@@ -41,6 +41,10 @@ let Files = {
     Files.loadedFiles[index].filepath = filepath;
     Files.setFileName(index, path.basename(filepath));
   },
+  getFileDirectory: (index) => {
+    if (!Files.validateFileEntry(index)) return "";
+    return path.dirname(Files.loadedFiles[index].filepath);
+  },
   getFileLine: (index) => {
     if (!Files.validateFileEntry(index)) return 0;
     return Files.loadedFiles[index].current_line;

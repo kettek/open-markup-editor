@@ -8,6 +8,8 @@ module.exports = {
   oncreate: (vnode) => {
       vnode.dom.addEventListener('dom-ready', () => {
         let converted_text = MarkupPacks.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
+        vnode.dom.send('filename', Files.getFileName(Files.focused));
+        vnode.dom.send('filepath', Files.getFilePath(Files.focused));
         vnode.dom.send('render', converted_text);
         vnode.dom.send('line', Files.getFileLine(Files.focused));
       });
@@ -15,6 +17,9 @@ module.exports = {
   onupdate: (vnode) => {
     if (Files.isFileDirty(Files.focused, true) || Files.should_redraw) {
       let converted_text = MarkupPacks.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
+      // TODO: only send filename/filepath when the focused file changes!
+      vnode.dom.send('filename', Files.getFileName(Files.focused));
+      vnode.dom.send('filepath', Files.getFilePath(Files.focused));
       vnode.dom.send('render', converted_text);
       Files.setFileDirty(Files.focused, false);
       Files.should_redraw = false;
@@ -28,9 +33,8 @@ module.exports = {
                autosize: true,
                minwidth: 0,
                minheight: 0,
-               nodeintegration: true,
                src: rp.preview,
-               preload: rp.preload
+               preload: './preload.js'
              }
     );
   }

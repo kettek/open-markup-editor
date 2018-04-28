@@ -25,7 +25,7 @@ let md = new require('markdown-it')({
     md.use(require('markdown-it-container'), 'todo');
     md.use(require('markdown-it-container'), 'menu');
     md.use(require('markdown-it-modify-token'));
-    md.use(require('markdown-it-multimd-table'));
+    md.use(require('markdown-it-multimd-table'), {enableMultilineRows: true});
 
 
     md.use(require('markdown-it-task-lists'));

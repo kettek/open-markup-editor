@@ -1,19 +1,12 @@
-const { ipcRenderer } = require('electron');
+let target_element = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-  ipcRenderer.send('webview-disable-external-navigation', true);
-  window.onbeforeunload = () => {
-    ipcRenderer.send('webview-disable-external-navigation', false);
-  }
-
-  const target_element = document.getElementById('OME_TARGET');
-  ipcRenderer.on('render', (event, message) => {
-    target_element.innerHTML = message;
-  });
-  ipcRenderer.on('line', (event, message) => {
-    let el = document.querySelector('[data-source-line="'+message+'"]');
-    if (el) {
-      el.scrollIntoView();
-    }
-  });
+ome.on('ready', () => {
+  target_element = document.getElementById('OME_TARGET');
+});
+ome.on('render', html => {
+  target_element.innerHTML = html;
+});
+ome.on('line', line => {
+  let el = document.querySelector('[data-source-line="'+line+'"]');
+  if (el) el.scrollIntoView();
 });
