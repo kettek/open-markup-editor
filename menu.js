@@ -73,7 +73,9 @@ function getMenuTemplate () {
             ? 'Close'
             : 'Close Window',
           accelerator: 'CmdOrCtrl+W',
-          role: 'close'
+          click: () => {
+            windows.list[windows.MAIN_WINDOW].webContents.send('file-close', -1);
+          }
         }
       ]
     },
@@ -175,12 +177,11 @@ function getMenuTemplate () {
   ]
 
   if (process.platform === 'darwin') {
-    // Add WebTorrent app menu (OS X)
     template.unshift({
-      label: config.APP_NAME,
+      label: 'OME',
       submenu: [
         {
-          label: 'About ' + config.APP_NAME,
+          label: 'About ' + 'OME',
           role: 'about'
         },
         {
@@ -203,7 +204,7 @@ function getMenuTemplate () {
           type: 'separator'
         },
         {
-          label: 'Hide ' + config.APP_NAME,
+          label: 'Hide ' + 'OME',
           accelerator: 'Command+H',
           role: 'hide'
         },

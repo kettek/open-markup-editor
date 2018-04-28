@@ -75,7 +75,8 @@ let Files = {
     return Files.loadedFiles[index].saved;
   },
   closeFile: index => {
-    if (!Files.validateFileEntry(index)) return;
+    if (index == -1) index = Files.focused;
+    if (!Files.validateFileEntry(index)) return false;
     Files.loadedFiles.splice(index, 1);
     if (index >= Files.loadedFiles.length) {
       Files.setFileFocus(index-1);
@@ -83,6 +84,8 @@ let Files = {
       Files.setFileFocus(index);
     }
     Files.should_redraw = true;
+    m.redraw();
+    return true;
   },
   saveFile: (index, save_as) => {
     if (index == -1) index = Files.focused;
@@ -112,6 +115,7 @@ let Files = {
         return;
       }
       Files.loadedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
+      Files.setFileFocus(Files.loadedFiles.length-1);
       Files.checkState();
     });
   },
@@ -119,6 +123,7 @@ let Files = {
     Files.loadedFiles.push(
       Files.buildFileEntry({name: "Untitled"})
     );
+    Files.setFileFocus(Files.loadedFiles.length-1);
     Files.checkState();
   },
   checkState: () => {
