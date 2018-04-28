@@ -1,0 +1,217 @@
+:root {
+  --s: #ef5350;
+  --s-fg: #261312;
+  --s-light: #ff867c;
+  --s-light-fg: #261312;
+  --s-dark: #b61827;
+  --s-dark-fg: #f4e9ea;
+
+  --p: #fffde7;
+  --p-fg: #0c0c0c;
+  --p-light: #ffffff;
+  --p-light-fg: #0c0c0c;
+  --p-dark: #cccab5;
+  --p-dark-fg: #0c0c0c;
+
+}
+
+html, body { width: 100%; height: 100%; }
+body { 
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: sans-serif;
+  background-color: var(--p-light);
+  color: var(--font-color);
+}
+* { box-sizing: border-box }
+
+.tabs {
+  display: flex;
+}
+
+.tab {
+  padding: .25em;
+}
+
+.view-window {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  padding: .1em 0;
+  backgound-color: var(--p-dark);
+}
+
+.view-window.focused {
+  display: flex;
+}
+
+.view-window section {
+}
+
+.welcome {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 1px 1px 1px 0;
+  border-color: var(--s-light);
+  background-color: var(--p);
+  color: var(--s-light);
+  border-radius: 0 3px 3px 0;
+  font-size: 3vw;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 1px 1px 1px 0;
+  border-color: var(--s-light);
+  border-radius: 0 3px 3px 0;
+  display: flex;
+}
+
+.CodeMirrorWrapper {
+  flex: 1 1 auto;
+  width:100%;
+  height: 100%;
+  position: relative;
+}
+
+.CodeMirror {
+  position: absolute !important;
+  height: auto !important;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 3px 3px 0;
+}
+
+.preview {
+  flex: 1;
+  background-color: #eee;
+  border-radius: 3px 0 0 3px;
+  border-style: solid;
+  border-width: 1px 0 1px  1px;
+  border-color: var(--s-light);
+
+}
+.preview webview {
+  width: 100%; height: 100%;
+  overflow: auto;
+  border-radius: 3px 0 0 3px;
+}
+
+.splitter {
+  width: 4px;
+  cursor: col-resize;
+  border-style: solid;
+  border-width: 0 1px;
+  border-color: var(--p);
+  border-radius: 100px;
+}
+.splitter:hover {
+  border-width: 0 1px;
+  border-color: var(--p-dark);
+  background-color: var(--p-dark);
+}
+
+nav {
+  background-color: var(--p);
+}
+
+.tab {
+  position: relative;
+  margin: 0 .25em;
+  background-color: var(--p);
+  color: var(--p-dark);
+  cursor: pointer;
+}
+.tab.focused {
+  background-color: var(--p);
+  color: var(--s-dark);
+}
+.tab:after {
+  content: '';
+  display: block;
+  position: absolute; bottom: 0;
+  left: 50%;
+  width: 0%;
+  height: 5%;
+  background-color: var(--p);
+  transition: .2s all;
+}
+.tab.focused:hover:after, .tab.focused:after {
+  left: 0;
+  width: 100%;
+  background-color: var(--s);
+}
+.tab:hover:after {
+  left: 0;
+  width: 100%;
+  background-color: var(--p-dark);
+}
+
+.focused > .close {
+  background-color: var(--s);
+}
+.focused > .close:after {
+  background-color: var(--s-dark);
+}
+.focused > .close:before {
+  background-color: var(--s-dark);
+}
+.close {
+  cursor: pointer;
+  background-color: var(--s-light);
+  border: 0;
+  border-radius: 100px;
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0 0 0 .5em;
+  position: relative;
+  transition: .3s all;
+}
+.close:after {
+  content: '';
+  position: absolute;
+  left: 25%; top: 45%;
+  width: 50%;
+  height: 10%;
+  display: block;
+  transform: rotate(45deg);
+  background-color: var(--s);
+  transition: .3s all;
+}
+.close:before {
+  content: '';
+  position: absolute;
+  left: 25%; top: 45%;
+  width: 50%;
+  height: 10%;
+  display: block;
+  transform: rotate(-45deg);
+  background-color: var(--s);
+  transition: .3s all;
+}
+.close:hover {
+  background-color: var(--s-dark);
+  color: var(--s-dark-fg);
+}
+.close:hover:before, .close:hover:after {
+  background-color: var(--s-dark-fg);
+}
+
+footer {
+  font-size: 75%;
+  background-color: var(--p);
+  color: var(--p-dark);
+  padding: 0.25em;
+}

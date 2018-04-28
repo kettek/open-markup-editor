@@ -1,0 +1,27 @@
+{
+  "name": "open-markup-editor",
+  "version": "1.0.0",
+  "description": "Pluggable markup editor",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "markup",
+    "markdown",
+    "editor",
+    "plugins",
+    "pluggable"
+  ],
+  "author": "kts of kettek",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "electron": "^1.8.6"
+  },
+  "dependencies": {
+    "codemirror": "^5.37.0",
+    "electron-settings": "^3.1.4",
+    "mithril": "^1.1.6"
+  }
+}
