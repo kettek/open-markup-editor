@@ -12,9 +12,9 @@ module.exports = {
   },
   view: (vnode) => {
     return m('section.view-window', [
-        m(EditorView, {fileIndex: vnode.attrs.fileIndex})
-      , m(Splitter)
-      , m('section.preview', [m(PreviewView, {fileIndex: vnode.attrs.fileIndex})])
+        m(EditorView, {fileIndex: vnode.attrs.fileIndex }),
+        m(Splitter),
+        m('section.preview', [m(PreviewView, {fileIndex: vnode.attrs.fileIndex})])
     ]);
   }
 }

@@ -39,7 +39,7 @@ body {
   display: flex;
   height: 100%;
   padding: .1em 0;
-  backgound-color: var(--p-dark);
+  background-color: var(--p);
 }
 
 .view-window.focused {
