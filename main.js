@@ -4,6 +4,8 @@ const settings = require('electron').remote.require('electron-settings');
 
 const Files = require('./src/models/Files');
 
+const Config = require('./src/models/Config');
+
 const { ipcRenderer } = require('electron');
 
 // ---- Setup IPC ---
@@ -24,6 +26,13 @@ ipcRenderer.on('file-close', (event, arg) => {
     // Quit if there are no more files?
   }
 });
+ipcRenderer.on('set-config', (event, arg) => {
+  Config.setConfig(arg);
+});
+ipcRenderer.on('update-config', (event, arg) => {
+  Config.storeConfig(arg.key, arg.value);
+});
+
 
 let MainView = require('./src/views/Main');
 

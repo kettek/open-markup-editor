@@ -20,6 +20,8 @@ function createMainWindow() {
   }));
 
   windows.list[windows.MAIN_WINDOW].on('ready-to-show', () => {
+    // Send our pertinent settings to the main app.
+    windows.list[windows.MAIN_WINDOW].webContents.send('set-config', settings.get('config'));
     windows.list[windows.MAIN_WINDOW].show();
   });
 
@@ -75,4 +77,7 @@ ipcMain.on('webview-disable-external-navigation', (event, enabled) => {
   } else {
     event.sender.removeListener('will-navigate', disableNavigation);
   }
+});
+ipcMain.on('update-settings', (event, config) => {
+  settings.set(config.key, config.value);
 });

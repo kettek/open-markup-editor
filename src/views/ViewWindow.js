@@ -2,6 +2,8 @@ let m = require('mithril');
 
 let Files = require('../models/Files');
 
+let Config = require('../models/Config');
+
 let EditorView  = require('./Editor')
   , PreviewView = require('./Preview')
   , Splitter     = require('./Splitter')
@@ -14,7 +16,7 @@ module.exports = {
     return m('section.view-window', [
         m(EditorView, {fileIndex: vnode.attrs.fileIndex }),
         m(Splitter),
-        m('section.preview', [m(PreviewView, {fileIndex: vnode.attrs.fileIndex})])
+        m('section.preview', (Config.element_settings["SECTION.preview"] ? Config.element_settings["SECTION.preview"] : {}), [m(PreviewView, {fileIndex: vnode.attrs.fileIndex})])
     ]);
   }
 }

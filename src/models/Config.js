@@ -1,3 +1,5 @@
+const { ipcRenderer } = require('electron');
+
 let Config = {
   synch_lines: true,
   synch_scroll: false,
@@ -19,6 +21,20 @@ let Config = {
       return obj;
     }
     Config.element_settings[identifier] = Object.assign(Config.element_settings[identifier], iterate(e, v));
+    Config.syncSettings();
+  },
+  setConfig: (value) => {
+    Config = Object.assign(Config, value);
+  },
+  storeConfig: (key, value) => {
+    if (typeof value === "string") {
+      Config.element_settings[key] = value;
+    } else {
+      Config.element_settings[key] = Object.assign(Config.element_settings[key]||{}, value);
+    }
+  },
+  syncSettings: () => {
+    ipcRenderer.send("update-settings", {key: "config.element_settings", value: Config.element_settings});
   }
 };
 
