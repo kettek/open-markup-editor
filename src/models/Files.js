@@ -63,9 +63,10 @@ let Files = {
   },
   getFileExtension: (index) => {
     if (!Files.validateFileEntry(index)) return '';
-    return Files.loadedFiles[index].filepath.split('.').pop();
+    return Files.loadedFiles[index].name.split('.').pop();
   },
   setFileFocus: (index) => {
+    if (index == Files.focused) return;
     if (!Files.validateFileEntry(index)) return;
     Files.focused = index;
     Files.should_redraw = true;
@@ -125,7 +126,7 @@ let Files = {
   },
   newFile: () => {
     Files.loadedFiles.push(
-      Files.buildFileEntry({name: "Untitled"})
+      Files.buildFileEntry({name: "Untitled.md"})
     );
     Files.setFileFocus(Files.loadedFiles.length-1);
     Files.checkState();

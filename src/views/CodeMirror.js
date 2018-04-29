@@ -2,6 +2,8 @@ let m = require('mithril');
 let CodeMirror = require('codemirror');
                  require('codemirror/mode/markdown/markdown');
 
+let Config = require('../models/Config');
+
 let Files = require('../models/Files');
 
 let CodeMirrorComponent = {
@@ -9,8 +11,8 @@ let CodeMirrorComponent = {
     // TODO: dynamically change mode, somehow!
     let cm = CodeMirror.fromTextArea(vnode.dom, {
       lineNumbers: true,
-      lineWrapping: false,
-      viewportMargin: 0,
+      lineWrapping: true,
+      viewportMargin: 1,
       mode: "markdown"
     });
     let lastChange = + new Date();
@@ -25,6 +27,7 @@ let CodeMirrorComponent = {
       updateTimeout = null;
     };
     cm.on("cursorActivity", (cm) => {
+      if (!Config.synch_lines) return;
       let li = cm.getDoc().getCursor().line;
       /*let vp = cm.getViewport();
       vp.from += 10;
@@ -40,6 +43,7 @@ let CodeMirrorComponent = {
       m.redraw();
     });
     cm.on("viewportChange", (cm, from, to) => {
+      if (!Config.synch_scroll) return;
       Files.setFileLine(Files.focused, from);
       m.redraw();
     });

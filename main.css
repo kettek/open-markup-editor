@@ -214,4 +214,76 @@ footer {
   background-color: var(--p);
   color: var(--p-dark);
   padding: 0.25em;
+  display: flex;
+  align-items: center;
+}
+
+footer > * {
+  flex: 1;
+}
+footer > span {
+  display: flex;
+  align-items: center;
+}
+
+label {
+}
+
+/* checkbox */
+input[type=checkbox] {
+  -webkit-appearance: none;
+  background-color: var(--s-light);
+  border: 0;
+  border-radius: 3px;
+  width: 1em;
+  height: 1em;
+  margin: .25em;
+  position: relative;
+  transition: .3s all;
+}
+input[type=checkbox] + label {
+  color: var(--s-light);
+}
+input[type=checkbox]:checked {
+  background-color: var(--s-dark);
+}
+input[type=checkbox]:checked + label {
+  color: var(--s-dark);
+}
+
+input[type=checkbox]:disabled {
+  background-color: var(--p-dark);
+}
+
+input[type=checkbox]:disabled + label {
+  color: var(--p-dark);
+}
+
+input[type=checkbox]:after, input[type=checkbox]:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0; height: 0;
+  background-color: var(--p-light);
+  transition: .2s all;
+}
+input[type=checkbox]:checked:after {
+  top: 45%;
+  left: 10%;
+  width: 45%;
+  height: 20%;
+  transform: rotate(45deg);
+}
+input[type=checkbox]:checked:before {
+  top: 30%;
+  left: 30%;
+  width: 70%;
+  height: 20%;
+  transform: rotate(-45deg);
+}
+
+input[type=checkbox]:not(:checked):not(:disabled):hover {
+  background-color: var(--s);
 }
