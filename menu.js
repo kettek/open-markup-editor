@@ -69,9 +69,7 @@ function getMenuTemplate () {
           type: 'separator'
         },
         {
-          label: process.platform === 'win32'
-            ? 'Close'
-            : 'Close Window',
+          label: 'Close',
           accelerator: 'CmdOrCtrl+W',
           click: () => {
             windows.list[windows.MAIN_WINDOW].webContents.send('file-close', -1);
@@ -222,7 +220,7 @@ function getMenuTemplate () {
         },
         {
           label: 'Quit',
-          accelerator: 'Command+Q',
+          accelerator: 'CmdOrCtrl+Q',
           click: () => app.quit()
         }
       ]
@@ -249,12 +247,14 @@ function getMenuTemplate () {
     })
   }
 
-  // Add "File > Quit" menu item so Linux distros where the system tray icon is
-  // missing will have a way to quit the app.
-  if (process.platform === 'linux') {
-    // File menu (Linux)
+  if (process.platform !== 'darwin') {
+    template[0].submenu.push({
+      type: 'separator'
+    })
+
     template[0].submenu.push({
       label: 'Quit',
+      accelerator: 'CmdOrCtrl+Q',
       click: () => app.quit()
     })
   }
