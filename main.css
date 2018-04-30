@@ -58,7 +58,7 @@ body {
   height: 100%;
   border-style: solid;
   border-width: 1px 1px 1px 0;
-  border-color: var(--s-light);
+  border-color: var(--s);
   background-color: var(--p);
   color: var(--p-fg);
   border-radius: 0 3px 3px 0;
@@ -73,7 +73,7 @@ body {
   height: 100%;
   border-style: solid;
   border-width: 1px 1px 1px 0;
-  border-color: var(--s-light);
+  border-color: var(--s);
   border-radius: 0 3px 3px 0;
   display: flex;
 }
@@ -102,7 +102,7 @@ body {
   border-radius: 3px 0 0 3px;
   border-style: solid;
   border-width: 1px 0 1px  1px;
-  border-color: var(--s-light);
+  border-color: var(--s);
 
 }
 .preview webview {
