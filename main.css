@@ -1,17 +1,17 @@
 :root {
-  --s: #ef5350;
+  --s: #0277bd;
   --s-fg: #261312;
-  --s-light: #ff867c;
+  --s-light: #58a5f0;
   --s-light-fg: #261312;
-  --s-dark: #b61827;
+  --s-dark: #004c8c;
   --s-dark-fg: #f4e9ea;
 
-  --p: #fffde7;
-  --p-fg: #0c0c0c;
-  --p-light: #ffffff;
-  --p-light-fg: #0c0c0c;
-  --p-dark: #cccab5;
-  --p-dark-fg: #0c0c0c;
+  --p: #212121;
+  --p-fg: #fbfbfb;
+  --p-light: #484848;
+  --p-light-fg: #fbfbfb;
+  --p-dark: #000;
+  --p-dark-fg: #fbfbfb;
 
 }
 
@@ -22,7 +22,7 @@ body {
   flex-direction: column;
   font-family: sans-serif;
   background-color: var(--p-light);
-  color: var(--font-color);
+  color: var(--p-light-fg);
 }
 * { box-sizing: border-box }
 
@@ -31,6 +31,8 @@ body {
 }
 
 .tab {
+  display: flex;
+  align-items: center;
   padding: .25em;
 }
 
@@ -58,7 +60,7 @@ body {
   border-width: 1px 1px 1px 0;
   border-color: var(--s-light);
   background-color: var(--p);
-  color: var(--s-light);
+  color: var(--p-fg);
   border-radius: 0 3px 3px 0;
   font-size: 3vw;
   align-items: center;
@@ -131,12 +133,11 @@ nav {
   position: relative;
   margin: 0 .25em;
   background-color: var(--p);
-  color: var(--p-dark);
+  color: var(--s-dark);
   cursor: pointer;
 }
 .tab.focused {
-  background-color: var(--p);
-  color: var(--s-dark);
+  color: var(--s-light);
 }
 .tab:after {
   content: '';
@@ -145,74 +146,72 @@ nav {
   left: 50%;
   width: 0%;
   height: 5%;
-  background-color: var(--p);
+  background-color: var(--s-dark);
   transition: .2s all;
 }
 .tab.focused:hover:after, .tab.focused:after {
   left: 0;
   width: 100%;
-  background-color: var(--s);
+  background-color: var(--s-light);
 }
 .tab:hover:after {
   left: 0;
   width: 100%;
-  background-color: var(--p-dark);
+  background-color: var(--s);
 }
 
 .focused > .close {
   background-color: var(--s);
 }
 .focused > .close:after {
-  background-color: var(--s-dark);
+  background-color: var(--s-light);
 }
 .focused > .close:before {
-  background-color: var(--s-dark);
+  background-color: var(--s-light);
 }
 .close {
   cursor: pointer;
-  background-color: var(--s-light);
+  background-color: var(--s);
   border: 0;
   border-radius: 100px;
   width: 1.5em;
   height: 1.5em;
   margin: 0 0 0 .5em;
   position: relative;
+  outline: none;
+  transition: .3s all;
+}
+.close:after, .close:before {
+  content: '';
+  position: absolute;
+  left: 25%; top: 45%;
+  width: 50%;
+  height: 10%;
+  display: block;
+  background-color: var(--s);
   transition: .3s all;
 }
 .close:after {
-  content: '';
-  position: absolute;
-  left: 25%; top: 45%;
-  width: 50%;
-  height: 10%;
-  display: block;
   transform: rotate(45deg);
-  background-color: var(--s);
-  transition: .3s all;
 }
 .close:before {
-  content: '';
-  position: absolute;
-  left: 25%; top: 45%;
-  width: 50%;
-  height: 10%;
-  display: block;
   transform: rotate(-45deg);
-  background-color: var(--s);
-  transition: .3s all;
 }
 .close:hover {
-  background-color: var(--s-dark);
-  color: var(--s-dark-fg);
+  background-color: var(--s-light);
+  color: var(--s-light-fg);
 }
 .close:hover:before, .close:hover:after {
   background-color: var(--s-dark-fg);
+  left: 25%; top: 45%;
+  width: 50%;
+  height: 10%;
 }
 
 footer {
   font-size: 75%;
   background-color: var(--p);
-  color: var(--p-dark);
+  color: var(--p-fg);
   padding: 0.25em;
   display: flex;
   align-items: center;
@@ -232,7 +231,7 @@ label {
 /* checkbox */
 input[type=checkbox] {
   -webkit-appearance: none;
-  background-color: var(--s-light);
+  background-color: var(--s);
   border: 0;
   border-radius: 3px;
   width: 1em;
@@ -242,17 +241,17 @@ input[type=checkbox] {
   transition: .3s all;
 }
 input[type=checkbox] + label {
-  color: var(--s-light);
+  color: var(--s);
 }
 input[type=checkbox]:checked {
-  background-color: var(--s-dark);
+  background-color: var(--s);
 }
 input[type=checkbox]:checked + label {
-  color: var(--s-dark);
+  color: var(--s);
 }
 
 input[type=checkbox]:disabled {
-  background-color: var(--p-dark);
+  background-color: var(--s-dark);
 }
 
 input[type=checkbox]:disabled + label {
@@ -266,7 +265,7 @@ input[type=checkbox]:after, input[type=checkbox]:before {
   top: 50%;
   left: 50%;
   width: 0; height: 0;
-  background-color: var(--p-light);
+  background-color: var(--s-dark-fg);
   transition: .2s all;
 }
 input[type=checkbox]:checked:after {
@@ -284,6 +283,9 @@ input[type=checkbox]:checked:before {
   transform: rotate(-45deg);
 }
 
-input[type=checkbox]:not(:checked):not(:disabled):hover {
-  background-color: var(--s);
+input[type=checkbox]:not(:disabled):hover {
+  background-color: var(--s-light);
+}
+input[type=checkbox]:not(:disabled):hover + label {
+  color: var(--s-light);
 }

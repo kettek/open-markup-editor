@@ -5,7 +5,8 @@ const path = require('path');
 
 module.exports = (editor) => {
   editor.emit("css-load", path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
-  const newFile = (mode="markdown", content="") => {
+  editor.emit("css-load", path.join(__dirname, 'node_modules/codemirror/theme/material.css'));
+  const newFile = (filename="", content="", mode="markdown") => {
     return {
       doc: CodeMirror.Doc(content, mode)
     }
@@ -16,7 +17,8 @@ module.exports = (editor) => {
     if (!editor.cm) {
       editor.cm = CodeMirror.fromTextArea(dom, {
         lineNumbers: true,
-        lineWrapping: false
+        lineWrapping: false,
+        theme: 'material'
       });
       editor.cm.on("changes", (cm, changes) => {
         editor.emit("change", editor.focused);
