@@ -45,6 +45,11 @@ module.exports = {
             updateTimeout = setTimeout(updateFunction, Config.editor.update_delay);
           });
         },
+        onremove: (vnode) => {
+          if (vnode.state.editor) {
+            if (vnode.state.editor.unload) vnode.state.editor.unload();
+          }
+        },
         onupdate: (vnode) => {
           if (vnode.state.editor) {
             vnode.state.editor.emit("doc-focus", parent.attrs.fileIndex);

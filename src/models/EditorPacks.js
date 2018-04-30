@@ -22,7 +22,22 @@ let EditorPacks = {
       link.addEventListener('load', m.redraw);
       document.getElementsByTagName('head')[0].appendChild(link);
     });
-    EditorPacks.packs[pack_index](editor_instance);
+    editor_instance.on('css-unload', css => {
+      let links = document.getElementsByTagName('head')[0].querySelectorAll('link');
+      for (let i = 0; i < links.length; i++) {
+        if (links[i].getAttribute('href') == css) {
+          links[i].parentNode.removeChild(links[i]);
+          return;
+        }
+      }
+    });
+    editor_instance.on('ready', () => {
+      m.redraw();
+    });
+    EditorPacks.packs[pack_index].create(editor_instance);
+    if (editor_instance.load) {
+      editor_instance.load();
+    }
     return editor_instance
   },
   loadPack: (source) => {
