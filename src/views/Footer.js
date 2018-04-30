@@ -13,16 +13,7 @@ module.exports = {
             Config.synch_lines = checked;
           }),
           checked: Config.synch_lines
-        }), m('label[for=synch_lines]', "synch lines")
-      ),
-      m('span.checkbox', 
-        m('input[type=checkbox]#synch_scroll', {
-          onchange: m.withAttr("checked", (checked) => {
-            Config.synch_scroll = checked;
-          }),
-          checked: Config.synch_scroll,
-          disabled: !Config.synch_lines
-        }), m('label[for=synch_scroll]', "synch scroll")
+        }), m('label[for=synch_lines]', "synch-to-line")
       )
     ]);
   }

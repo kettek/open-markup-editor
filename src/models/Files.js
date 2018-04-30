@@ -3,9 +3,11 @@ const path = require('path');
 
 const m = require('mithril');
 
+const Emitter = require('../emitter.js');
+
 const {dialog} = require('electron').remote;
 
-let Files = {
+let Files = Emitter({
   focused: 0,
   should_redraw: true,
   loadedFiles: [
@@ -18,10 +20,12 @@ let Files = {
   },
   getFileText: (index) => {
     if (!Files.validateFileEntry(index)) return "";
-    return Files.loadedFiles[index].text;
+    let text = Files.emit('get-text', index);
+    return text || Files.loadedFiles[index].text;
   },
   setFileText: (index, text) => {
     if (!Files.validateFileEntry(index)) return false;
+    Files.emit('set-text', index, text);
     Files.loadedFiles[index].text = text;
   },
   getFileName: (index) => {
@@ -52,6 +56,7 @@ let Files = {
   setFileLine: (index, num) => {
     if (!Files.validateFileEntry(index)) return false;
     Files.loadedFiles[index].current_line = num;
+    m.redraw();
   },
   isFileDirty: (index) => {
     if (!Files.validateFileEntry(index)) return false;
@@ -88,6 +93,7 @@ let Files = {
     } else {
       Files.setFileFocus(index);
     }
+    Files.emit('file-close', index);
     Files.should_redraw = true;
     m.redraw();
     return true;
@@ -102,7 +108,7 @@ let Files = {
         Files.saveFile(index);
       });
     } else {
-      fs.writeFile(Files.loadedFiles[index].filepath, Files.loadedFiles[index].text, (err) => {
+      fs.writeFile(Files.loadedFiles[index].filepath, Files.getFileText(index), (err) => {
         if (err) {
           console.log(err.message);
           Files.loadedFiles[index].saved = false;
@@ -121,6 +127,7 @@ let Files = {
       }
       Files.loadedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
       Files.setFileFocus(Files.loadedFiles.length-1);
+      Files.emit("file-load", Files.loadedFiles.length-1);
       Files.checkState();
     });
   },
@@ -129,6 +136,7 @@ let Files = {
       Files.buildFileEntry({name: "Untitled.md"})
     );
     Files.setFileFocus(Files.loadedFiles.length-1);
+    Files.emit("file-load", Files.loadedFiles.length-1);
     Files.checkState();
   },
   checkState: () => {
@@ -148,11 +156,11 @@ let Files = {
       name: "",
       filepath: "",
       text: "",
-      saved: false,
+      saved: true,
       current_line: 0,
       is_dirty: true
     }, obj);
   }
-}
+})
 
 module.exports = Files;

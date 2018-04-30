@@ -6,6 +6,8 @@ const Files = require('./src/models/Files');
 
 const Config = require('./src/models/Config');
 
+const EditorPacks = require('./src/models/EditorPacks');
+
 const { ipcRenderer } = require('electron');
 
 // ---- Setup IPC ---
@@ -28,6 +30,9 @@ ipcRenderer.on('file-close', (event, arg) => {
 });
 ipcRenderer.on('set-config', (event, arg) => {
   Config.setConfig(arg);
+
+  EditorPacks.loadPack(Config.editorpack);
+  // ---- ----
 });
 ipcRenderer.on('update-config', (event, arg) => {
   Config.storeConfig(arg.key, arg.value);

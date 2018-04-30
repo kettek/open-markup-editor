@@ -3,6 +3,10 @@ const { ipcRenderer } = require('electron');
 let Config = {
   synch_lines: true,
   synch_scroll: false,
+  editor: {
+    update_delay: 250,
+  },
+  editorpack: '',
   element_settings: {},
   storeElementSettings: (e, v) => {
     let identifier = e.tagName + (e.className ? '.'+e.className : '') + (e.id ? '#' + e.id : '');

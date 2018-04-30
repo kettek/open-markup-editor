@@ -76,14 +76,14 @@ body {
   display: flex;
 }
 
-.CodeMirrorWrapper {
+.editor-wrapper {
   flex: 1 1 auto;
   width:100%;
   height: 100%;
   position: relative;
 }
 
-.CodeMirror {
+.editor-wrapper > * {
   position: absolute !important;
   height: auto !important;
   width: 100%;
