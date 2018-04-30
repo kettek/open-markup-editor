@@ -39,7 +39,7 @@ function getMenuTemplate () {
         {
           label: 'Open...',
           accelerator: 'CmdOrCtrl+O',
-          click: () => {dialog.showOpenDialog({
+          click: () => {dialog.showOpenDialog(windows.list[windows.MAIN_WINDOW], {
             properties: ['openFile', 'multiSelections']},
             (fileNames) => {
               if (fileNames === undefined) return;

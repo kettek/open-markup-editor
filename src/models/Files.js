@@ -6,6 +6,7 @@ const m = require('mithril');
 const Emitter = require('../emitter.js');
 
 const {dialog} = require('electron').remote;
+const windows = require('electron').remote.require('./windows');
 
 let Files = Emitter({
   focused: 0,
@@ -102,7 +103,7 @@ let Files = Emitter({
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return;
     if (Files.loadedFiles[index].filepath.length == 0 || save_as == true) {
-      dialog.showSaveDialog(filename => {
+      dialog.showSaveDialog(windows.list[windows.MAIN_WINDOW], filename => {
         if (filename === undefined) return;
         Files.setFilePath(index, filename);
         Files.saveFile(index);
