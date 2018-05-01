@@ -1,10 +1,12 @@
+@import "fonts/mplus-2c.css";
+
 :root {
   --s: #0277bd;
-  --s-fg: #261312;
   --s-light: #58a5f0;
-  --s-light-fg: #261312;
   --s-dark: #004c8c;
+  --s-fg: #261312;
   --s-dark-fg: #f4e9ea;
+  --s-light-fg: #261312;
 
   --p: #212121;
   --p-fg: #fbfbfb;
@@ -13,6 +15,7 @@
   --p-dark: #000;
   --p-dark-fg: #fbfbfb;
 
+  --font-family: "M+ C Type-2 (basic latin)";
 }
 
 html, body { width: 100%; height: 100%; }
@@ -20,7 +23,7 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   background-color: var(--p-light);
   color: var(--p-light-fg);
 }
@@ -34,6 +37,7 @@ body {
   display: flex;
   align-items: center;
   padding: .25em;
+  font-size: 10pt;
 }
 
 .view-window {
@@ -139,6 +143,9 @@ nav {
 .tab.focused {
   color: var(--s-light);
 }
+span.unsaved:after {
+  content: '*';
+}
 .tab:after {
   content: '';
   display: block;
@@ -149,63 +156,50 @@ nav {
   background-color: var(--s-dark);
   transition: .2s all;
 }
-.tab.focused:hover:after, .tab.focused:after {
-  left: 0;
+.tab.focused:after {
+  left: 0%;
   width: 100%;
   background-color: var(--s-light);
 }
-.tab:hover:after {
-  left: 0;
-  width: 100%;
-  background-color: var(--s);
+.tab:hover {
+  color: var(--s);
 }
 
 .focused > .close {
   background-color: var(--s);
 }
-.focused > .close:after {
-  background-color: var(--s-light);
-}
 .focused > .close:before {
-  background-color: var(--s-light);
+  color: var(--s-light);
 }
 .close {
   cursor: pointer;
-  background-color: var(--s);
+  background-color: var(--s-dark);
   border: 0;
-  border-radius: 100px;
-  width: 1.5em;
-  height: 1.5em;
+  border-radius: 3px;
+  width: 1em;
+  height: 1em;
   margin: 0 0 0 .5em;
   position: relative;
   outline: none;
-  transition: .3s all;
-}
-.close:after, .close:before {
-  content: '';
-  position: absolute;
-  left: 25%; top: 45%;
-  width: 50%;
-  height: 10%;
-  display: block;
-  background-color: var(--s);
-  transition: .3s all;
-}
-.close:after {
-  transform: rotate(45deg);
+  transition: .2s all;
 }
 .close:before {
-  transform: rotate(-45deg);
+  content: '✖';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  line-height: 100%;
+  transition: .2s all;
+  color: var(--s-dark);
 }
 .close:hover {
   background-color: var(--s-light);
-  color: var(--s-light-fg);
+  color: var(--s-light);
 }
-.close:hover:before, .close:hover:after {
-  background-color: var(--s-dark-fg);
-  left: 25%; top: 45%;
-  width: 50%;
-  height: 10%;
+.close:hover:before {
+  color: var(--s-dark-fg);
 }
 
 footer {
