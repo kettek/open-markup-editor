@@ -35,7 +35,7 @@ ipcRenderer.on('set-config', (event, arg) => {
 
   EditorPacks.loadPack(Config.editorpack);
   // ---- ----
-  if (Config.use_colorizer) Colorizer.setup(Config.colorizer.use_system_colors ? true : false);
+  if (Config.use_colorizer) Colorizer.setup(Config.colorizer);
 });
 ipcRenderer.on('update-config', (event, arg) => {
   Config.storeConfig(arg.key, arg.value);

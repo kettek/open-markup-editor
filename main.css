@@ -166,9 +166,6 @@ span.unsaved:after {
   color: var(--s);
 }
 
-.focused > button {
-  background-color: var(--s);
-}
 .focused > .close:before {
   color: var(--s-light);
 }
