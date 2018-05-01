@@ -6,6 +6,8 @@ const Files = require('./src/models/Files');
 
 const Config = require('./src/models/Config');
 
+const Colorizer = require('./src/Colorizer');
+
 const EditorPacks = require('./src/models/EditorPacks');
 
 const { ipcRenderer } = require('electron');
@@ -33,6 +35,7 @@ ipcRenderer.on('set-config', (event, arg) => {
 
   EditorPacks.loadPack(Config.editorpack);
   // ---- ----
+  if (Config.use_colorizer) Colorizer.setup(Config.colorizer.use_system_colors ? true : false);
 });
 ipcRenderer.on('update-config', (event, arg) => {
   Config.storeConfig(arg.key, arg.value);

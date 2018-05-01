@@ -49,6 +49,8 @@ app.on('ready', () => {
   if (!settings.has("filetypes")) settings.set("filetypes", {"md": "$OME_MARKUP_PACKS/ome-mp-markdown-it" });
   if (!settings.has("renderpack")) settings.set("renderpack", "$OME_RENDER_PACKS/ome-rp-default");
   if (!settings.has("config.editorpack")) settings.set("config.editorpack", "$OME_EDITOR_PACKS/ome-ep-codemirror");
+  if (!settings.has("config.use_colorizer")) settings.set("config.use_colorizer", "true");
+  if (!settings.has("config.colorizer.use_system_colors")) settings.set("config.colorizer.use_system_colors", "true");
   // ---- ----
   for (const [key, value] of Object.entries(settings.get("filetypes"))) {
     MarkupPacks.setPack(value);
