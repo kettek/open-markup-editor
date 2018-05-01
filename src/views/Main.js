@@ -12,18 +12,18 @@ module.exports = {
   oninit: (vnode) => {
   },
   view: () => {
+    const view = [];
+    view.push( m(TabsView, 
+        Files.loadedFiles.map(function(file, index) {
+          return m(TabView, {fileIndex: index});
+        })
+      ));
     if (Files.loadedFiles.length == 0) {
-      return m(WelcomeView);
+      view.push(m(WelcomeView));
     } else {
-      return [
-        m(TabsView, 
-          Files.loadedFiles.map(function(file, index) {
-            return m(TabView, {fileIndex: index});
-          })
-        ),
-        m(ViewWindow, {fileIndex: Files.focused}),
-        m(FooterView, {fileIndex: Files.focused})
-      ];
+      view.push(m(ViewWindow, {fileIndex: Files.focused}));
+      view.push(m(FooterView, {fileIndex: Files.focused}));
     }
+    return view;
   }
 }

@@ -24,13 +24,14 @@ body {
   display: flex;
   flex-direction: column;
   font-family: var(--font-family);
-  background-color: var(--p-light);
+  background-color: var(--p);
   color: var(--p-light-fg);
 }
 * { box-sizing: border-box }
 
 .tabs {
   display: flex;
+  align-items: center;
 }
 
 .tab {
@@ -61,11 +62,11 @@ body {
   width: 100%;
   height: 100%;
   border-style: solid;
-  border-width: 1px 1px 1px 0;
+  border-width: 1px 0;
+  margin: 3px 0 0 0;
   border-color: var(--s);
   background-color: var(--p);
   color: var(--p-fg);
-  border-radius: 0 3px 3px 0;
   font-size: 3vw;
   align-items: center;
   justify-content: center;
@@ -161,17 +162,17 @@ span.unsaved:after {
   width: 100%;
   background-color: var(--s-light);
 }
-.tab:hover {
+.tab:not(.focused):hover {
   color: var(--s);
 }
 
-.focused > .close {
+.focused > button {
   background-color: var(--s);
 }
 .focused > .close:before {
   color: var(--s-light);
 }
-.close {
+button {
   cursor: pointer;
   background-color: var(--s-dark);
   border: 0;
@@ -182,23 +183,39 @@ span.unsaved:after {
   position: relative;
   outline: none;
   transition: .2s all;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button:before {
+  position: absolute;
+  line-height: 100%;
+  transition: .2s all;
+  color: var(--s);
 }
 .close:before {
   content: '✖';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  line-height: 100%;
-  transition: .2s all;
   color: var(--s-dark);
 }
-.close:hover {
+.close:hover:before {
+  color: var(--s-dark-fg);
+}
+.new {
+  font-size: 13pt;
+  margin: 0;
+  background-color: transparent;
+}
+.new:hover {
+  background-color: transparent;
+}
+.new:before {
+  content: '✚';
+}
+button:hover {
   background-color: var(--s-light);
   color: var(--s-light);
 }
-.close:hover:before {
+button:hover:before {
   color: var(--s-dark-fg);
 }
 
