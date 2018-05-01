@@ -85,9 +85,32 @@ let Files = Emitter({
     if (!Files.validateFileEntry(index)) return false;
     return Files.loadedFiles[index].saved;
   },
-  closeFile: index => {
+  closeFile: (index, force=false) => {
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return false;
+    if (!Files.isFileSaved(index) && !force) {
+      const isSuperior = process.platform !== 'win32'; // ;)
+      let options = {
+         type: "warning",
+         title: "Unsaved Changes",
+         message: "The Document \"" + Files.getFileName(index) + "\" has been modified.",
+         detail: "Do you want to save your changes or discard them?",
+         buttons: isSuperior ?  ["Discard", "Cancel", "Save"] : ["Save", "Discard", "Cancel"],
+         defaultId: isSuperior ? 2 : 0
+      };
+      dialog.showMessageBox(windows.list[windows.MAIN_WINDOW], options, (response) => {
+        if (response === (isSuperior ? 1 : 2)) {          // Cancel
+        } else if (response === (isSuperior ? 2 : 0)) {   // Save
+          Files.saveFile(index, false, (saved_index) => {
+            Files.closeFile(saved_index);
+          });
+        } else if (response === (isSuperior ? 0 : 1)) {   // Discard
+          Files.closeFile(index, true);
+        }
+      });
+      return;
+    }
+
     Files.loadedFiles.splice(index, 1);
     if (index >= Files.loadedFiles.length) {
       Files.setFileFocus(index-1);
@@ -99,14 +122,14 @@ let Files = Emitter({
     m.redraw();
     return true;
   },
-  saveFile: (index, save_as) => {
+  saveFile: (index, save_as=false, cb=()=>{}) => {
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return;
     if (Files.loadedFiles[index].filepath.length == 0 || save_as == true) {
       dialog.showSaveDialog(windows.list[windows.MAIN_WINDOW], filename => {
         if (filename === undefined) return;
         Files.setFilePath(index, filename);
-        Files.saveFile(index);
+        Files.saveFile(index, false, cb);
       });
     } else {
       fs.writeFile(Files.loadedFiles[index].filepath, Files.getFileText(index), (err) => {
@@ -116,6 +139,7 @@ let Files = Emitter({
           return;
         }
         Files.loadedFiles[index].saved = true;
+        cb(index);
         Files.checkState();
       });
     }
