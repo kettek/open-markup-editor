@@ -6,11 +6,13 @@ const Files = require('./src/models/Files');
 
 const Config = require('./src/models/Config');
 
-const Colorizer = require('./src/Colorizer');
-
 const EditorPacks = require('./src/models/EditorPacks');
 
+const Extensions = require('./src/Extensions');
+
 const { ipcRenderer } = require('electron');
+
+const path = require('path');
 
 // ---- Setup IPC ---
 ipcRenderer.on('file-new', (event, arg) => {
@@ -34,13 +36,18 @@ ipcRenderer.on('set-config', (event, arg) => {
   Config.setConfig(arg);
 
   EditorPacks.loadPack(Config.editorpack);
-  // ---- ----
-  if (Config.use_colorizer) Colorizer.setup(Config.colorizer);
 });
 ipcRenderer.on('update-config', (event, arg) => {
   Config.storeConfig(arg.key, arg.value);
 });
 
+// TODO: some "init" event
+Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
+  for (let i = 0; i < Extensions.list.length; i++) {
+    Extensions.setupExtension(i);
+    Extensions.enableExtension(i);
+  }
+});
 
 let MainView = require('./src/views/Main');
 
