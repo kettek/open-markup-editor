@@ -55,10 +55,10 @@ let Config = Emitter({
       }
     }
 
-    if (typeof value === "string") {
-      last_obj[last_name] = is_default ? Config.element_settings[key] || value : value;
-    } else {
+    if (typeof value === 'object') {
       last_obj[last_name] = is_default ? Object.assign(value, last_obj[last_name]||{}) : Object.assign(last_obj[last_name]||{}, value);
+    } else {
+      last_obj[last_name] = is_default ? Config.element_settings[key] || value : value;
     }
     Config.emit('conf-set', key, value);
     ipcRenderer.send("update-settings", {key: "config."+key, value: last_obj[last_name]});
