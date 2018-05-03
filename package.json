@@ -5,7 +5,10 @@
   "main": "app.js",
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [
     "markup",
@@ -17,10 +20,19 @@
   "author": "kts of kettek",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^1.8.6"
+    "electron": "^1.8.6",
+    "electron-builder": "^20.11.1"
   },
   "dependencies": {
     "electron-settings": "^3.1.4",
     "mithril": "^1.1.6"
+  },
+  "build": {
+    "appId": "net.kettek.ome",
+    "productName": "Open Markup Editor",
+    "copyright": "Copyright © 2018 Ketchetwahmeegwun T. Southall",
+    "win": {
+      "target": "zip"
+    }
   }
 }
