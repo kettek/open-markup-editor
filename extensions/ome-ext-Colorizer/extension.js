@@ -8,21 +8,21 @@ module.exports = {
         'use_system_colors': true,
         'foreground': '#0277bd',
         'background': '#212121'
-      }/*,
+      },
       [
         [
-          ['checkbox', 'use_system_colors'],
-          ['label', 'Use System Colors']
+          ['checkbox', '', 'use_system_colors'],
+          ['label', 'Use System Colors', 'use_system_colors']
         ],
         [
-          ['color', 'foreground'],
-          ['label', 'Secondary'];
+          ['color', '', 'foreground'],
+          ['label', 'Secondary', 'foreground']
         ],
         [
-          ['color', 'background'],
-          ['label', 'Primary'];
+          ['color', '', 'background'],
+          ['label', 'Primary', 'background']
         ]
-      ]*/
+      ]
     );
     ex.on('enable', () => {
       Colorizer.setup(ex.getConf());
@@ -31,6 +31,7 @@ module.exports = {
       Colorizer.removeColorTable();
     });
     ex.on('conf-set', (k, v) => {
+      Colorizer.setup(ex.getConf());
     });
   }
 }

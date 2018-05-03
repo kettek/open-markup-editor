@@ -7,6 +7,7 @@ let TabsView = require('./Tabs');
 let TabView = require('./Tab');
 let FooterView = require('./Footer');
 let WelcomeView = require('./Welcome');
+let SettingsView = require('./Settings');
 
 module.exports = {
   oninit: (vnode) => {
@@ -19,6 +20,7 @@ module.exports = {
         })
       ));
     if (Files.loadedFiles.length == 0) {
+      //view.push(m(SettingsView));
       view.push(m(WelcomeView));
     } else {
       view.push(m(ViewWindow, {fileIndex: Files.focused}));

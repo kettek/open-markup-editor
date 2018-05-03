@@ -23,6 +23,7 @@ const Extensions = {
   loadExtension: filepath => {
     try {
       let extension = Emitter(require(filepath));
+      extension.conf_ui = [];
       extension.did_setup = false;
       extension.short_name = extension.short_name || path.basename(filepath);
       if (!extension.name) {
@@ -33,8 +34,15 @@ const Extensions = {
         console.log("Warning, no extension setup provided. I hope you know what you're doing.");
         extension.setup = ()=>{};
       }
-      extension.conf = (obj) => {
+      extension.conf = (obj, conf_ui) => {
         Config.set('extensions.'+extension.short_name, obj, true);
+        extension.conf_ui = conf_ui;
+      }
+      extension.setConf = (key, value) => {
+        let obj = {};
+        obj[key] = value;
+        Config.set('extensions.'+extension.short_name, obj);
+        extension.emit('conf-set', key, value);
       }
       extension.getConf = (key=null) => {
         return Config.get('extensions.'+extension.short_name+(key === null ? '' : '.'+key));
