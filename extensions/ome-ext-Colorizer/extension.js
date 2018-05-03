@@ -6,21 +6,23 @@ module.exports = {
     ex.conf(
       {
         'use_system_colors': true,
-        'foreground': '#0277bd',
-        'background': '#212121'
+        'secondary': '#0277bd',
+        'primary': '#212121'
       },
       [
-        [
+        [{title: "Attempts to use the Operating System's window border colors, if supported."},
           ['checkbox', '', 'use_system_colors'],
           ['label', 'Use System Colors', 'use_system_colors']
         ],
         [
-          ['color', '', 'foreground'],
-          ['label', 'Secondary', 'foreground']
+          ['color', '', 'secondary'],
+          ['hex', '', 'secondary'],
+          ['label', 'Secondary', 'secondary']
         ],
         [
-          ['color', '', 'background'],
-          ['label', 'Primary', 'background']
+          ['color', '', 'primary'],
+          ['hex', '', 'primary'],
+          ['label', 'Primary', 'primary']
         ]
       ]
     );

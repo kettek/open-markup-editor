@@ -5,6 +5,10 @@ let Config = require('../models/Config');
 let Extensions = require('../Extensions');
 
 const defined_elements = {
+  'article': {
+    tag: 'article',
+    value: '<h1>%VALUE%</h1>'
+  },
   'checkbox': {
     tag: 'input[type=%TYPE%]',
     events: ['change'],
@@ -15,6 +19,14 @@ const defined_elements = {
   },
   'input': {
     tag: 'input',
+    events: ['change'],
+    map: {
+      key: 'id',
+      value: 'value'
+    }
+  },
+  'hex': {
+    tag: 'input[size=5]',
     events: ['change'],
     map: {
       key: 'id',
@@ -36,65 +48,80 @@ const defined_elements = {
   }
 };
 
-function buildExtensionView(extension, ui) {
-  // TODO: Rework this hot garbage
-  let stepOne = {
-    tag: '',
+function build(extension, obj) {
+  let item = {
+    tag: 'section',
     key: '',
     value: '',
     attrs: {},
     children: []
   };
 
-  for (let i = 0; i < ui.length; i++) {
-    if (typeof ui[i] === 'string') {
-      if (i === 0) { // Type
-        stepOne.tag = ui[i];
-      } else if (i === 1) { // Contents
-        stepOne.value = ui[i];
-      } else if (i === 2) { // Key
-        stepOne.key = ui[i];
+  if (Array.isArray(obj)) {
+    // OH, we're a declaration!
+    for (let i = 0; i < obj.length; i++) {
+      if (typeof obj[i] === 'string') {
+        if (i === 0) { // Type
+          item.tag = obj[i];
+        } else if (i === 1) { // Contents
+          item.value = obj[i];
+        } else if (i === 2) { // Key
+          item.key = obj[i];
+        }
+      } else if (Array.isArray(obj[i])) {
+        item.children.push(build(extension, obj[i]));
+      } else if (typeof obj[i] === 'object') {
+        item.attrs = Object.assign(item.attrs, obj[i]);
       }
-    } else if (Array.isArray(ui[i])) {
-      for (let j = 0; j < ui[i].length; j++) {
-        stepOne.children.push(buildExtensionView(extension, ui[i][j]));
-      }
-    } else if (typeof ui[i] === 'Object') {
-      stepOne.attrs = Object.assign(stepOne.attrs, ui[i]);
     }
-  }
 
-  // Apply element filter
-  let e_handler = defined_elements[stepOne.tag];
-  if (e_handler) {
-    if (stepOne.key && e_handler.map.key) {
-      stepOne.attrs[e_handler.map.key] = extension.short_name+'_'+stepOne.key;
-      if (e_handler.map.value) {
-        let stored_value = Config.get('extensions.' + stepOne.attrs[e_handler.map.key].replace('_','.'));
-        if (stored_value) stepOne.value = stored_value;
+    // Apply element filter
+    let e_handler = defined_elements[item.tag];
+    if (e_handler) {
+      if (e_handler.map) {
+        if (item.key && e_handler.map.key) {
+          item.attrs[e_handler.map.key] = extension.short_name+'_'+item.key;
+          if (e_handler.map.value) {
+            let stored_value = Config.get('extensions.' + item.attrs[e_handler.map.key].replace('_','.'));
+            if (stored_value) item.value = stored_value;
+          }
+        }
+        if (item.value && e_handler.map.value) {
+          item.attrs[e_handler.map.value] = item.value;
+        }
+        for (let i = 0; e_handler.events && i < e_handler.events.length; i++) {
+          item.attrs['on'+e_handler.events[i]] = (e) => {
+            extension.setConf(item.key, e.target[e_handler.map.value]);
+          }
+        }
+      }
+      if (item.tag && e_handler.tag) {
+        item.tag = e_handler.tag.replace('%TYPE%', item.tag);
+      }
+      if (item.value && e_handler.value) {
+        item.value = e_handler.value.replace('%VALUE%', item.value);
+        item.children.unshift(m.trust(item.value));
+        item.value = '';
       }
     }
-    if (stepOne.tag && e_handler.tag) {
-      stepOne.tag = e_handler.tag.replace('%TYPE%', stepOne.tag);
-    }
-    if (stepOne.value && e_handler.map.value) {
-      stepOne.attrs[e_handler.map.value] = stepOne.value;
-    }
-    for (let i = 0; e_handler.events && i < e_handler.events.length; i++) {
-      stepOne.attrs['on'+e_handler.events[i]] = (e) => {
-        extension.setConf(stepOne.key, e.target[e_handler.map.value]);
-      }
-    }
+    return m(item.tag, item.attrs, item.value, item.children);
   }
-
-  return m(stepOne.tag, stepOne.attrs, stepOne.children, stepOne.value);
 }
 
 module.exports = {
+  onbeforeremove: (vnode) => {
+    vnode.dom.style.animation = '';
+    vnode.dom.classList.add("closeElement");
+    return new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+  },
   view: (vnode) => {
     return(m("section.settings", 
       Extensions.list.map((extension) => {
-        return buildExtensionView(extension, extension.conf_ui);
+        return build(extension, [
+          'article', extension.name, extension.conf_ui, ['button.reset', 'Reset to Defaults', {onclick: extension.reset}]
+        ]);
       })
     ))
   }

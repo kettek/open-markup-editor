@@ -5,18 +5,18 @@ let Colorizer = {
   setup: (conf) => {
     if (conf.use_system_colors) {
       if (WinColor.isDetectable) {
-        conf.foreground = WinColor.titlebarColor;
+        conf.secondary = WinColor.titlebarColor;
       }
     }
     // Ensure some sane colors are set
-    conf.foreground = conf.foreground || '#0277bd';
-    conf.background = conf.background || '#212121';
+    conf.secondary = conf.secondary || '#0277bd';
+    conf.primary = conf.primary || '#212121';
 
     // Convert our colors to RGB
-    let bg = Colorizer.hexToRgb(conf.background);
-    let fg = Colorizer.hexToRgb(conf.foreground);
+    let bg = Colorizer.hexToRgb(conf.primary);
+    let fg = Colorizer.hexToRgb(conf.secondary);
 
-    // Match our foreground to our background
+    // Match our secondary to our primary
     fg = Colorizer.matchColorToColor(fg, bg);
 
     // Build our color tables
@@ -62,10 +62,12 @@ let Colorizer = {
     dark.r  -= 46, dark.g  -= 46, dark.b  -= 46;
 
     // Attempt to brighten or darken it to differentiate from base color (Might not be needed)
+    /*
     light = Colorizer.matchColorToColor(light, color);
     dark = Colorizer.matchColorToColor(dark, color);
+    */
 
-    // Get our base foreground color
+    // Get our base secondary color
     let fg = Colorizer.hexToRgb(Colorizer.hasLowBrightness(color) ? '#c0c0c0' : '#0f0f0f')
 
     // Return/build our table

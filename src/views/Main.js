@@ -7,7 +7,9 @@ let TabsView = require('./Tabs');
 let TabView = require('./Tab');
 let FooterView = require('./Footer');
 let WelcomeView = require('./Welcome');
-let SettingsView = require('./Settings');
+let SettingsView = require('./Settings')
+
+const UIState = require('../UIState');
 
 module.exports = {
   oninit: (vnode) => {
@@ -20,12 +22,14 @@ module.exports = {
         })
       ));
     if (Files.loadedFiles.length == 0) {
-      //view.push(m(SettingsView));
-      view.push(m(WelcomeView));
+      view.push(m('section.main', m(WelcomeView), (UIState.show_config ? m(SettingsView) : null )));
     } else {
-      view.push(m(ViewWindow, {fileIndex: Files.focused}));
-      view.push(m(FooterView, {fileIndex: Files.focused}));
+      view.push(m('section.main',
+        m(ViewWindow, {fileIndex: Files.focused}),
+        (UIState.show_config ? m(SettingsView) : null)
+      ));
     }
+    view.push(m(FooterView, {fileIndex: Files.focused}));
     return view;
   }
 }

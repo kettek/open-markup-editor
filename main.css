@@ -39,6 +39,7 @@ body {
   align-items: center;
   padding: .25em;
   font-size: 10pt;
+  overflow: hidden;
 }
 
 .view-window {
@@ -54,6 +55,17 @@ body {
 }
 
 .view-window section {
+}
+
+section {
+  position: relative;
+  transition: .2s all;
+}
+section.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .welcome {
@@ -171,12 +183,11 @@ span.unsaved:after {
 }
 button {
   cursor: pointer;
-  background-color: var(--s-dark);
+  background-color: var(--s);
+  color: var(--s-fg);
   border: 0;
   border-radius: 3px;
-  width: 1em;
-  height: 1em;
-  margin: 0 0 0 .5em;
+  margin: .5em;
   position: relative;
   outline: none;
   transition: .2s all;
@@ -190,12 +201,24 @@ button:before {
   transition: .2s all;
   color: var(--s);
 }
+button.close {
+  width: 1em;
+  height: 1em;
+}
+.tab > button {
+  margin: 0 0 0 .5em;
+}
 .close:before {
   content: '✖';
   color: var(--s-dark);
 }
 .close:hover:before {
   color: var(--s-dark-fg);
+}
+button.new {
+  width: 1em;
+  height: 1em;
+  margin: 0;
 }
 .new {
   font-size: 13pt;
@@ -210,10 +233,50 @@ button:before {
 }
 button:hover {
   background-color: var(--s-light);
-  color: var(--s-light);
+  color: var(--s-dark-fg);
 }
 button:hover:before {
   color: var(--s-dark-fg);
+}
+
+.tab.settings {
+  margin-left: auto;
+}
+button.settings:before {
+  content: '⚙';
+}
+button.settings {
+  width: 1em;
+  height: 1em;
+  font-size: 14pt;
+  margin: 0;
+  background-color: transparent;
+}
+button.settings:hover {
+  background-color: transparent;
+}
+section.settings {
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  padding: 0 .5em;
+  transform: translateX(100%);
+  width: 100%;
+  height: 100%;
+  animation: slideToLeft 0.5s, fadeIn 0.5s;
+  animation-fill-mode: forwards;
+  background: var(--p-dark);
+}
+section.settings h1 {
+  margin: .5em;
+}
+section.settings > article {
+}
+section.settings section {
+  margin-left: 1em;
+}
+section.settings button.reset {
+  margin-left: auto;
 }
 
 footer {
@@ -296,4 +359,39 @@ input[type=checkbox]:not(:disabled):hover {
 }
 input[type=checkbox]:not(:disabled):hover + label {
   color: var(--s-light);
+}
+
+/* animation hoopla */
+@keyframes slideToLeft {
+  100% {
+    transform: translateX(0%);
+  }
+}
+@keyframes slideToRight {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1.0;
+  }
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1.0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+section.closeElement {
+  animation: slideToRight 0.5s, fadeOut 0.5s;
 }

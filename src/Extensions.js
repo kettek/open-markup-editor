@@ -35,12 +35,25 @@ const Extensions = {
         extension.setup = ()=>{};
       }
       extension.conf = (obj, conf_ui) => {
+        extension.conf_default = Object.assign({}, obj);
         Config.set('extensions.'+extension.short_name, obj, true);
         extension.conf_ui = conf_ui;
       }
+      extension.reset = () => {
+        extension.setConf(extension.conf_default);
+      }
+      // setConf(KEY), setConf(KEY, VALUE), setConf(OBJ)
       extension.setConf = (key, value) => {
         let obj = {};
-        obj[key] = value;
+        if (value === undefined) {
+          if (typeof key === 'object') {
+            obj = key;
+          } else { // flag
+            value = true;
+          }
+        } else {
+          obj[key] = value;
+        }
         Config.set('extensions.'+extension.short_name, obj);
         extension.emit('conf-set', key, value);
       }

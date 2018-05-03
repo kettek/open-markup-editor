@@ -35,18 +35,18 @@ ipcRenderer.on('file-close', (event, arg) => {
 ipcRenderer.on('set-config', (event, arg) => {
   Config.setConfig(arg);
 
+  // TODO: some "init" event
+  Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
+    for (let i = 0; i < Extensions.list.length; i++) {
+      Extensions.setupExtension(i);
+      Extensions.enableExtension(i);
+    }
+  });
+
   EditorPacks.loadPack(Config.editorpack);
 });
 ipcRenderer.on('update-config', (event, arg) => {
   Config.storeConfig(arg.key, arg.value);
-});
-
-// TODO: some "init" event
-Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
-  for (let i = 0; i < Extensions.list.length; i++) {
-    Extensions.setupExtension(i);
-    Extensions.enableExtension(i);
-  }
 });
 
 let MainView = require('./src/views/Main');
