@@ -20,7 +20,6 @@
   "author": "kts of kettek",
   "license": "GPL-3.0",
   "devDependencies": {
-    "app-builder-bin-mac": "^1.8.6",
     "electron": "^1.8.6",
     "electron-builder": "^20.11.1"
   },
