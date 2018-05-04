@@ -1,4 +1,5 @@
 module.exports = {
+  name: 'Markdown',
   supports: ['md', 'markdown'],
   create: (pack) => {
     let md = null;

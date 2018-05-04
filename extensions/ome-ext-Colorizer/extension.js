@@ -14,15 +14,15 @@ module.exports = {
           ['checkbox', '', 'use_system_colors'],
           ['label', 'Use System Colors', 'use_system_colors']
         ],
-        [
-          ['color', '', 'secondary'],
-          ['hex', '', 'secondary'],
-          ['label', 'Secondary', 'secondary']
-        ],
-        [
+        [{title: "Primary is the color used for backgrounds"},
           ['color', '', 'primary'],
           ['hex', '', 'primary'],
           ['label', 'Primary', 'primary']
+        ],
+        [{title: "Secondary is the color used for buttons, text fields, and other input elements that are laid atop primary colors."},
+          ['color', '', 'secondary'],
+          ['hex', '', 'secondary'],
+          ['label', 'Secondary', 'secondary']
         ]
       ]
     );

@@ -2,12 +2,13 @@ let m = require('mithril');
 
 let Files = require('../models/Files');
 let Config = require('../models/Config');
-let MarkupPacks = require('electron').remote.require('./src/models/MarkupPacks');
-let RenderPacks = require('electron').remote.require('./src/models/RenderPacks');
+let MarkupPacks = require('../models/MarkupPacks');
+let RenderPacks = require('../models/RenderPacks');
 
 module.exports = {
   oncreate: (vnode) => {
       vnode.dom.addEventListener('dom-ready', () => {
+        vnode.dom.send('go', RenderPacks.getPack(Files.getFileExtension(Files.focused)));
         let converted_text = MarkupPacks.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
         vnode.dom.send('filename', Files.getFileName(Files.focused));
         vnode.dom.send('filepath', Files.getFilePath(Files.focused));

@@ -1,9 +1,12 @@
 const Emitter = require('../emitter.js');
+const fs      = require('fs');
+const path    = require('path');
 
 let MarkupPacks = {
   instances: {},
   packs: [
     {
+      name: 'Passthru',
       supports: [".*"],
       instance: (pack) => {
         pack.render = (text) => {
@@ -12,6 +15,18 @@ let MarkupPacks = {
       }
     }
   ],
+  loadPacksFromDir: (dir, on_finish=()=>{}) => {
+    fs.readdir(dir, (err, files) => {
+      files.forEach(file => {
+        try {
+          MarkupPacks.loadPack(path.join(dir, file));
+        } catch (e) {
+          console.log("Failed to load Markup Pack \"" + file + "\"");
+        }
+      });
+      on_finish();
+    });
+  },
   parseText: (type, text) => {
     return MarkupPacks.getPack(type).render(text);
   },
@@ -36,7 +51,7 @@ let MarkupPacks = {
     }
     return MarkupPacks.instances[type] = MarkupPacks.createPack(0);
   },
-  setPack: (source) => {
+  loadPack: (source) => {
     let check = (/^\$OME_MARKUP_PACKS(.*)/g).exec(source);
     if (check) {
       source = '../../markup-packs/' + check[1];

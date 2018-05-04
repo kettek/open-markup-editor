@@ -267,16 +267,28 @@ section.settings {
   animation-fill-mode: forwards;
   background: var(--p-dark);
 }
-section.settings h1 {
-  margin: .5em;
+section.settings header {
+  margin: .5em 0 .5em .5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 section.settings > article {
+  margin-left: 1em;
+  background-color: var(--p);
+  color: var(--p-fg);
 }
 section.settings section {
   margin-left: 1em;
 }
 section.settings button.reset {
   margin-left: auto;
+}
+section.settings button.disable {
+  border: 1px solid #a22;
+}
+section.settings button.enable {
+  border: 1px solid #2a2;
 }
 
 footer {

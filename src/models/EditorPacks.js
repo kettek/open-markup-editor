@@ -1,4 +1,6 @@
 const Emitter = require('../emitter.js');
+const fs      = require('fs');
+const path    = require('path');
 
 const m = require('mithril');
 
@@ -8,6 +10,12 @@ let EditorPacks = {
   createEditor: (pack_index=0) => {
     if (pack_index < 0 || pack_index >= EditorPacks.packs.length) return null;
     let editor_instance = Emitter();
+    editor_instance.conf_ui = [];
+    editor_instance.conf = (obj, conf_ui) => {
+      editor_instance.conf_default = Object.assign({}, obj);
+      editor_instance.conf_ui = conf_ui;
+    }
+
     editor_instance.on('css-load', css => {
       // TODO: Move this code to a generic css loader/unloader
       let links = document.getElementsByTagName('head')[0].querySelectorAll('link');
@@ -39,6 +47,18 @@ let EditorPacks = {
       editor_instance.load();
     }
     return editor_instance
+  },
+  loadPacksFromDir: (dir, on_finish=()=>{}) => {
+    fs.readdir(dir, (err, files) => {
+      files.forEach(file => {
+        try {
+          EditorPacks.loadPack(path.join(dir, file));
+        } catch (e) {
+          console.log("Failed to load Editor Pack \"" + file + "\"");
+        }
+      });
+      on_finish();
+    });
   },
   loadPack: (source) => {
     let check = (/^\$OME_EDITOR_PACKS(.*)/g).exec(source);

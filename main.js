@@ -7,6 +7,8 @@ const Files = require('./src/models/Files');
 const Config = require('./src/models/Config');
 
 const EditorPacks = require('./src/models/EditorPacks');
+const MarkupPacks = require('./src/models/MarkupPacks');
+const RenderPacks = require('./src/models/RenderPacks');
 
 const Extensions = require('./src/Extensions');
 
@@ -39,11 +41,14 @@ ipcRenderer.on('set-config', (event, arg) => {
   Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
     for (let i = 0; i < Extensions.list.length; i++) {
       Extensions.setupExtension(i);
-      Extensions.enableExtension(i);
+      if (Extensions.list[i].getConf('enabled')) {
+        Extensions.enableExtension(i);
+      }
     }
   });
-
-  EditorPacks.loadPack(Config.editorpack);
+  EditorPacks.loadPacksFromDir(path.join(__dirname, 'editor-packs'));
+  MarkupPacks.loadPacksFromDir(path.join(__dirname, 'markup-packs'));
+  RenderPacks.loadPacksFromDir(path.join(__dirname, 'render-packs'));
 });
 ipcRenderer.on('update-config', (event, arg) => {
   Config.storeConfig(arg.key, arg.value);

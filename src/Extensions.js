@@ -79,11 +79,18 @@ const Extensions = {
     Extensions.setupExtension(index);
     // Enable that beezy
     Extensions.list[index].enabled = Extensions.list[index].emit('enable') === false ? false : true;
+    Extensions.list[index].setConf('enabled', Extensions.list[index].enabled);
   },
   disableExtension: index => {
     if (index < 0 || index >= Extensions.list.length) return;
     if (!Extensions.list[index].enabled) return;
     Extensions.list[index].enabled = Extensions.list[index].emit('disable') === false ? true : false;
+    Extensions.list[index].setConf('enabled', Extensions.list[index].enabled);
+  },
+  toggleExtension: index => {
+    if (index < 0 || index >= Extensions.list.length) return;
+    if (Extensions.list[index].enabled) Extensions.disableExtension(index);
+    else Extensions.enableExtension(index);
   }
 };
 

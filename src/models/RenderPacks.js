@@ -1,3 +1,6 @@
+const fs      = require('fs');
+const path    = require('path');
+
 let RenderPacks = {
   packs: [
   ],
@@ -10,6 +13,18 @@ let RenderPacks = {
         }
       }
     }
+  },
+  loadPacksFromDir: (dir, on_finish=()=>{}) => {
+    fs.readdir(dir, (err, files) => {
+      files.forEach(file => {
+        try {
+          RenderPacks.loadPack(path.join(dir, file));
+        } catch (e) {
+          console.log("Failed to load Render Pack \"" + file + "\"");
+        }
+      });
+      on_finish();
+    });
   },
   loadPack: (source) => {
     let check = (/^\$OME_RENDER_PACKS(.*)/g).exec(source);

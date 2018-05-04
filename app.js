@@ -4,9 +4,6 @@ const path      = require('path');
 const url       = require('url');
 const menu      = require('./menu');
 
-const MarkupPacks = require('./src/models/MarkupPacks');
-const RenderPacks = require('./src/models/RenderPacks');
-
 let windows   = require('./windows');
 
 function createMainWindow() {
@@ -46,15 +43,8 @@ app.on('ready', () => {
   if (!settings.has("window.left")) settings.set("window.left", 0);
   if (!settings.has("window.top")) settings.set("window.top", 0);
   if (!settings.has("recent_files")) settings.set("recent_files", []);
-  if (!settings.has("filetypes")) settings.set("filetypes", {"md": "$OME_MARKUP_PACKS/ome-mp-markdown-it" });
-  if (!settings.has("renderpack")) settings.set("renderpack", "$OME_RENDER_PACKS/ome-rp-default");
+  if (!settings.has("config.renderpack")) settings.set("config.renderpack", "$OME_RENDER_PACKS/ome-rp-default");
   if (!settings.has("config.editorpack")) settings.set("config.editorpack", "$OME_EDITOR_PACKS/ome-ep-codemirror");
-  // ---- ----
-  for (const [key, value] of Object.entries(settings.get("filetypes"))) {
-    MarkupPacks.setPack(value);
-  }
-  // ---- ----
-  RenderPacks.loadPack(settings.get("renderpack"));
   // ---- ----
   menu.init();
 

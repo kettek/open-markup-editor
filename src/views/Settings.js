@@ -2,6 +2,9 @@ let m = require('mithril');
 
 let Files = require('../models/Files');
 let Config = require('../models/Config');
+let EditorPacks = require('../models/EditorPacks');
+let MarkupPacks = require('../models/MarkupPacks');
+let RenderPacks = require('../models/RenderPacks');
 let Extensions = require('../Extensions');
 
 const defined_elements = {
@@ -54,7 +57,9 @@ function build(extension, obj) {
     key: '',
     value: '',
     attrs: {},
-    children: []
+    children: [],
+    classes: [],
+    id: ''
   };
 
   if (Array.isArray(obj)) {
@@ -73,6 +78,17 @@ function build(extension, obj) {
       } else if (typeof obj[i] === 'object') {
         item.attrs = Object.assign(item.attrs, obj[i]);
       }
+    }
+    // Parse out classname and id from tag
+    let reg = /([\.|#][a-zA-Z0-9_-]*)/g
+    let part;
+    while ((part = reg.exec(item.tag)) != null) {
+      if (part[0][0] == '.') {
+        item.classes.push(item.tag.substr(part.index+1, part[0].length-1));
+      } else if (part[0][0] == '#') {
+        item.id = item.tag.substr(part.index+1, part[0].length-1);
+      }
+      item.tag = item.tag.substr(0, part.index);
     }
 
     // Apply element filter
@@ -104,7 +120,7 @@ function build(extension, obj) {
         item.value = '';
       }
     }
-    return m(item.tag, item.attrs, item.value, item.children);
+    return m(item.tag + (item.classes ? '.'+item.classes.join('.') : '') + (item.id ? '#'+item.id : ''), item.attrs, item.value, item.children);
   }
 }
 
@@ -117,12 +133,37 @@ module.exports = {
     });
   },
   view: (vnode) => {
-    return(m("section.settings", 
-      Extensions.list.map((extension) => {
-        return build(extension, [
-          'article', extension.name, extension.conf_ui, ['button.reset', 'Reset to Defaults', {onclick: extension.reset}]
-        ]);
-      })
-    ))
+    return(
+      m("section.settings",
+        // Markup Packs
+        /*m("header", "Markup Packs"),
+        m("select", {size: MarkupPacks.packs.length},
+          MarkupPacks.packs.map((pack) => {
+            return m('option', pack.name);
+          }),
+        ),*/
+        // Editor Packs
+        m("header", "Editor Packs"),
+        m("select", {size: EditorPacks.packs.length},
+          EditorPacks.packs.map((pack) => {
+            return m('option', pack.name);
+          }),
+        ),
+        // Render Packs
+        m("header", "Render Packs"),
+        m("select", {size: RenderPacks.packs.length},
+          RenderPacks.packs.map((pack) => {
+            return m('option', pack.name);
+          }),
+        ),
+        // Extensions
+        m("header", "Extensions"),
+        Extensions.list.map((extension, index) => {
+          return build(extension, [
+            'article', ['header', extension.name, ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => Extensions.toggleExtension(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
+          ]);
+        })
+      )
+    )
   }
 }

@@ -3,6 +3,15 @@ let CodeMirror = null;
 const path = require('path');
 
 module.exports = {
+  name: "CodeMirror",
+  conf: {
+    'theme': 'material',
+  },
+  ui: [
+    [{title: "The theme used by CodeMirror"},
+      ['label', 'Theme', 'theme']
+    ]
+  ],
   create: (editor) => {
     editor.load = () => {
       CodeMirror = require('codemirror');
@@ -69,5 +78,13 @@ module.exports = {
       if (index < 0 || index > editor.files.length-1) return;
       return editor.files[index].doc.getValue();
     };
+    /* --- */
+    editor.getThemes = () => {
+      console.log('getThemes');
+    }
+    editor.updateTheme = (e) => {
+      console.log('updateTheme');
+      console.log(e);
+    }
   }
 }
