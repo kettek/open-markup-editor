@@ -2,16 +2,19 @@ const Emitter = require('./emitter');
 const Config = require('./models/Config');
 const fs      = require('fs');
 const path    = require('path');
+const log     = require('electron-log');
 
 const Extensions = {
   list: [],
   populateExtensionsList: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
+      log.info("Found " + files.length + " Extension(s) in " + dir);
       files.forEach(file => {
+        log.info(" Loading " + file + "...");
         try {
           Extensions.loadExtension(path.join(dir, file));
         } catch (e) {
-          console.log("Failed to load extension \"" + file + "\"");
+          log.error("  Failed to load extension \"" + file + "\"", e);
         }
       });
       on_finish();

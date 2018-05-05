@@ -2,6 +2,8 @@ let m = require('mithril');
 
 const settings = require('electron').remote.require('electron-settings');
 
+const log = require('electron-log');
+
 const Files = require('./src/models/Files');
 
 const Config = require('./src/models/Config');
@@ -38,6 +40,7 @@ ipcRenderer.on('set-config', (event, arg) => {
   Config.setConfig(arg);
 
   // TODO: some "init" event
+  log.info("Loading Extensions...");
   Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
     for (let i = 0; i < Extensions.list.length; i++) {
       Extensions.setupExtension(i);

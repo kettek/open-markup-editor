@@ -1,4 +1,7 @@
 const {app, BrowserWindow, Menu, dialog, ipcMain} = require('electron');
+const log       = require('electron-log');
+                log.transports.console.level = 'info';
+                log.transports.file.level = 'info';
 const settings  = require('electron-settings');
 const path      = require('path');
 const url       = require('url');

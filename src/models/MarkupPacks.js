@@ -1,6 +1,7 @@
 const Emitter = require('../emitter.js');
 const fs      = require('fs');
 const path    = require('path');
+const log     = require('electron-log');
 
 let MarkupPacks = {
   instances: {},
@@ -17,11 +18,13 @@ let MarkupPacks = {
   ],
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
+      log.info("Found " + files.length + " MarkupPacks(s) in " + dir);
       files.forEach(file => {
+        log.info(" Loading " + file + "...");
         try {
           MarkupPacks.loadPack(path.join(dir, file));
         } catch (e) {
-          console.log("Failed to load Markup Pack \"" + file + "\"");
+          log.error("  Failed to load MarkupPack \"" + file + "\"", e);
         }
       });
       on_finish();

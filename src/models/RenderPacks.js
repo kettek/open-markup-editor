@@ -1,5 +1,6 @@
 const fs      = require('fs');
 const path    = require('path');
+const log     = require('electron-log');
 
 let RenderPacks = {
   packs: [
@@ -16,11 +17,13 @@ let RenderPacks = {
   },
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
+      log.info("Found " + files.length + " RenderPacks(s) in " + dir);
       files.forEach(file => {
+        log.info(" Loading " + file + "...");
         try {
           RenderPacks.loadPack(path.join(dir, file));
         } catch (e) {
-          console.log("Failed to load Render Pack \"" + file + "\"");
+          log.error("  Failed to load RenderPack \"" + file + "\"", e);
         }
       });
       on_finish();

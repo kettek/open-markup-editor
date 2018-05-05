@@ -1,6 +1,7 @@
 const Emitter = require('../emitter.js');
 const fs      = require('fs');
 const path    = require('path');
+const log     = require('electron-log');
 
 const m = require('mithril');
 
@@ -50,11 +51,13 @@ let EditorPacks = {
   },
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
+      log.info("Found " + files.length + " EditorPacks(s) in " + dir);
       files.forEach(file => {
+        log.info(" Loading " + file + "...");
         try {
           EditorPacks.loadPack(path.join(dir, file));
         } catch (e) {
-          console.log("Failed to load Editor Pack \"" + file + "\"");
+          log.error("  Failed to load EditorPack \"" + file + "\"", e);
         }
       });
       on_finish();
