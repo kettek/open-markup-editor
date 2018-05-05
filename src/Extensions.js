@@ -1,5 +1,6 @@
 const Emitter = require('./emitter');
 const Config = require('./models/Config');
+const m       = require('mithril');
 const fs      = require('fs');
 const path    = require('path');
 const log     = require('electron-log');
@@ -14,7 +15,8 @@ const Extensions = {
         try {
           Extensions.loadExtension(path.join(dir, file));
         } catch (e) {
-          log.warn("  Failed to load extension \"" + file + "\"");
+          log.warn("  Failed to load extension \"" + file + "\":");
+          log.warn(e);
         }
       });
       on_finish();
@@ -59,6 +61,7 @@ const Extensions = {
         }
         Config.set('extensions.'+extension.short_name, obj);
         extension.emit('conf-set', key, value);
+        m.redraw();
       }
       extension.getConf = (key=null) => {
         return Config.get('extensions.'+extension.short_name+(key === null ? '' : '.'+key));
