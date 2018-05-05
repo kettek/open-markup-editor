@@ -3,18 +3,18 @@ const WinColor = require('windows-titlebar-color');
 
 let Colorizer = {
   setup: (conf) => {
+    let secondary = '#0277bd', primary = '#212121';
     if (conf.use_system_colors) {
       if (WinColor.isDetectable) {
-        conf.secondary = WinColor.titlebarColor;
+        secondary = WinColor.titlebarColor;
       }
+    } else {
+      secondary = conf.secondary;
+      primary = conf.primary;
     }
-    // Ensure some sane colors are set
-    conf.secondary = conf.secondary || '#0277bd';
-    conf.primary = conf.primary || '#212121';
-
     // Convert our colors to RGB
-    let bg = Colorizer.hexToRgb(conf.primary);
-    let fg = Colorizer.hexToRgb(conf.secondary);
+    let bg = Colorizer.hexToRgb(primary);
+    let fg = Colorizer.hexToRgb(secondary);
 
     // Match our secondary to our primary
     fg = Colorizer.matchColorToColor(fg, bg);

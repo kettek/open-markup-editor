@@ -55,7 +55,7 @@ function build(extension, obj) {
   let item = {
     tag: 'section',
     key: '',
-    value: '',
+    value: undefined,
     attrs: {},
     children: [],
     classes: [],
@@ -65,7 +65,11 @@ function build(extension, obj) {
   if (Array.isArray(obj)) {
     // OH, we're a declaration!
     for (let i = 0; i < obj.length; i++) {
-      if (typeof obj[i] === 'string') {
+      if (Array.isArray(obj[i])) {
+        item.children.push(build(extension, obj[i]));
+      } else if (typeof obj[i] === 'object') {
+        item.attrs = Object.assign(item.attrs, obj[i]);
+      } else { // Strings, Booleans, etc.
         if (i === 0) { // Type
           item.tag = obj[i];
         } else if (i === 1) { // Contents
@@ -73,10 +77,6 @@ function build(extension, obj) {
         } else if (i === 2) { // Key
           item.key = obj[i];
         }
-      } else if (Array.isArray(obj[i])) {
-        item.children.push(build(extension, obj[i]));
-      } else if (typeof obj[i] === 'object') {
-        item.attrs = Object.assign(item.attrs, obj[i]);
       }
     }
     // Parse out classname and id from tag
@@ -102,7 +102,7 @@ function build(extension, obj) {
             if (stored_value) item.value = stored_value;
           }
         }
-        if (item.value && e_handler.map.value) {
+        if (item.value !== undefined && e_handler.map.value) {
           item.attrs[e_handler.map.value] = item.value;
         }
         for (let i = 0; e_handler.events && i < e_handler.events.length; i++) {
@@ -114,7 +114,7 @@ function build(extension, obj) {
       if (item.tag && e_handler.tag) {
         item.tag = e_handler.tag.replace('%TYPE%', item.tag);
       }
-      if (item.value && e_handler.value) {
+      if (item.value !== undefined && e_handler.value) {
         item.value = e_handler.value.replace('%VALUE%', item.value);
         item.children.unshift(m.trust(item.value));
         item.value = '';
