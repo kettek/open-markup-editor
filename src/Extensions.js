@@ -8,13 +8,13 @@ const Extensions = {
   list: [],
   populateExtensionsList: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
-      log.info("Found " + files.length + " Extension(s) in " + dir);
+      log.info("Found " + files.length + " Extension" + (files.length == 1 ? '' : 's') +" in " + dir);
       files.forEach(file => {
         log.info(" Loading " + file + "...");
         try {
           Extensions.loadExtension(path.join(dir, file));
         } catch (e) {
-          log.error("  Failed to load extension \"" + file + "\"", e);
+          log.warn("  Failed to load extension \"" + file + "\"");
         }
       });
       on_finish();
@@ -65,7 +65,6 @@ const Extensions = {
       }
       Extensions.list.push(extension);
     } catch (e) {
-      // TODO: complain
       throw e;
     }
   },

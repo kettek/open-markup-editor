@@ -17,13 +17,13 @@ let RenderPacks = {
   },
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
-      log.info("Found " + files.length + " RenderPacks(s) in " + dir);
+      log.info("Found " + files.length + " RenderPack" + (files.length == 1 ? '' : 's') +" in " + dir);
       files.forEach(file => {
         log.info(" Loading " + file + "...");
         try {
           RenderPacks.loadPack(path.join(dir, file));
         } catch (e) {
-          log.error("  Failed to load RenderPack \"" + file + "\"", e);
+          log.warn("  Failed to load RenderPack \"" + file + "\"");
         }
       });
       on_finish();
@@ -37,7 +37,7 @@ let RenderPacks = {
     try {
       RenderPacks.packs.push(require(source));
     } catch (e) {
-      console.log(e);
+      throw e;
     }
   }
 }

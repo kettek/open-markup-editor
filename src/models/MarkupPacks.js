@@ -18,13 +18,13 @@ let MarkupPacks = {
   ],
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
-      log.info("Found " + files.length + " MarkupPacks(s) in " + dir);
+      log.info("Found " + files.length + " MarkupPack" + (files.length == 1 ? '' : 's') +" in " + dir);
       files.forEach(file => {
         log.info(" Loading " + file + "...");
         try {
           MarkupPacks.loadPack(path.join(dir, file));
         } catch (e) {
-          log.error("  Failed to load MarkupPack \"" + file + "\"", e);
+          log.warn("  Failed to load MarkupPack \"" + file + "\"");
         }
       });
       on_finish();
@@ -62,8 +62,7 @@ let MarkupPacks = {
     try {
       MarkupPacks.packs.push(require(source));
     } catch (e) {
-      // TODO: Throw some big ol' error
-      console.log(e);
+      throw e;
     }
   }
 }

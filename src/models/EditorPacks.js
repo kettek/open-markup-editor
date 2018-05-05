@@ -51,13 +51,13 @@ let EditorPacks = {
   },
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
-      log.info("Found " + files.length + " EditorPacks(s) in " + dir);
+      log.info("Found " + files.length + " EditorPack" + (files.length == 1 ? '' : 's') +" in " + dir);
       files.forEach(file => {
         log.info(" Loading " + file + "...");
         try {
           EditorPacks.loadPack(path.join(dir, file));
         } catch (e) {
-          log.error("  Failed to load EditorPack \"" + file + "\"", e);
+          log.warn("  Failed to load EditorPack \"" + file + "\"");
         }
       });
       on_finish();
@@ -71,8 +71,7 @@ let EditorPacks = {
     try {
       EditorPacks.packs.push(require(source));
     } catch (e) {
-      // TODO: Throw some big ol' error
-      console.log(e);
+      throw e;
     }
   }
 
