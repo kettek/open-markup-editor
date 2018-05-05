@@ -1,5 +1,12 @@
 const Colorizer = require('./Colorizer');
 
+const getColorHexRGB = require('electron-color-picker').getColorHexRGB;
+
+const getColor = async () => {
+  const color = await getColorHexRGB()
+  return color;
+}
+
 module.exports = {
   name: 'Colorizer',
   setup: (ex) => {
@@ -15,11 +22,23 @@ module.exports = {
           ['label', 'Use System Colors', 'use_system_colors']
         ],
         [{title: "Primary is the color used for backgrounds"},
+          ['button', '✎', {
+            onclick: () => {
+              getColor().then(color=>ex.setConf('primary', color))
+            },
+            style: "display: inline-block;"
+          }],
           ['color', '', 'primary'],
           ['hex', '', 'primary'],
           ['label', 'Primary', 'primary']
         ],
         [{title: "Secondary is the color used for buttons, text fields, and other input elements that are laid atop primary colors."},
+          ['button', '✎', {
+            onclick: () => {
+              getColor().then(color=>ex.setConf('secondary', color))
+            },
+            style: "display: inline-block;"
+          }],
           ['color', '', 'secondary'],
           ['hex', '', 'secondary'],
           ['label', 'Secondary', 'secondary']
