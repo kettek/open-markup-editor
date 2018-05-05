@@ -312,6 +312,9 @@ label {
 }
 
 /* checkbox */
+input {
+  margin: .25em;
+}
 input[type=checkbox] {
   -webkit-appearance: none;
   background-color: var(--s);
@@ -319,7 +322,6 @@ input[type=checkbox] {
   border-radius: 3px;
   width: 1em;
   height: 1em;
-  margin: .25em;
   position: relative;
   transition: .3s all;
 }
