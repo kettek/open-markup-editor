@@ -9,9 +9,15 @@ const Extensions = {
   list: [],
   populateExtensionsList: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
-      log.info("Found " + files.length + " Extension" + (files.length == 1 ? '' : 's') +" in " + dir);
       files.forEach(file => {
         log.info(" Loading " + file + "...");
+        try {
+          fs.accessSync(path.join(dir, file, 'package.json'), fs.constants.F_OK);
+        } catch (err) {
+          log.warn("  ...ignoring, missing 'package.json'.");
+          return;
+        }
+
         try {
           Extensions.loadExtension(path.join(dir, file));
           log.info("  ...OK");

@@ -40,7 +40,6 @@ ipcRenderer.on('set-config', (event, arg) => {
   Config.setConfig(arg);
 
   // TODO: some "init" event
-  log.info("Loading Extensions...");
   Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
     for (let i = 0; i < Extensions.list.length; i++) {
       Extensions.setupExtension(i);

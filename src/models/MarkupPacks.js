@@ -18,9 +18,15 @@ let MarkupPacks = {
   ],
   loadPacksFromDir: (dir, on_finish=()=>{}) => {
     fs.readdir(dir, (err, files) => {
-      log.info("Found " + files.length + " MarkupPack" + (files.length == 1 ? '' : 's') +" in " + dir);
       files.forEach(file => {
         log.info(" Loading " + file + "...");
+        try {
+          fs.accessSync(path.join(dir, file, 'package.json'), fs.constants.F_OK);
+        } catch (err) {
+          log.warn("  ...ignoring, missing 'package.json'.");
+          return;
+        }
+
         try {
           MarkupPacks.loadPack(path.join(dir, file));
           log.info("  ...OK");
