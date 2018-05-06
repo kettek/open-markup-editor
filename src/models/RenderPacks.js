@@ -22,8 +22,10 @@ let RenderPacks = {
         log.info(" Loading " + file + "...");
         try {
           RenderPacks.loadPack(path.join(dir, file));
+          log.info("  ...OK");
         } catch (e) {
-          log.warn("  Failed to load RenderPack \"" + file + "\"");
+          log.warn("  ...NOKAY");
+          log.warn(e);
         }
       });
       on_finish();

@@ -56,8 +56,10 @@ let EditorPacks = {
         log.info(" Loading " + file + "...");
         try {
           EditorPacks.loadPack(path.join(dir, file));
+          log.info("  ...OK");
         } catch (e) {
-          log.warn("  Failed to load EditorPack \"" + file + "\"");
+          log.warn("  ...NOKAY");
+          log.warn(e);
         }
       });
       on_finish();

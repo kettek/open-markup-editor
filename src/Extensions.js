@@ -14,8 +14,9 @@ const Extensions = {
         log.info(" Loading " + file + "...");
         try {
           Extensions.loadExtension(path.join(dir, file));
+          log.info("  ...OK");
         } catch (e) {
-          log.warn("  Failed to load extension \"" + file + "\":");
+          log.warn("  ...NOKAY");
           log.warn(e);
         }
       });

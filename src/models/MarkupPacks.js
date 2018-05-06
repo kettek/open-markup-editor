@@ -23,8 +23,10 @@ let MarkupPacks = {
         log.info(" Loading " + file + "...");
         try {
           MarkupPacks.loadPack(path.join(dir, file));
+          log.info("  ...OK");
         } catch (e) {
-          log.warn("  Failed to load MarkupPack \"" + file + "\"");
+          log.warn("  ...NOKAY");
+          log.warn(e);
         }
       });
       on_finish();
