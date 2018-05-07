@@ -1,12 +1,10 @@
 let m = require('mithril');
 
-const settings = require('electron').remote.require('electron-settings');
+const settings = require('electron-app-settings');
 
 const log = require('electron-log');
 
 const Files = require('./src/models/Files');
-
-const Config = require('./src/models/Config');
 
 const EditorPacks = require('./src/models/EditorPacks');
 const MarkupPacks = require('./src/models/MarkupPacks');
@@ -36,9 +34,8 @@ ipcRenderer.on('file-close', (event, arg) => {
     // Quit if there are no more files?
   }
 });
-ipcRenderer.on('set-config', (event, arg) => {
-  Config.setConfig(arg);
 
+ipcRenderer.on('init', (event, arg) => {
   // TODO: some "init" event
   Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
     for (let i = 0; i < Extensions.list.length; i++) {
@@ -51,9 +48,7 @@ ipcRenderer.on('set-config', (event, arg) => {
   EditorPacks.loadPacksFromDir(path.join(__dirname, 'editor-packs'));
   MarkupPacks.loadPacksFromDir(path.join(__dirname, 'markup-packs'));
   RenderPacks.loadPacksFromDir(path.join(__dirname, 'render-packs'));
-});
-ipcRenderer.on('update-config', (event, arg) => {
-  Config.storeConfig(arg.key, arg.value);
+  ipcRenderer.send('ready-to-run');
 });
 
 let MainView = require('./src/views/Main');

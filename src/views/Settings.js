@@ -1,7 +1,7 @@
-let m = require('mithril');
+const m = require('mithril');
+const settings = require('electron-app-settings');
 
 let Files = require('../models/Files');
-let Config = require('../models/Config');
 let EditorPacks = require('../models/EditorPacks');
 let MarkupPacks = require('../models/MarkupPacks');
 let RenderPacks = require('../models/RenderPacks');
@@ -98,7 +98,7 @@ function build(extension, obj) {
         if (item.key && e_handler.map.key) {
           item.attrs[e_handler.map.key] = extension.short_name+'_'+item.key;
           if (e_handler.map.value) {
-            let stored_value = Config.get('extensions.' + item.attrs[e_handler.map.key].replace('_','.'));
+            let stored_value = settings.get('extensions.' + item.attrs[e_handler.map.key].replace('_','.'));
             if (stored_value) item.value = stored_value;
           }
         }

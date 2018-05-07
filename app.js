@@ -2,7 +2,7 @@ const {app, BrowserWindow, Menu, dialog, ipcMain} = require('electron');
 const log       = require('electron-log');
                 log.transports.console.level = 'info';
                 log.transports.file.level = 'info';
-const settings  = require('electron-settings');
+const settings  = require('electron-app-settings');
 const path      = require('path');
 const url       = require('url');
 const menu      = require('./menu');
@@ -19,35 +19,37 @@ function createMainWindow() {
     slashes: true
   }));
 
-  windows.list[windows.MAIN_WINDOW].on('ready-to-show', () => {
-    windows.list[windows.MAIN_WINDOW].show();
-  });
-
   // Send our settings to the renderer when it loads.
   windows.list[windows.MAIN_WINDOW].webContents.on('did-finish-load', () => {
-    // Send our pertinent settings to the main app.
-    windows.list[windows.MAIN_WINDOW].webContents.send('set-config', settings.get('config'));
+    windows.list[windows.MAIN_WINDOW].webContents.send('init');
   });
 
   windows.list[windows.MAIN_WINDOW].on('close', () => {
     let bounds = windows.list[windows.MAIN_WINDOW].getBounds();
-    settings.set("window.left", bounds.x);
-    settings.set("window.top", bounds.y);
-    settings.set("window.width", bounds.width);
-    settings.set("window.height", bounds.height);
+    settings.set("window", {left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height });
     windows.list[windows.MAIN_WINDOW] = null;
   });
 }
 
 app.on('ready', () => {
   // ---- Defaults ----
-  if (!settings.has("window.width")) settings.set("window.width", 800);
-  if (!settings.has("window.height")) settings.set("window.height", 600);
-  if (!settings.has("window.left")) settings.set("window.left", 0);
-  if (!settings.has("window.top")) settings.set("window.top", 0);
-  if (!settings.has("recent_files")) settings.set("recent_files", []);
-  if (!settings.has("config.renderpack")) settings.set("config.renderpack", "$OME_RENDER_PACKS/ome-rp-default");
-  if (!settings.has("config.editorpack")) settings.set("config.editorpack", "$OME_EDITOR_PACKS/ome-ep-codemirror");
+  settings.set({
+    window: {
+      width: 800,
+      height: 600,
+      left: 0,
+      top: 0
+    },
+    editor: {
+      update_delay: 250
+    },
+    render: {
+      synch_lines: true
+    },
+    recent_files: [],
+    renderpack: "$OME_RENDER_PACKS/ome-rp-default",
+    editorpack: "$OME_EDITOR_PACKS/ome-ep-codemirror"
+  }, true);
   // ---- ----
   menu.init();
 
@@ -55,9 +57,9 @@ app.on('ready', () => {
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
+  //if (process.platform !== 'darwin') {
     app.quit();
-  }
+  //}
 });
 
 app.on('activate', () => {
@@ -76,6 +78,6 @@ ipcMain.on('webview-disable-external-navigation', (event, enabled) => {
     event.sender.removeListener('will-navigate', disableNavigation);
   }
 });
-ipcMain.on('update-settings', (event, config) => {
-  settings.set(config.key, config.value);
+ipcMain.on('ready-to-run', (event) => {
+  windows.list[windows.MAIN_WINDOW].show();
 });

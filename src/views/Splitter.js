@@ -1,6 +1,25 @@
 let m = require('mithril');
 
-const Config = require('../models/Config.js');
+const settings = require('electron-app-settings');
+
+let storeElementSettings = (e, v) => {
+  // NOTE: electron-settings is foolish and does not escape dot-syntax, e.g., `my\.one\.object` turns into `"my\":{"one\": {"object": ... } }` instead of `"my\.one\.object": ..., so we are just going with the foolish flow here.
+  let identifier = e.tagName + (e.className ? '\\.'+e.className : '') + (e.id ? '#' + e.id : '');
+
+  let iterate = (ectx, value) => {
+    if (!ectx) return;
+    let obj = {};
+    if (typeof value === "string") {
+      obj[value] = ectx[value];
+    } else if (value instanceof Object) {
+      for (v in value) {
+        obj[v] = iterate(ectx[v], value[v]);
+      }
+    }
+    return obj;
+  }
+  settings.set('element_settings.'+identifier, iterate(e, v));
+}
 
 module.exports = {
   view: (vnode) => {
@@ -19,8 +38,8 @@ module.exports = {
           let e1 = vnode.dom.previousSibling,
               e2 = vnode.dom.nextSibling;
           if (!e1 || !e2) return;
-          Config.storeElementSettings(e1, {style: 'flex'});
-          Config.storeElementSettings(e2, {style: 'flex'});
+          storeElementSettings(e1, {style: 'flex'});
+          storeElementSettings(e2, {style: 'flex'});
         }
         vnode.state.mousemove = e => {
           let e1 = vnode.dom.previousSibling,

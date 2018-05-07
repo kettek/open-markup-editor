@@ -1,7 +1,7 @@
 let m = require('mithril');
+const settings = require('electron-app-settings');
 
 let Files = require('../models/Files');
-let Config = require('../models/Config');
 let MarkupPacks = require('../models/MarkupPacks');
 let RenderPacks = require('../models/RenderPacks');
 
@@ -13,7 +13,7 @@ module.exports = {
         vnode.dom.send('filename', Files.getFileName(Files.focused));
         vnode.dom.send('filepath', Files.getFilePath(Files.focused));
         vnode.dom.send('render', converted_text);
-        if (Config.synch_lines) vnode.dom.send('line', Files.getFileLine(Files.focused));
+        if (settings.get('render.synch_lines') == true) vnode.dom.send('line', Files.getFileLine(Files.focused));
       });
   },
   onupdate: (vnode) => {
@@ -26,7 +26,7 @@ module.exports = {
       Files.setFileDirty(Files.focused, false);
       Files.should_redraw = false;
     }
-    if (Config.synch_lines) vnode.dom.send('line', Files.getFileLine(Files.focused));
+    if (settings.get('render.synch_lines') == true) vnode.dom.send('line', Files.getFileLine(Files.focused));
   },
   view: (vnode) => {
     let rp = RenderPacks.getPack(Files.getFileExtension(Files.focused));

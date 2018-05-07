@@ -1,5 +1,5 @@
 let m = require('mithril');
-let Config = require('../models/Config');
+const settings = require('electron-app-settings');
 
 let EditorPacks = require('../models/EditorPacks');
 
@@ -7,7 +7,7 @@ let Files = require('../models/Files');
 
 module.exports = {
   view: (parent, attrs) => {
-    return m('section.editor', (Config.element_settings["SECTION.editor"] ? Config.element_settings["SECTION.editor"] : {}), [
+    return m('section.editor', (settings.get("element_settings.SECTION\\.editor") ? settings.get("element_settings.SECTION\\.editor") : {}), [
       m(".editor-wrapper", m("textarea", {
         oncreate: (vnode) => {
           vnode.state.editor = EditorPacks.createEditor();
@@ -42,7 +42,7 @@ module.exports = {
           vnode.state.editor.on("change", index => {
             Files.setFileSaved(index, false);
             clearTimeout(updateTimeout);
-            updateTimeout = setTimeout(updateFunction, Config.editor.update_delay);
+            updateTimeout = setTimeout(updateFunction, settings.get("editor.update_delay"));
           });
         },
         onremove: (vnode) => {

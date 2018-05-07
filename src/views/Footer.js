@@ -1,7 +1,7 @@
 let m = require('mithril');
+const settings = require('electron-app-settings');
 
 let Files   = require('../models/Files');
-let Config  = require('../models/Config');
 
 module.exports = {
   view: (vnode) => {
@@ -10,9 +10,9 @@ module.exports = {
       m('span.checkbox', 
         m('input[type=checkbox]#synch_lines', {
           onchange: m.withAttr("checked", (checked) => {
-            Config.synch_lines = checked;
+            settings.set('render.synch_lines', checked);
           }),
-          checked: Config.synch_lines
+          checked: settings.get('render.synch_lines')
         }), m('label[for=synch_lines]', "synch-to-line")
       )
     ]);
