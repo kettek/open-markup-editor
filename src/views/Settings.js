@@ -144,18 +144,17 @@ module.exports = {
         ),*/
         // Editor Packs
         m("header", "Editor Packs"),
-        m("select", {size: EditorPacks.packs.length},
-          EditorPacks.packs.map((pack) => {
-            return m('option', pack.name);
-          }),
-        ),
+        EditorPacks.packs.map((pack, index) => {
+          return build(pack, [
+            'article.disabled', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
+        }),
         // Render Packs
         m("header", "Render Packs"),
-        m("select", {size: RenderPacks.packs.length},
-          RenderPacks.packs.map((pack) => {
-            return m('option', pack.name);
-          }),
-        ),
+        RenderPacks.packs.map((pack, index) => {
+          return build(pack, [
+            'article.disabled', ['header', pack.name, ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Not Yet Implemented', {onclick: () => {}}]], pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
+          ]);
+        }),
         // Extensions
         m("header", "Extensions"),
         Extensions.list.map((extension, index) => {

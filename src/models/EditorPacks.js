@@ -2,6 +2,7 @@ const Emitter = require('../emitter.js');
 const fs      = require('fs');
 const path    = require('path');
 const log     = require('electron-log');
+const settings = require('electron-app-settings');
 
 const m = require('mithril');
 
@@ -39,6 +40,10 @@ let EditorPacks = {
           return;
         }
       }
+    });
+    // NOTE: It seems messy to attach to the settings object directly here.
+    settings.on('set', (args) => {
+      editor_instance.emit('global-conf-set', args.key, args.value, args.is_default);
     });
     editor_instance.on('ready', () => {
       m.redraw();

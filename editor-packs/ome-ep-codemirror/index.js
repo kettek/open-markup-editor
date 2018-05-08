@@ -1,13 +1,14 @@
 let CodeMirror = null;
 
+const settings = require('electron-app-settings');
 const path = require('path');
 
 module.exports = {
   name: "CodeMirror",
   conf: {
-    'theme': 'material',
+    'theme': 'material'
   },
-  ui: [
+  conf_ui: [
     [{title: "The theme used by CodeMirror"},
       ['label', 'Theme', 'theme']
     ]
@@ -35,7 +36,7 @@ module.exports = {
       if (!editor.cm) {
         editor.cm = CodeMirror.fromTextArea(dom, {
           lineNumbers: true,
-          lineWrapping: false,
+          lineWrapping: settings.get('editor.linewrapping') ? true : false,
           theme: 'material'
         });
         editor.cm.on("changes", (cm, changes) => {
@@ -79,12 +80,10 @@ module.exports = {
       return editor.files[index].doc.getValue();
     };
     /* --- */
-    editor.getThemes = () => {
-      console.log('getThemes');
-    }
-    editor.updateTheme = (e) => {
-      console.log('updateTheme');
-      console.log(e);
-    }
+    editor.on('global-conf-set', (key, value) => {
+      if (key === 'editor.linewrapping') {
+        editor.cm.setOption('lineWrapping', value);
+      }
+    });
   }
 }
