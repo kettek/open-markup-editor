@@ -8,6 +8,9 @@ let RenderPacks = require('../models/RenderPacks');
 let Extensions = require('../Extensions');
 
 const defined_elements = {
+  'section': {
+    tag: 'section',
+  },
   'article': {
     tag: 'article',
     value: '<h1>%VALUE%</h1>'
@@ -19,6 +22,16 @@ const defined_elements = {
       key: 'id',
       value: 'checked'
     }
+  },
+  'select': {
+    tag: 'select',
+    map: {
+      key: 'id',
+      value: 'selectedIndex'
+    }
+  },
+  'option': {
+    tag: 'option'
   },
   'input': {
     tag: 'input',
@@ -53,7 +66,7 @@ const defined_elements = {
 
 function build(extension, obj) {
   let item = {
-    tag: 'section',
+    tag: '',
     key: '',
     value: undefined,
     attrs: {},
@@ -67,6 +80,8 @@ function build(extension, obj) {
     for (let i = 0; i < obj.length; i++) {
       if (Array.isArray(obj[i])) {
         item.children.push(build(extension, obj[i]));
+      } else if (typeof obj[i] === 'function') {
+        item.children.push(build(extension, obj[i]()));
       } else if (typeof obj[i] === 'object') {
         item.attrs = Object.assign(item.attrs, obj[i]);
       } else { // Strings, Booleans, etc.
@@ -98,9 +113,10 @@ function build(extension, obj) {
         if (item.key && e_handler.map.key) {
           item.attrs[e_handler.map.key] = extension.short_name+'_'+item.key;
           if (e_handler.map.value) {
-            let stored_value = settings.get('extensions.' + item.attrs[e_handler.map.key].replace('_','.'));
+            let stored_value = extension.getConf(item.key);
             if (stored_value) item.value = stored_value;
           }
+          item.attrs[e_handler.map.key] = extension.short_name+'_'+item.key;
         }
         if (item.value !== undefined && e_handler.map.value) {
           item.attrs[e_handler.map.value] = item.value;
@@ -120,7 +136,13 @@ function build(extension, obj) {
         item.value = '';
       }
     }
-    return m(item.tag + (item.classes ? '.'+item.classes.join('.') : '') + (item.id ? '#'+item.id : ''), item.attrs, item.value, item.children);
+
+    // If the tag is still blank, then we presume it is simply a container unworthy of _THE DOM_.
+    if (item.tag == '') {
+      return item.children;
+    } else {
+      return m(item.tag + (item.classes ? '.'+item.classes.join('.') : '') + (item.id ? '#'+item.id : ''), item.attrs, item.value, item.children);
+    }
   }
 }
 
@@ -146,7 +168,7 @@ module.exports = {
         m("header", "Editor Packs"),
         EditorPacks.packs.map((pack, index) => {
           return build(pack, [
-            'article.disabled', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
+            'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
         }),
         // Render Packs
         m("header", "Render Packs"),
