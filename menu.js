@@ -4,7 +4,8 @@ module.exports = {
 
 let electron = require('electron')
 
-const {app, config, dialog, shell, remote, ipcMain } = require('electron');
+const {app, dialog, shell, remote, ipcMain } = require('electron');
+const isDev = require('electron-is-dev');
 
 let windows = require('./windows');
 
@@ -106,7 +107,7 @@ function getMenuTemplate () {
         {
           label: 'Preferences',
           accelerator: 'CmdOrCtrl+,',
-          click: () => windows.list[windows.MAIN_WINDOW].dispatch('preferences')
+          click: () => windows.list[windows.MAIN_WINDOW].webContents.send('conf-show')
         }
       ]
     },
@@ -119,24 +120,29 @@ function getMenuTemplate () {
           accelerator: process.platform === 'darwin'
             ? 'Ctrl+Command+F'
             : 'F11',
-          click: () => windows.list[windows.MAIN_WINDOW].toggleFullScreen()
+          click: () => {
+            if (windows.list[windows.MAIN_WINDOW].isFullScreen()) {
+              windows.list[windows.MAIN_WINDOW].setFullScreen(false);
+            } else {
+              windows.list[windows.MAIN_WINDOW].setFullScreen(true);
+            }
+          }
         },
         {
           label: 'Float on Top',
           type: 'checkbox',
-          click: () => windows.list[windows.MAIN_WINDOW].toggleAlwaysOnTop()
+          click: () => {
+            if (windows.list[windows.MAIN_WINDOW].isAlwaysOnTop()) {
+              windows.list[windows.MAIN_WINDOW].setAlwaysOnTop(false);
+            } else {
+              windows.list[windows.MAIN_WINDOW].setAlwaysOnTop(true);
+            }
+          }
         },
         {
           type: 'separator'
         },
-        {
-          label: 'Go Back',
-          accelerator: 'Esc',
-          click: () => windows.list[windows.MAIN_WINDOW].dispatch('escapeBack')
-        },
-        {
-          type: 'separator'
-        },
+        isDev ?
         {
           label: 'Developer',
           submenu: [
@@ -149,6 +155,8 @@ function getMenuTemplate () {
             },
           ]
         }
+        :
+        {}
       ]
     },
     {
@@ -157,18 +165,18 @@ function getMenuTemplate () {
       submenu: [
         {
           label: 'Learn more about OME',
-          click: () => shell.openExternal(config.HOME_PAGE_URL)
+          click: () => shell.openExternal("https://kettek.net/s/OME")
         },
         {
           label: 'Contribute on GitHub',
-          click: () => shell.openExternal(config.GITHUB_URL)
+          click: () => shell.openExternal("https://github.com/kettek/open-markup-editor")
         },
         {
           type: 'separator'
         },
         {
           label: 'Report an Issue...',
-          click: () => shell.openExternal(config.GITHUB_URL_ISSUES)
+          click: () => shell.openExternal("https://github.com/kettek/open-markup-editor/issues/new")
         }
       ]
     }
@@ -188,7 +196,7 @@ function getMenuTemplate () {
         {
           label: 'Preferences',
           accelerator: 'Cmd+,',
-          click: () => windows.list[windows.MAIN_WINDOW].dispatch('preferences')
+          click: () => windows.list[windows.MAIN_WINDOW].webContents.send('conf-show')
         },
         {
           type: 'separator'

@@ -5,6 +5,7 @@ const settings = require('electron-app-settings');
 const log = require('electron-log');
 
 const Files = require('./src/models/Files');
+const UIState = require('./src/UIState');
 
 const EditorPacks = require('./src/models/EditorPacks');
 const MarkupPacks = require('./src/models/MarkupPacks');
@@ -33,6 +34,10 @@ ipcRenderer.on('file-close', (event, arg) => {
   if (Files.closeFile(-1) == false) {
     // Quit if there are no more files?
   }
+});
+ipcRenderer.on('conf-show', (event, arg) => {
+  UIState.show_config = true;
+  m.redraw();
 });
 
 ipcRenderer.on('init', (event, arg) => {
