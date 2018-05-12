@@ -18,7 +18,6 @@ module.exports = {
       'theme': 'material'
     }, [
       ['section', {title: "The theme used by CodeMirror"},
-        ['label', 'Theme', 'theme_index'],
         ['select', '', 'theme_index', {
             'onchange': (e) => {
               pack.setConf('theme_index', e.target.selectedIndex);
@@ -29,7 +28,8 @@ module.exports = {
           return pack.themes.map((theme, index) => {
             return ['option', theme, { value: index, selected: pack.getConf('theme') == index ? true : false }]
           })
-        }]
+        }],
+        ['label', 'Theme', 'theme_index']
       ]
     ]);
   },
