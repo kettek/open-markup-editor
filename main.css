@@ -270,21 +270,30 @@ section.settings {
   animation-fill-mode: forwards;
   background: var(--p-dark);
 }
-section.settings header {
-  margin: .5em 0 .5em .5em;
+section.settings > header {
+  margin: .5em .5em 0 .25em;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+section.settings > header {
+  font-size: 150%;
+}
 section.settings > article {
   position: relative;
-  margin-left: 1em;
-  background-color: var(--p);
+  padding: .125em;
   color: var(--p-fg);
+}
+article > header {
+  margin: 0 .5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 *[disabled], .disabled {
   cursor: no-drop;
+  opacity: 0.25;
 }
 
 section.disabled:after, article.disabled:after, section[disabled]:after, article[disabled]:after {
@@ -293,10 +302,11 @@ section.disabled:after, article.disabled:after, section[disabled]:after, article
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
 }
 
 section.settings section {
+  display: flex;
+  align-items: center;
   margin: 0 .75em;
   padding: 0 .25em;
 }
@@ -329,10 +339,11 @@ footer > span {
 }
 
 label {
+  padding: 0 .5em;
 }
 
 /* checkbox */
-input {
+input, select {
   margin: .25em;
 }
 input[type=checkbox] {
