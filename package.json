@@ -21,10 +21,11 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "electron": "^1.8.6",
-    "electron-builder": "^20.11.1"
+    "electron-builder": "^20.13.3"
   },
   "dependencies": {
     "electron-app-settings": "^1.0.0",
+    "electron-is-dev": "^0.3.0",
     "electron-log": "^2.2.14",
     "mithril": "^1.1.6"
   },
