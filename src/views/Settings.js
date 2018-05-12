@@ -136,6 +136,12 @@ function build(extension, obj) {
         item.value = '';
       }
     }
+    // Process attrs that are functions
+    Object.keys(item.attrs).forEach((key, index) => {
+      if (typeof item.attrs[key] === 'function' && !key.startsWith("on")) {
+        item.attrs[key] = item.attrs[key]();
+      }
+    });
 
     // If the tag is still blank, then we presume it is simply a container unworthy of _THE DOM_.
     if (item.tag == '') {

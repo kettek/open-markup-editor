@@ -21,7 +21,7 @@ module.exports = {
           ['checkbox', '', 'use_system_colors'],
           ['label', 'Use System Colors', 'use_system_colors']
         ],
-        ['section', {title: "Primary is the color used for backgrounds"},
+        ['section', {title: "Primary is the color used for backgrounds", disabled: () => { return ex.getConf('use_system_colors') }},
           ['button', '✎', {
             onclick: () => {
               getColor().then(color=>ex.setConf('primary', color))
@@ -32,7 +32,7 @@ module.exports = {
           ['hex', '', 'primary'],
           ['label', 'Primary', 'primary']
         ],
-        ['section', {title: "Secondary is the color used for buttons, text fields, and other input elements that are laid atop primary colors."},
+        ['section', {title: "Secondary is the color used for buttons, text fields, and other input elements that are laid atop primary colors.", disabled: () => { return ex.getConf('use_system_colors') } },
           ['button', '✎', {
             onclick: () => {
               getColor().then(color=>ex.setConf('secondary', color))

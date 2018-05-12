@@ -283,11 +283,11 @@ section.settings > article {
   color: var(--p-fg);
 }
 
-.disabled {
+*[disabled], .disabled {
   cursor: no-drop;
 }
 
-section.disabled:after, article.disabled:after {
+section.disabled:after, article.disabled:after, section[disabled]:after, article[disabled]:after {
   content: '';
   display: block;
   position: absolute;
@@ -297,7 +297,8 @@ section.disabled:after, article.disabled:after {
 }
 
 section.settings section {
-  margin-left: 1em;
+  margin: 0 .75em;
+  padding: 0 .25em;
 }
 section.settings button.reset {
   margin-left: auto;
