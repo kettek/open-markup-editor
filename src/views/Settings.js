@@ -34,7 +34,7 @@ const defined_elements = {
     tag: 'option'
   },
   'input': {
-    tag: 'input',
+    tag: 'input[type=text]',
     events: ['change'],
     map: {
       key: 'id',
@@ -42,7 +42,7 @@ const defined_elements = {
     }
   },
   'hex': {
-    tag: 'input[size=5]',
+    tag: 'input[size=5][type=text]',
     events: ['change'],
     map: {
       key: 'id',
