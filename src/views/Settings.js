@@ -163,18 +163,18 @@ module.exports = {
   view: (vnode) => {
     return(
       m("section.settings",
-        // Markup Packs
-        /*m("header", "Markup Packs"),
-        m("select", {size: MarkupPackManager.packs.length},
-          MarkupPackManager.packs.map((pack) => {
-            return m('option', pack.name);
-          }),
-        ),*/
         // Editor Packs
         m("header", "Editor Packs"),
         EditorPackManager.packs.map((pack, index) => {
           return build(pack, [
             'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
+        }),
+        // Markup Packs
+        m("header", "Markup Packs"),
+        MarkupPackManager.packs.map((pack, index) => {
+          return build(pack, [
+            'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui
+          ]);
         }),
         // Render Packs
         m("header", "Render Packs"),
