@@ -44,7 +44,7 @@ module.exports = {
           }, [])
         },
         onchange: (e) => {
-          pack.set('active_libraries', e.right_items);
+          pack.set('active_libraries', e.right_items.map(item => { return item.name; }));
         }
       }],
       ['label', 'Plugins', ''],
