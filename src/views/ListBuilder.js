@@ -8,7 +8,7 @@ const ListBuilder = {
     vnode.state.right_index = 0;
   },
   view: vnode => {
-    return [
+    return m('listbuilder', [
       m('select', {
         onchange: e => {
           vnode.state.left_index = e.target.selectedIndex;
@@ -51,7 +51,7 @@ const ListBuilder = {
           selected: index == vnode.state.right_index
         }, item);
       }))
-    ]
+    ])
   }
 };
 

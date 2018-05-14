@@ -443,6 +443,15 @@ input[type=checkbox]:not(:disabled):hover + label {
   }
 }
 
+listbuilder {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+listbuilder select {
+  flex: 1;
+}
+
 section.closeElement {
   animation: slideToRight 0.5s, fadeOut 0.5s;
 }
