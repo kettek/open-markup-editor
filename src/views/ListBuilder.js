@@ -15,10 +15,12 @@ const ListBuilder = {
         },
         size: vnode.state.left_items.length + vnode.state.right_items.length
       }, vnode.state.left_items.map((item, index) => {
-        if (vnode.state.right_items.indexOf(item) == -1) {
+        let target_index = vnode.state.right_items.map( d => { return d.name}).indexOf(item.name);
+        if (target_index == -1) {
           return m('option', {
-            selected: index == vnode.state.left_index
-          }, item);
+            selected: index == vnode.state.left_index,
+            title: item.title
+          }, item.name);
         }
       })),
       m('.controls', [
@@ -48,8 +50,9 @@ const ListBuilder = {
         size: vnode.state.left_items.length + vnode.state.right_items.length
       }, vnode.state.right_items.map((item, index) => {
         return m('option', {
-          selected: index == vnode.state.right_index
-        }, item);
+          selected: index == vnode.state.right_index,
+          title: item.title
+        }, item.name);
       }))
     ])
   }
