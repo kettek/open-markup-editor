@@ -23,7 +23,8 @@ module.exports = {
         return lib.name;
       })
     },
-    ['section', {title: "Available and active markdown-it plugins"},
+    ['section', {style: 'flex-direction: column;align-items:flex-start', title: "Available and active markdown-it plugins"},
+      ['label', 'Plugins', ''],
       ['listbuilder', '', '', {
         left_items: () => {
           let active = pack.get('active_libraries');
@@ -46,8 +47,7 @@ module.exports = {
         onchange: (e) => {
           pack.set('active_libraries', e.right_items.map(item => { return item.name; }));
         }
-      }],
-      ['label', 'Plugins', ''],
+      }]
     ]);
 
     pack.render = (text) => {
