@@ -1,5 +1,3 @@
-let md = null;
-
 module.exports = {
   name: 'markdown-it',
   supports: ['md', 'markdown'],
@@ -21,32 +19,34 @@ module.exports = {
   setup: pack => {
     let md = null;
     pack.conf({
-      inactive_libraries: [],
       active_libraries: pack.libraries.map((lib, index) => {
-        return index;
+        return lib.name;
       })
     },
     ['section', {title: "Available and active markdown-it libraries"},
-      ['select', '', 'disabled', {
-          'onchange': (e) => {
-          },
-          'size': () => { return pack.libraries.length }
+      ['listbuilder', '', '', {
+        left_items: () => {
+          let active = pack.get('active_libraries');
+          return pack.libraries.reduce( (list, item) => {
+            if (active.indexOf(item.name) === -1) {
+              list.push(item.name);
+            }
+            return list;
+          }, [])
         },
-        () => {
-        return pack.libraries.map((lib, index) => {
-          return ['option', lib.name, { value: index }]
-        })
+        right_items: () => {
+          let active = pack.get('active_libraries');
+          return pack.libraries.reduce( (list, item) => {
+            if (active.indexOf(item.name) !== -1) {
+              list.push(item.name);
+            }
+            return list;
+          }, [])
+        },
+        onchange: (e) => {
+          pack.set('active_libraries', e.right_items);
+        }
       }],
-      ['select', '', 'enabled', {
-          'onchange': (e) => {
-          },
-          'size': () => { return pack.libraries.length }
-        },
-        () => {
-        return pack.get('active_libraries').map((lib, index) => {
-          return ['option', pack.libraries[lib].name, { value: index }]
-        })
-      }]
     ]);
 
     pack.render = (text) => {
@@ -64,8 +64,11 @@ module.exports = {
           }
         }
       });
-      for (let i = 0; i < pack.libraries.length; i++) {
-        md.use(require(pack.libraries[i].src, pack.libraries[i].args));
+      let active = pack.get('active_libraries');
+      for (let i = 0; i < active.length; i++) {
+        let index = pack.libraries.map( d => {return d.name}).indexOf(active[i]);
+        if (index == -1) continue;
+        md.use(require(pack.libraries[index].src), pack.libraries[index].args);
       }
       md.use(require('markdown-it-container'), 'warning');
       md.use(require('markdown-it-container'), 'info');
@@ -79,6 +82,7 @@ module.exports = {
     });
 
     pack.on('conf-set', (key, value) => {
+      createMD();
     });
     pack.on('disable', () => { });
 

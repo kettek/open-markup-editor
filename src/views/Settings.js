@@ -7,6 +7,8 @@ let MarkupPackManager = require('../MarkupPackManager');
 let RenderPackManager = require('../RenderPackManager');
 let ExtensionPackManager = require('../ExtensionPackManager');
 
+let ListBuilder = require('./ListBuilder');
+
 const defined_elements = {
   'section': {
     tag: 'section',
@@ -32,6 +34,13 @@ const defined_elements = {
   },
   'option': {
     tag: 'option'
+  },
+  'listbuilder': {
+    mithril: ListBuilder,
+    map: {
+      items: 'left_items',
+      selected_items: 'right_items'
+    }
   },
   'input': {
     tag: 'input[type=text]',
@@ -147,6 +156,12 @@ function build(extension, obj) {
     if (item.tag == '') {
       return item.children;
     } else {
+      if (e_handler && e_handler.mithril) {
+        return m(e_handler.mithril, Object.assign({
+          id: item.id,
+          className: item.classes.join('.'),
+        }, item.attrs), item.attrs, item.value, item.children);
+      }
       return m(item.tag + (item.classes ? '.'+item.classes.join('.') : '') + (item.id ? '#'+item.id : ''), item.attrs, item.value, item.children);
     }
   }
