@@ -21,10 +21,10 @@ module.exports = {
           ['checkbox', '', 'use_system_colors'],
           ['label', 'Use System Colors', 'use_system_colors']
         ],
-        ['section', {title: "Primary is the color used for backgrounds", disabled: () => { return ex.getConf('use_system_colors') }},
+        ['section', {title: "Primary is the color used for backgrounds", disabled: () => { return ex.get('use_system_colors') }},
           ['button', '✎', {
             onclick: () => {
-              getColor().then(color=>ex.setConf('primary', color))
+              getColor().then(color=>ex.set('primary', color))
             },
             style: "display: inline-block;"
           }],
@@ -32,10 +32,10 @@ module.exports = {
           ['hex', '', 'primary'],
           ['label', 'Primary', 'primary']
         ],
-        ['section', {title: "Secondary is the color used for buttons, text fields, and other input elements that are laid atop primary colors.", disabled: () => { return ex.getConf('use_system_colors') } },
+        ['section', {title: "Secondary is the color used for buttons, text fields, and other input elements that are laid atop primary colors.", disabled: () => { return ex.get('use_system_colors') } },
           ['button', '✎', {
             onclick: () => {
-              getColor().then(color=>ex.setConf('secondary', color))
+              getColor().then(color=>ex.set('secondary', color))
             },
             style: "display: inline-block;"
           }],
@@ -46,13 +46,13 @@ module.exports = {
       ]
     );
     ex.on('enable', () => {
-      Colorizer.setup(ex.getConf());
+      Colorizer.setup(ex.get());
     });
     ex.on('disable', () => {
       Colorizer.removeColorTable();
     });
     ex.on('conf-set', (k, v) => {
-      Colorizer.setup(ex.getConf());
+      Colorizer.setup(ex.get());
     });
   }
 }

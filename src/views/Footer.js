@@ -1,6 +1,6 @@
 let m = require('mithril');
 const settings = require('electron-app-settings');
-const RenderPacks = require('../models/RenderPacks');
+const RenderPackManager = require('../RenderPackManager');
 
 let Files   = require('../models/Files');
 
@@ -28,10 +28,10 @@ module.exports = {
       m('span',
         m('label[for=renderpack]', "Render Pack:"),
         m("select#renderpack", {onchange: (e) => {
-          RenderPacks.selectPack(e.target.options[e.target.selectedIndex].value);
+          RenderPackManager.select(e.target.options[e.target.selectedIndex].value);
         }},
-          RenderPacks.packs.map((pack, index) => {
-            return m('option', (index == RenderPacks.selected_index ? {selected: true} : {}), pack.name);
+          RenderPackManager.packs.map((pack, index) => {
+            return m('option', (index == RenderPackManager.selected_index ? {selected: true} : {}), pack.name);
           }),
         )
       )

@@ -7,11 +7,11 @@ const log = require('electron-log');
 const Files = require('./src/models/Files');
 const UIState = require('./src/UIState');
 
-const EditorPacks = require('./src/models/EditorPacks');
-const MarkupPacks = require('./src/models/MarkupPacks');
-const RenderPacks = require('./src/models/RenderPacks');
+const EditorModuleMangaer = require('./src/EditorPackManager');
+const MarkupPackManager = require('./src/MarkupPackManager');
+const RenderPackManager = require('./src/RenderPackManager');
 
-const Extensions = require('./src/Extensions');
+const ExtensionPackManager = require('./src/ExtensionPackManager');
 
 const { ipcRenderer } = require('electron');
 
@@ -42,17 +42,30 @@ ipcRenderer.on('conf-show', (event, arg) => {
 
 ipcRenderer.on('init', (event, arg) => {
   // TODO: some "init" event
-  Extensions.populateExtensionsList(path.join(__dirname, 'extensions'), () => {
-    for (let i = 0; i < Extensions.list.length; i++) {
-      Extensions.setupExtension(i);
-      if (Extensions.list[i].getConf('enabled')) {
-        Extensions.enableExtension(i);
+  ExtensionPackManager.populate(path.join(__dirname, 'extensions'), () => {
+    for (let i = 0; i < ExtensionPackManager.packs.length; i++) {
+      ExtensionPackManager.setup(i);
+      if (!ExtensionPackManager.packs[i].get('disabled')) {
+        ExtensionPackManager.enable(i);
       }
     }
   });
-  EditorPacks.loadPacksFromDir(path.join(__dirname, 'editor-packs'));
-  MarkupPacks.loadPacksFromDir(path.join(__dirname, 'markup-packs'));
-  RenderPacks.loadPacksFromDir(path.join(__dirname, 'render-packs'));
+  EditorModuleMangaer.populate(path.join(__dirname, 'editor-packs'), () => {
+    for (let i = 0; i < EditorModuleMangaer.packs.length; i++) {
+      if (!EditorModuleMangaer.packs[i].get('disabled')) {
+        EditorModuleMangaer.enable(i);
+      }
+    }
+  });
+  MarkupPackManager.populate(path.join(__dirname, 'markup-packs'), () => {
+    for (let i = 0; i < MarkupPackManager.packs.length; i++) {
+      if (!MarkupPackManager.packs[i].get('disabled')) {
+        MarkupPackManager.enable(i);
+      }
+    }
+  });
+  RenderPackManager.populate(path.join(__dirname, 'render-packs'), () => {
+  });
   ipcRenderer.send('ready-to-run');
 });
 

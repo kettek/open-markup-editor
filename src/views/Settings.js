@@ -2,10 +2,10 @@ const m = require('mithril');
 const settings = require('electron-app-settings');
 
 let Files = require('../models/Files');
-let EditorPacks = require('../models/EditorPacks');
-let MarkupPacks = require('../models/MarkupPacks');
-let RenderPacks = require('../models/RenderPacks');
-let Extensions = require('../Extensions');
+let EditorPackManager = require('../EditorPackManager');
+let MarkupPackManager = require('../MarkupPackManager');
+let RenderPackManager = require('../RenderPackManager');
+let ExtensionPackManager = require('../ExtensionPackManager');
 
 const defined_elements = {
   'section': {
@@ -113,7 +113,7 @@ function build(extension, obj) {
         if (item.key && e_handler.map.key) {
           item.attrs[e_handler.map.key] = extension.short_name+'_'+item.key;
           if (e_handler.map.value) {
-            let stored_value = extension.getConf(item.key);
+            let stored_value = extension.get(item.key);
             if (stored_value) item.value = stored_value;
           }
           item.attrs[e_handler.map.key] = extension.short_name+'_'+item.key;
@@ -123,7 +123,7 @@ function build(extension, obj) {
         }
         for (let i = 0; e_handler.events && i < e_handler.events.length; i++) {
           item.attrs['on'+e_handler.events[i]] = (e) => {
-            extension.setConf(item.key, e.target[e_handler.map.value]);
+            extension.set(item.key, e.target[e_handler.map.value]);
           }
         }
       }
@@ -165,29 +165,29 @@ module.exports = {
       m("section.settings",
         // Markup Packs
         /*m("header", "Markup Packs"),
-        m("select", {size: MarkupPacks.packs.length},
-          MarkupPacks.packs.map((pack) => {
+        m("select", {size: MarkupPackManager.packs.length},
+          MarkupPackManager.packs.map((pack) => {
             return m('option', pack.name);
           }),
         ),*/
         // Editor Packs
         m("header", "Editor Packs"),
-        EditorPacks.packs.map((pack, index) => {
+        EditorPackManager.packs.map((pack, index) => {
           return build(pack, [
             'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
         }),
         // Render Packs
         m("header", "Render Packs"),
-        RenderPacks.packs.map((pack, index) => {
+        RenderPackManager.packs.map((pack, index) => {
           return build(pack, [
             'article.disabled', ['header', pack.name, ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Not Yet Implemented', {onclick: () => {}}]], pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
           ]);
         }),
-        // Extensions
+        // ExtensionPackManager
         m("header", "Extensions"),
-        Extensions.list.map((extension, index) => {
+        ExtensionPackManager.packs.map((extension, index) => {
           return build(extension, [
-            'article', ['header', extension.name, ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => Extensions.toggleExtension(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
+            'article', ['header', extension.name, ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
           ]);
         })
       )
