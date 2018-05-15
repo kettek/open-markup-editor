@@ -7,15 +7,23 @@ const path      = require('path');
 module.exports = {
   name: "CodeMirror",
   themes: [],
+  keymaps: ['default'],
   setup: (pack) => {
     // TODO: async
     let files = fs.readdirSync(path.join(__dirname, 'node_modules/codemirror/theme'));
     files.forEach(file => {
-      pack.themes.push(file);
+      pack.themes.push(path.basename(file, '.css'));
     });
+    files = fs.readdirSync(path.join(__dirname, 'node_modules/codemirror/keymap'));
+    files.forEach(file => {
+      pack.keymaps.push(path.basename(file, '.js'));
+    });
+
     pack.conf({
       'theme_index': 25,
-      'theme': 'material'
+      'theme': 'material',
+      'keymap_index': 0,
+      'keymap': 'default'
     }, [
       ['section', {title: "The theme used by CodeMirror"},
         ['select', '', 'theme_index', {
@@ -30,22 +38,45 @@ module.exports = {
           })
         }],
         ['label', 'Theme', 'theme_index']
-      ]
+      ],
+      ['section', {title: "The key map (keyboard control) used by CodeMirror"},
+        ['select', '', 'keymap_index', {
+            'onchange': (e) => {
+              pack.set('keymap_index', e.target.selectedIndex);
+              pack.set('keymap', pack.keymaps[e.target.selectedIndex]);
+            }
+          },
+          () => {
+          return pack.keymaps.map((keymap, index) => {
+            return ['option', keymap, { value: index, selected: pack.get('keymap') == index ? true : false }]
+          })
+        }],
+        ['label', 'Key map', 'keymap_index']
+      ],
     ]);
 
     pack.theme = pack.get('theme');
+    pack.keymap = pack.get('keymap');
 
     function loadTheme(theme) {
       unloadTheme(pack.theme);
-      pack.load(path.join(__dirname, 'node_modules/codemirror/theme/', theme));
+      pack.load(path.join(__dirname, 'node_modules/codemirror/theme/', theme+'.css'));
       pack.theme = theme;
       if (pack.cm) {
-        pack.cm.setOption('theme', path.basename(pack.theme, '.css'));
-        console.log(pack.cm.getOption('theme'));
+        pack.cm.setOption('theme', pack.theme);
       }
     }
     function unloadTheme(theme) {
-      pack.unload(path.join(__dirname, 'node_modules/codemirror/theme/', theme));
+      pack.unload(path.join(__dirname, 'node_modules/codemirror/theme/', theme+'.css'));
+    }
+    function loadKeymap(keymap) {
+      if (keymap !== 'default') {
+        require(path.join('codemirror/keymap/', keymap + ".js"));
+      }
+      pack.keymap = keymap;
+      if (pack.cm) {
+        pack.cm.setOption('keyMap', pack.keymap);
+      }
     }
     pack.on('enable', () => {
       if (!CodeMirror) {
@@ -54,6 +85,7 @@ module.exports = {
       }
       pack.load(path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
       loadTheme(pack.theme);
+      loadKeymap(pack.keymap);
       pack.emit('ready');
     });
     pack.on('disable', () => {
@@ -72,7 +104,8 @@ module.exports = {
         pack.cm = CodeMirror.fromTextArea(dom, {
           lineNumbers: true,
           lineWrapping: settings.get('pack.linewrapping') ? true : false,
-          theme: path.basename(pack.theme, '.css')
+          theme: pack.theme,
+          keyMap: pack.keymap
         });
         pack.cm.on("changes", (cm, changes) => {
           pack.emit("change", pack.focused);
@@ -127,6 +160,9 @@ module.exports = {
     pack.on('conf-set', (key, value) => {
       if (key === 'theme') {
         loadTheme(value);
+      }
+      if (key === 'keymap') {
+        loadKeymap(value);
       }
     });
   }
