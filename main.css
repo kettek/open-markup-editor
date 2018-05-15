@@ -269,6 +269,7 @@ section.settings {
   animation: slideToLeft 0.5s, fadeIn 0.5s;
   animation-fill-mode: forwards;
   background: var(--p-dark);
+  overflow: auto;
 }
 section.settings > header {
   margin: .5em .5em 0 .25em;
