@@ -81,7 +81,7 @@ module.exports = {
     pack.on('enable', () => {
       if (!CodeMirror) {
         CodeMirror = require('codemirror');
-        require('codemirror/mode/markdown/markdown');
+        require('codemirror/mode/meta');
       }
       pack.load(path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
       loadTheme(pack.theme);
@@ -93,6 +93,11 @@ module.exports = {
       unloadTheme(pack.theme);
     });
     const newFile = (filename="", content="", mode="markdown") => {
+      let meta_info = CodeMirror.findModeByFileName(filename);
+      if (meta_info) {
+        require(path.join('codemirror/mode/', meta_info.mode, meta_info.mode))
+        mode = meta_info.mode;
+      }
       return {
         doc: CodeMirror.Doc(content, mode)
       }
