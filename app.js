@@ -2,7 +2,7 @@ const {app, BrowserWindow, Menu, dialog, ipcMain} = require('electron');
 const log       = require('electron-log');
                 log.transports.console.level = 'info';
                 log.transports.file.level = 'info';
-const settings  = require('electron-app-settings');
+let   settings  = {};
 const path      = require('path');
 const url       = require('url');
 const menu      = require('./menu');
@@ -37,53 +37,71 @@ function createMainWindow() {
   });
 }
 
-app.on('ready', () => {
-  // ---- Defaults ----
-  settings.set({
-    window: {
-      width: 800,
-      height: 600,
-      left: 0,
-      top: 0
-    },
-    editor: {
-      update_delay: 250
-    },
-    render: {
-      synch_lines: true
-    },
-    recent_files: [],
-    renderpack: "$OME_RENDER_PACKS/ome-rp-default",
-    editorpack: "$OME_EDITOR_PACKS/ome-ep-codemirror"
-  }, true);
-  // ---- ----
-  menu.init();
-
-  createMainWindow();
+let is_main_instance = !app.makeSingleInstance((argv, cwd) => {
+  if (windows.list[windows.MAIN_WINDOW]) {
+    if (windows.list[windows.MAIN_WINDOW].isMinimized()) windows.list[windows.MAIN_WINDOW].restore();
+    windows.list[windows.MAIN_WINDOW].focus();
+    // Send file open for any passed arguments
+    argv.forEach((val, index) => {
+      if (index == 0) return; // FIXME: index >= 1 when npm start called directly
+      windows.list[windows.MAIN_WINDOW].webContents.send('file-open', val);
+    });
+  }
 });
 
-app.on('window-all-closed', () => {
-  //if (process.platform !== 'darwin') {
-    app.quit();
-  //}
-});
-
-app.on('activate', () => {
-  if (windows.list[windows.MAIN_WINDOW] === null) {
+if (is_main_instance) {
+  // TODO: handle open-file for Mac OS
+  settings = require('electron-app-settings');
+  app.on('ready', () => {
+    // ---- Defaults ----
+    settings.set({
+      window: {
+        width: 800,
+        height: 600,
+        left: 0,
+        top: 0
+      },
+      editor: {
+        update_delay: 250
+      },
+      render: {
+        synch_lines: true
+      },
+      recent_files: [],
+      renderpack: "$OME_RENDER_PACKS/ome-rp-default",
+      editorpack: "$OME_EDITOR_PACKS/ome-ep-codemirror"
+    }, true);
+    // ---- ----
+    menu.init();
+  
     createMainWindow();
+  });
+  
+  app.on('window-all-closed', () => {
+    //if (process.platform !== 'darwin') {
+      app.quit();
+    //}
+  });
+  
+  app.on('activate', () => {
+    if (windows.list[windows.MAIN_WINDOW] === null) {
+      createMainWindow();
+    }
+  });
+  // ----
+  const disableNavigation = (event, url) => {
+    event.preventDefault();
   }
-});
-// ----
-const disableNavigation = (event, url) => {
-  event.preventDefault();
+  ipcMain.on('webview-disable-external-navigation', (event, enabled) => {
+    if (enabled) {
+      event.sender.on('will-navigate', disableNavigation);
+    } else {
+      event.sender.removeListener('will-navigate', disableNavigation);
+    }
+  });
+  ipcMain.on('ready-to-run', (event) => {
+    windows.list[windows.MAIN_WINDOW].show();
+  });
+} else {
+  app.quit();
 }
-ipcMain.on('webview-disable-external-navigation', (event, enabled) => {
-  if (enabled) {
-    event.sender.on('will-navigate', disableNavigation);
-  } else {
-    event.sender.removeListener('will-navigate', disableNavigation);
-  }
-});
-ipcMain.on('ready-to-run', (event) => {
-  windows.list[windows.MAIN_WINDOW].show();
-});
