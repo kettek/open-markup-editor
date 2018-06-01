@@ -22,6 +22,12 @@ function createMainWindow() {
   // Send our settings to the renderer when it loads.
   windows.list[windows.MAIN_WINDOW].webContents.on('did-finish-load', () => {
     windows.list[windows.MAIN_WINDOW].webContents.send('init');
+    // Send file open for any passed arguments
+    process.argv.forEach((val, index) => {
+      if (index == 0) return; // FIXME: index >= 1 when npm start called directly
+      windows.list[windows.MAIN_WINDOW].webContents.send('file-open', val);
+    });
+
   });
 
   windows.list[windows.MAIN_WINDOW].on('close', () => {
