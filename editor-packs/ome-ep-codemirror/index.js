@@ -108,7 +108,7 @@ module.exports = {
       if (!pack.cm) {
         pack.cm = CodeMirror.fromTextArea(dom, {
           lineNumbers: true,
-          lineWrapping: settings.get('pack.linewrapping') ? true : false,
+          lineWrapping: settings.get('editor.linewrapping') ? true : false,
           theme: pack.theme,
           keyMap: pack.keymap
         });
