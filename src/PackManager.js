@@ -61,6 +61,13 @@ function makePackManager(module_name, obj={}) {
       mm.setup(index);
       // Enable that beezy
       mm.packs[index].enabled = mm.packs[index].emit('enable') === false ? false : true;
+      // Hook pack into global settings if it is listening for it
+      if (mm.packs[index].on['global-conf-set']) {
+        mm.packs[index]._global_conf_set = (arg) => {
+          mm.packs[index].emit('global-conf-set', arg.key, arg.value, arg.is_default);
+        };
+        settings.on('set', mm.packs[index]._global_conf_set);
+      }
       //settings.set(mm.packs[index].key + '.enabled', mm.packs[index].enabled);
     },
     disable: index => {
@@ -68,6 +75,11 @@ function makePackManager(module_name, obj={}) {
       if (!mm.packs[index].enabled) return false;
       mm.packs[index].enabled = mm.packs[index].emit('disable') === false ? true : false;
       //settings.set(mm.packs[index].key+'.enabled', mm.packs[index].enabled);
+      if (mm.packs[index]._global_conf_set) {
+        settings.off('set', mm.packs[index]._global_conf_set);
+        delete mm.packs[index]._global_conf_set;
+      }
+
       return true;
     },
     toggle: index => {
@@ -154,6 +166,9 @@ function makePackManager(module_name, obj={}) {
             }
           }
         }
+        mod.on('redraw', () => {
+          m.redraw();
+        });
       }
       return mod;
     }
