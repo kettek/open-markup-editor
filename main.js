@@ -45,7 +45,7 @@ ipcRenderer.on('conf-show', (event, arg) => {
 
 ipcRenderer.on('init', (event, arg) => {
   DataManager.addPath(app.getPath('userData'), 0);  // User's data directory
-  DataManager.addPath(app.getAppPath());            // Application's CWD
+  //DataManager.addPath(app.getAppPath());            // Application's CWD FIXME: process.env.PORTABLE_EXECUTABLE_DIR sort of works, but that's only for portable builds with electron-builder.
   DataManager.addPath(__dirname);                   // main.js-relative directory
   // TODO: some "init" event
   ExtensionPackManager.populate('extensions', () => {
