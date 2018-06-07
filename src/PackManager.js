@@ -1,27 +1,30 @@
-const settings  = require('electron-app-settings');
-const m         = require('mithril');
-const fs        = require('fs');
-const path      = require('path');
-const log       = require('electron-log');
-const Emitter   = require('./emitter');
+const settings    = require('electron-app-settings');
+const m           = require('mithril');
+const fs          = require('fs');
+const path        = require('path');
+const log         = require('electron-log');
+const DataManager = require('./DataManager');
+const Emitter     = require('./emitter');
 
 function makePackManager(module_name, obj={}) {
   let mm = Emitter(Object.assign({
     packs: [],
     mod_replace_string: "",
     populate: (dir, on_finish=()=>{}) => {
-      fs.readdir(dir, (err, files) => {
+      DataManager.getFiles(dir, (errors, files) => {
+        console.log("AYY");
+        console.log(files);
         files.forEach(file => {
           log.info(" Loading " + file + "...");
           try {
-            fs.accessSync(path.join(dir, file, 'package.json'), fs.constants.F_OK);
+            fs.accessSync(file, fs.constants.F_OK);
           } catch (err) {
             log.warn("  ...ignoring, missing 'package.json'.");
             return;
           }
 
           try {
-            mm.load(path.join(dir, file));
+            mm.load(file);
             log.info("  ...OK");
           } catch (e) {
             log.warn("  ...NOKAY");
