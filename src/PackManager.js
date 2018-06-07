@@ -12,12 +12,10 @@ function makePackManager(module_name, obj={}) {
     mod_replace_string: "",
     populate: (dir, on_finish=()=>{}) => {
       DataManager.getFiles(dir, (errors, files) => {
-        console.log("AYY");
-        console.log(files);
         files.forEach(file => {
           log.info(" Loading " + file + "...");
           try {
-            fs.accessSync(file, fs.constants.F_OK);
+            fs.accessSync(path.join(file, 'package.json'), fs.constants.F_OK);
           } catch (err) {
             log.warn("  ...ignoring, missing 'package.json'.");
             return;
