@@ -8,8 +8,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
+    "preinstall": "submodules-install",
     "postinstall": "electron-builder install-app-deps"
   },
+  "submodules": [
+    "render-packs/*",
+    "editor-packs/*",
+    "markup-packs/*",
+    "extensions/*"
+  ],
   "keywords": [
     "markup",
     "markdown",
@@ -27,7 +34,8 @@
     "electron-app-settings": "^1.0.1",
     "electron-is-dev": "^0.3.0",
     "electron-log": "^2.2.14",
-    "mithril": "^1.1.6"
+    "mithril": "^1.1.6",
+    "submodules-install": "^1.0.0"
   },
   "build": {
     "appId": "net.kettek.ome",
