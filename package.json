@@ -8,8 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
-    "preinstall": "submodules-install",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps && submodules-install"
   },
   "submodules": [
     "render-packs/*",
