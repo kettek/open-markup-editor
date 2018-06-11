@@ -40,8 +40,13 @@
     "appId": "net.kettek.ome",
     "productName": "Open Markup Editor",
     "copyright": "Copyright © 2018 Ketchetwahmeegwun T. Southall",
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": false
+    },
     "win": {
-      "target": "zip"
+      "target": ["nsis", "zip"]
     },
     "mac": {
       "category": "public.app-category.productivity",
