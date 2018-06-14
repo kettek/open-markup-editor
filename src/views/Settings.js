@@ -1,4 +1,5 @@
 const m = require('mithril');
+const {dialog} = require('electron').remote;
 const settings = require('electron-app-settings');
 
 let Files = require('../models/Files');
@@ -179,27 +180,59 @@ module.exports = {
     return(
       m("section.settings",
         // Editor Packs
-        m("header", "Editor Packs"),
+        m("header", "Editor Packs", m("button.new", {
+          onclick: () => {
+            dialog.showOpenDialog({
+              title: "Install Editor Pack archive",
+              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+              properties: ["openFile", "showHiddenFiles"]
+            }, EditorPackManager.install);
+          }
+        }) ),
         EditorPackManager.packs.map((pack, index) => {
           return build(pack, [
             'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
         }),
         // Markup Packs
-        m("header", "Markup Packs"),
+        m("header", "Markup Packs", m("button.new", {
+          onclick: () => {
+            dialog.showOpenDialog({
+              title: "Install Editor Pack archive",
+              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+              properties: ["openFile", "showHiddenFiles"]
+            }, EditorPackManager.install);
+          }
+        }) ),
         MarkupPackManager.packs.map((pack, index) => {
           return build(pack, [
             'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui
           ]);
         }),
         // Render Packs
-        m("header", "Render Packs"),
+        m("header", "Render Packs", m("button.new", {
+          onclick: () => {
+            dialog.showOpenDialog({
+              title: "Install Render Pack archive",
+              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+              properties: ["openFile", "showHiddenFiles"]
+            }, RenderPackManager.install);
+          }
+        })),
         RenderPackManager.packs.map((pack, index) => {
           return build(pack, [
             'article.disabled', ['header', pack.name, ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Not Yet Implemented', {onclick: () => {}}]], pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
           ]);
         }),
         // ExtensionPackManager
-        m("header", "Extensions"),
+        m("header", "Extensions", m("button.new", {
+          onclick: () => {
+            dialog.showOpenDialog({
+              title: "Install Render Pack archive",
+              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+              properties: ["openFile", "showHiddenFiles"]
+            }, RenderPackManager.install);
+          }
+        })),
         ExtensionPackManager.packs.map((extension, index) => {
           return build(extension, [
             'article', ['header', extension.name, ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null

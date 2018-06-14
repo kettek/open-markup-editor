@@ -172,6 +172,24 @@ function makePackManager(module_name, obj={}) {
         });
       }
       return mod;
+    },
+    install: files => {
+      if (!files || files.length == 0) return;
+      let file = files[0];
+      DataManager.unpackFile(file, module_name, (err, pack_path) => {
+        if (err) {
+          alert(err);
+        } else {
+          try {
+            mm.load(pack_path);
+            log.info("  ...OK");
+          } catch (e) {
+            log.warn("  ...NOKAY");
+            log.warn(e);
+          }
+          m.redraw();
+        }
+      });
     }
   }, obj));
   return mm;

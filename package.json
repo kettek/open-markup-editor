@@ -34,7 +34,8 @@
     "electron-is-dev": "^0.3.0",
     "electron-log": "^2.2.14",
     "mithril": "^1.1.6",
-    "submodules-install": "^1.0.0"
+    "submodules-install": "^1.0.0",
+    "tar": "^4.4.4"
   },
   "build": {
     "appId": "net.kettek.ome",
@@ -46,7 +47,10 @@
       "createDesktopShortcut": false
     },
     "win": {
-      "target": ["nsis", "zip"]
+      "target": [
+        "nsis",
+        "zip"
+      ]
     },
     "mac": {
       "category": "public.app-category.productivity",

@@ -3,6 +3,7 @@ const path      = require('path');
 const fs        = require('fs');
 const log       = require('electron-log');
 const Emitter   = require('./emitter');
+const tar       = require('tar');
 
 const DataManager = Emitter({
   paths: [
@@ -48,6 +49,41 @@ const DataManager = Emitter({
           on_finish(errors.length == total_paths ? errors : null);
         }
       });
+    });
+  },
+  unpackFile: (source, target, on_finish=()=>{}) => {
+    // FIXME: This is pretty ugly. Also we're not properly handling errors because node tar is weird.
+    let output_dir = path.join(DataManager.paths[DataManager.paths.length-1], target);
+    let package_type = 0;
+    let package_root = '';
+    tar.t({
+      file: source,
+      onentry: entry => {
+        if (package_type == 1) return;
+        if (entry.path == 'package.json') {
+          package_root = path.basename(source);
+          package_type = 1; // make dir
+        } else if (entry.path.match(/^[^\/]*\/package\.json/gi)) {
+          package_root = path.basename(path.dirname(entry.path));
+          package_type = 2; // contains dir
+        }
+      }
+    }, (err) => {
+      let output_path = path.join(output_dir, package_root);
+      function extract() {
+        tar.x({
+          file: source,
+          cwd: path.join(output_dir, package_type == 1 ? package_root : '')
+        }, (e) => {
+          on_finish(null, output_path);
+        });
+      }
+
+      if (package_type == 1) {
+        fs.mkdir(output_path, extract);
+      } else {
+        extract();
+      }
     });
   }
 });
