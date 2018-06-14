@@ -34,6 +34,7 @@
     "electron-is-dev": "^0.3.0",
     "electron-log": "^2.2.14",
     "mithril": "^1.1.6",
+    "rimraf": "^2.6.2",
     "submodules-install": "^1.0.0",
     "tar": "^4.4.4"
   },
