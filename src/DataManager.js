@@ -8,21 +8,22 @@ const tar       = require('tar');
 const DataManager = Emitter({
   paths: [
   ],
-  addPath: (path, pos=-1) => {
-    DataManager.paths.splice(pos, 0, path);
-    log.info("Added DataManager path: " + path);
+  addPath: (path_obj, pos=-1) => {
+    path_obj = Object.assign({path: "", writable: false}, path_obj);
+    DataManager.paths.splice(pos, 0, path_obj);
+    log.info("Added DataManager path: " + path_obj.path);
   },
   getFiles: (dir, on_finish=()=>{}) => {
     let parsed_paths  = 0;
     let total_paths   = DataManager.paths.length;
     let total_files   = [];
     let errors        = [];
-    DataManager.paths.forEach((dir_path, dir_i) => {
-      dir_path = path.join(dir_path, dir);
+    DataManager.paths.forEach((path_obj, path_i) => {
+      let dir_path = path.join(path_obj.path, dir);
       fs.readdir(dir_path, (err, files) => {
         parsed_paths++;
         if (err) {
-          errors[dir_i] = err;
+          errors[path_i] = err;
         } else {
           files.forEach((file, file_i) => {
             files[file_i] = path.join(dir_path, file);
@@ -35,12 +36,13 @@ const DataManager = Emitter({
       });
     });
   },
-  fileExists: (path, on_finish=()=>{}) => {
+  fileExists: (filepath, on_finish=()=>{}) => {
     let parsed_paths  = 0;
     let total_paths   = DataManager.paths.length;
     let errors        = [];
-    DataManager.paths.forEach((dir_path, dir_i) => {
-      fs.access(path.join(dir_path, path), fs.constants_F_OK, err => {
+    DataManager.paths.forEach((path_obj, path_i) => {
+      let dir_path = path.join(path_obj.path, filepath);
+      fs.access(dir_path, fs.constants_F_OK, err => {
         parsed_paths++;
         if (err) {
           errors.push(err);
@@ -53,7 +55,7 @@ const DataManager = Emitter({
   },
   unpackFile: (source, target, on_finish=()=>{}) => {
     // FIXME: This is pretty ugly. Also we're not properly handling errors because node tar is weird.
-    let output_dir = path.join(DataManager.paths[DataManager.paths.length-1], target);
+    let output_dir = path.join(DataManager.paths[DataManager.paths.length-1].path, target);
     let package_type = 0;
     let package_root = '';
     tar.t({

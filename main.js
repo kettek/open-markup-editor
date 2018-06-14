@@ -44,9 +44,21 @@ ipcRenderer.on('conf-show', (event, arg) => {
 });
 
 ipcRenderer.on('init', (event, arg) => {
-  DataManager.addPath(app.getPath('userData'), 0);  // User's data directory
-  DataManager.addPath(path.dirname(arg));           // Application's CWD (same as below if using npm start)
-  DataManager.addPath(__dirname);                   // main.js-relative directory
+  // Add directory relative to main.js
+  DataManager.addPath({
+    path: __dirname,
+    writable: false
+  });
+  // Add Application's CWD (same as above if using `npm start`)
+  DataManager.addPath({
+    path: path.dirname(arg),
+    writable: false
+  });
+  // Add User's data directory
+  DataManager.addPath({
+    path: app.getPath('userData'),
+    writable: true
+  }, -1);
   // TODO: some "init" event
   ExtensionPackManager.populate('extensions', () => {
     for (let i = 0; i < ExtensionPackManager.packs.length; i++) {

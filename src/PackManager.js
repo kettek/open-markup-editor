@@ -94,6 +94,7 @@ function makePackManager(module_name, obj={}) {
     create: filepath => {
       let mod = Emitter(Object.assign({
         short_name: path.basename(filepath),
+        filepath:   filepath,
         name:       '',
         key:        module_name+'.undefined',
         conf_ui:    [],
