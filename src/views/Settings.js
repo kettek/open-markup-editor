@@ -220,7 +220,17 @@ module.exports = {
         })),
         RenderPackManager.packs.map((pack, index) => {
           return build(pack, [
-            'article.disabled', ['header', pack.name, ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Not Yet Implemented', {onclick: () => {}}]], pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
+            'article', ['header', pack.name, 
+            (pack.read_only
+              ? ['button.disabled', 'Built-in']
+              : ['button', 'Uninstall', {
+                onclick: () => {
+                  RenderPackManager.uninstall(index);
+                }
+              }]
+            )
+            ],
+            pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
           ]);
         }),
         // ExtensionPackManager

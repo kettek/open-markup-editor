@@ -11,18 +11,18 @@ function makePackManager(module_name, obj={}) {
     packs: [],
     mod_replace_string: "",
     populate: (dir, on_finish=()=>{}) => {
-      DataManager.getFiles(dir, (errors, files) => {
-        files.forEach(file => {
-          log.info(" Loading " + file + "...");
+      DataManager.getFiles(dir, (errors, data_files) => {
+        data_files.forEach(data_file => {
+          log.info(" Loading " + data_file.fullpath + "...");
           try {
-            fs.accessSync(path.join(file, 'package.json'), fs.constants.F_OK);
+            fs.accessSync(path.join(data_file.fullpath, 'package.json'), fs.constants.F_OK);
           } catch (err) {
             log.warn("  ...ignoring, missing 'package.json'.");
             return;
           }
 
           try {
-            mm.load(file);
+            mm.load(data_file);
             log.info("  ...OK");
           } catch (e) {
             log.warn("  ...NOKAY");
@@ -32,20 +32,25 @@ function makePackManager(module_name, obj={}) {
         on_finish();
       });
     },
-    load: filepath => {
-      // TODO: full var parsing
-      let check = (/^\$`${mm.mod_replace_string}`(.*)/g).exec(filepath);
-      if (check) {
-        filepath = '../../'+module_name+'/' + check[1];
-      }
-
+    load: data_file => {
       try {
-        let extension = mm.create(filepath);
+        let extension = mm.create(data_file.fullpath);
+        console.log('WOW:');
+        console.log(data_file);
+        extension.read_only = DataManager.paths[DataManager.paths.map(o => o.path).indexOf(data_file.root)].writable ? false : true;
         mm.packs.push(extension);
         mm.emit('load', extension);
       } catch (e) {
         throw e;
       }
+    },
+    unload: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      let extension = mm.packs[index];
+      mm.disable(index);
+      mm.emit('unload', extension);
+      mm.packs.splice(index, 1);
+      m.redraw();
     },
     setup: index => {
       if (index < 0 || index >= mm.packs.length) return false;
@@ -189,6 +194,16 @@ function makePackManager(module_name, obj={}) {
             log.warn(e);
           }
           m.redraw();
+        }
+      });
+    },
+    uninstall: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      DataManager.deleteDirectory(mm.packs[index].filepath, err => {
+        if (err) {
+          alert(err);
+        } else {
+          mm.unload(index);
         }
       });
     }

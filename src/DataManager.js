@@ -4,6 +4,7 @@ const fs        = require('fs');
 const log       = require('electron-log');
 const Emitter   = require('./emitter');
 const tar       = require('tar');
+const rimraf    = require('rimraf');
 
 const DataManager = Emitter({
   paths: [
@@ -26,7 +27,7 @@ const DataManager = Emitter({
           errors[path_i] = err;
         } else {
           files.forEach((file, file_i) => {
-            files[file_i] = path.join(dir_path, file);
+            files[file_i] = { root: path_obj.path, path: file, fullpath: path.join(dir_path, file) };
           });
           total_files = total_files.concat(files);
         }
@@ -55,7 +56,8 @@ const DataManager = Emitter({
   },
   unpackFile: (source, target, on_finish=()=>{}) => {
     // FIXME: This is pretty ugly. Also we're not properly handling errors because node tar is weird.
-    let output_dir = path.join(DataManager.paths[DataManager.paths.length-1].path, target);
+    let output_dir = path.join(DataManager.paths[0].path, target);
+    console.log(DataManager.paths);
     let package_type = 0;
     let package_root = '';
     tar.t({
@@ -77,7 +79,7 @@ const DataManager = Emitter({
           file: source,
           cwd: path.join(output_dir, package_type == 1 ? package_root : '')
         }, (e) => {
-          on_finish(null, output_path);
+          on_finish(null, { root: DataManager.paths[0].path, path: package_root, fullpath: output_path });
         });
       }
 
@@ -86,6 +88,21 @@ const DataManager = Emitter({
       } else {
         extract();
       }
+    });
+  },
+  constrained: (filepath, has_write_access) => {
+    return DataManager.paths.map(p => {
+      let index = filepath.lastIndexOf(p.path, 0);
+      if (index === 0 && (has_write_access == 'undefined' || has_write_access == p.writable)) {
+        return filepath;
+      }
+      return null;
+    }).filter(o => o !== null);
+  },
+  deleteDirectory: (target, on_finish=()=>{}) => {
+    DataManager.constrained(target, true).forEach(file => {
+      console.log('delete ' + file);
+      rimraf(file, on_finish);
     });
   }
 });

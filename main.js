@@ -58,7 +58,7 @@ ipcRenderer.on('init', (event, arg) => {
   DataManager.addPath({
     path: app.getPath('userData'),
     writable: true
-  }, -1);
+  }, 0);
   // TODO: some "init" event
   ExtensionPackManager.populate('extensions', () => {
     for (let i = 0; i < ExtensionPackManager.packs.length; i++) {
