@@ -6,8 +6,8 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
+    "pack": "gulp run && electron-builder --dir",
+    "dist": "gulp run && electron-builder",
     "postinstall": "electron-builder install-app-deps && submodules-install"
   },
   "submodules": [
@@ -27,7 +27,9 @@
   "license": "GPL-3.0",
   "devDependencies": {
     "electron": "^1.8.6",
-    "electron-builder": "^20.13.3"
+    "electron-builder": "^20.13.3",
+    "gulp": "^3.9.1",
+    "gulp-to-ico": "^1.0.0"
   },
   "dependencies": {
     "electron-app-settings": "^1.0.1",
