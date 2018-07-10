@@ -27,6 +27,9 @@ ipcRenderer.on('file-new', (event, arg) => {
 ipcRenderer.on('file-open', (event, arg) => {
   Files.loadFile(arg);
 });
+ipcRenderer.on('file-import', (event, arg) => {
+  Files.importFile(arg);
+});
 ipcRenderer.on('file-save', (event, arg) => {
   Files.saveFile(arg, false);
 });

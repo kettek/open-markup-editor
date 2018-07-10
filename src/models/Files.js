@@ -144,6 +144,22 @@ let Files = Emitter({
       });
     }
   },
+  importFile: filepath => {
+    let index = Files.focused;
+    // Load a new file if we have no file currently open.
+    if (!Files.validateFileEntry(index)) {
+      Files.loadFile(filepath);
+      return;
+    }
+    fs.readFile(filepath, 'utf-8', (err, data) => {
+      if (err) {
+        console.log(err.message);
+        return;
+      }
+      Files.emit('file-import', index, data);
+      Files.checkState();
+    });
+  },
   loadFile: filepath => {
     fs.readFile(filepath, 'utf-8', (err, data) => {
       if (err) {

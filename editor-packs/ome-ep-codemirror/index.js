@@ -136,6 +136,12 @@ module.exports = {
       // Set document data at position in editor list
       pack.files[index].doc.setValue(content);
     });
+    pack.on('doc-insert', (index=pack.focused, content) => {
+      if (index < 0 || index > pack.files.length-1) return;
+      // Insert new document data at cursor
+      let selection = pack.files[index].doc.getSelection();
+      pack.files[index].doc.replaceSelection(content, selection);
+    });
     pack.on('doc-focus', (index=pack.focused) => {
       if (index < 0 || index >= pack.files.length) return;
       // Hide old focus and bring target document into focus

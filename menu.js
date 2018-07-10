@@ -53,6 +53,21 @@ function getMenuTemplate () {
           type: 'separator'
         },
         {
+          label: 'Import...',
+          accelerator: 'CmdOrCtrl+I',
+          click: () => {dialog.showOpenDialog(windows.list[windows.MAIN_WINDOW], {
+            properties: ['openFile', 'multiSelections']},
+            (fileNames) => {
+              if (fileNames === undefined) return;
+              for (let i = 0; i < fileNames.length; i++) {
+                windows.list[windows.MAIN_WINDOW].webContents.send('file-import', fileNames[i]);
+              }
+          })}
+        },
+        {
+          type: 'separator'
+        },
+        {
           label: 'Save...',
           accelerator: 'CmdOrCtrl+S',
           click: () => {
