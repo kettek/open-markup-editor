@@ -51,6 +51,14 @@ const defined_elements = {
       value: 'value'
     }
   },
+  'number': {
+    tag: 'input[size=5][type=number]',
+    events: ['change'],
+    map: {
+      key: 'id',
+      value: 'value'
+    }
+  },
   'hex': {
     tag: 'input[size=5][type=text]',
     events: ['change'],

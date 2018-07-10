@@ -285,7 +285,7 @@ section.settings > article {
   padding: .125em;
   color: var(--p-fg);
 }
-section.settings input[type=text], section.settings select {
+section.settings input[type=text], section.settings select, section.settings input[type=number] {
   padding: .25em;
 }
 article > header {

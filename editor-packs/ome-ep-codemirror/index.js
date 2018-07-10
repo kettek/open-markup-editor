@@ -23,7 +23,9 @@ module.exports = {
       'theme_index': 25,
       'theme': 'material',
       'keymap_index': 0,
-      'keymap': 'default'
+      'keymap': 'default',
+      'use_tabs': false,
+			'indent_size': 2
     }, [
       ['section', {title: "The theme used by CodeMirror"},
         ['select', '', 'theme_index', {
@@ -53,6 +55,26 @@ module.exports = {
         }],
         ['label', 'Key map', 'keymap_index']
       ],
+      ['section', {title: "Whether to use spaces or tabs for the Tab key"},
+        ['checkbox', '', 'use_tabs', {
+            'onchange': (e) => {
+              pack.set('use_tabs', e.target.checked);
+            }
+          }
+        ],
+        ['label', 'Use tabs', 'use_tabs']
+      ],
+      ['section', {title: "Indentation size, whether spaces or tabs"},
+        ['number', '', 'indent_size', {
+            'min': 1,
+            'max': 16,
+            'onchange': (e) => {
+              pack.set('indent_size', Number(e.target.value));
+            }
+          }
+        ],
+        ['label', 'Indentation Size', 'indent_size']
+      ]
     ]);
 
     pack.theme = pack.get('theme');
@@ -121,6 +143,23 @@ module.exports = {
         });
         pack.cm.on("viewportChange", (cm, from, to) => {
         });
+        pack.cm.addKeyMap({
+					Tab: (cm) => {
+	          if (cm.somethingSelected()) {
+	            cm.indentSelection("add");
+	            return;
+	          }
+	
+	          if (pack.get('use_tabs') == true) {
+	            cm.replaceSelection("\t", "end", "+input");
+	          } else {
+	            cm.execCommand("insertSoftTab");
+						}
+	        },
+	        "Shift-Tab": (cm) => {
+	          cm.indentSelection("subtract");
+	        }
+        });
       }
     });
     pack.on('dom-detach', (dom) => {
@@ -174,6 +213,12 @@ module.exports = {
       }
       if (key === 'keymap') {
         loadKeymap(value);
+      }
+      if (key === 'use_tabs') {
+        pack.cm.setOption('indentWithTabs', value);
+      }
+      if (key === 'indent_size') {
+        pack.cm.setOption('tabSize', value);
       }
     });
   }
