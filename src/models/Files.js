@@ -72,10 +72,11 @@ let Files = Emitter({
     return Files.loadedFiles[index].name.split('.').pop();
   },
   setFileFocus: (index) => {
-    if (index == Files.focused) return;
-    if (!Files.validateFileEntry(index)) return;
+    if (index == Files.focused) return index;
+    if (!Files.validateFileEntry(index)) return -1;
     Files.focused = index;
     Files.should_redraw = true;
+    return Files.focused;
   },
   setFileSaved: (index, value) => {
     if (!Files.validateFileEntry(index)) return false;
@@ -146,17 +147,21 @@ let Files = Emitter({
   },
   importFile: filepath => {
     let index = Files.focused;
-    // Load a new file if we have no file currently open.
-    if (!Files.validateFileEntry(index)) {
-      Files.loadFile(filepath);
-      return;
-    }
     fs.readFile(filepath, 'utf-8', (err, data) => {
       if (err) {
         console.log(err.message);
         return;
       }
-      Files.emit('file-import', index, data);
+      // Create a blank file if there is no valid file open.
+      if (!Files.validateFileEntry(index)) {
+        Files.loadedFiles.push(
+          Files.buildFileEntry({name: "Untitled.md", text: data, saved: false})
+        );
+        index = Files.setFileFocus(Files.loadedFiles.length-1);
+        Files.emit("file-load", Files.loadedFiles.length-1);
+      } else {
+        Files.emit('file-import', index, data);
+      }
       Files.checkState();
     });
   },
