@@ -30,6 +30,7 @@
     "electron-builder": "^20.13.3"
   },
   "dependencies": {
+    "cryptiles": "^4.1.2",
     "electron-app-settings": "^1.0.1",
     "electron-is-dev": "^0.3.0",
     "electron-log": "^2.2.14",
