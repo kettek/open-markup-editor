@@ -90,6 +90,21 @@ ipcRenderer.on('init', (event, arg) => {
   ipcRenderer.send('ready-to-run');
 });
 
+// Drag and Drop support
+document.body.addEventListener('dragover', (ev) => {
+  ev.stopPropagation();
+  ev.preventDefault();
+  ev.dataTransfer.dropEffect = 'copy';
+});
+document.body.addEventListener('drop', (ev) => {
+  ev.stopPropagation();
+  ev.preventDefault();
+  for (let f of ev.dataTransfer.files) {
+    Files.loadFile(f.path);
+  }
+  return false;
+});
+
 let MainView = require('./src/views/Main');
 
 m.route(document.body, "/", {
