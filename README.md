@@ -1,5 +1,7 @@
-# Open Markup Editor
+# ![](build/background.png =32x32) Open Markup Editor
 An okay markup editor designed for multiple markup languages and fully customizable HTML rendering.
+
+![Open Markup Editor in action!](screenshot.png)
 
 More to be added soon!
 
@@ -327,4 +329,4 @@ editor.emit('css-unload', path.join(__dirname, 'my_css.css'));
 
 ----
  
-... this document happily written in Open Markup Editor. :)
+... this document happily written in Open Markup Editor. ![:)](build/icons/16x16.png)
