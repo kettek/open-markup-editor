@@ -68,8 +68,7 @@
     "win": {
       "target": [
         { "target": "nsis" },
-        { "target": "portable" },
-        { "target": "zip" }
+        { "target": "portable" }
       ]
     },
     "nsis": {
