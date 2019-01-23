@@ -54,7 +54,7 @@ ipcRenderer.on('init', (event, arg) => {
   });
   // Add Application's CWD/packs (same as above if using `npm start`)
   DataManager.addPath({
-    path: path.join(path.dirname(arg), 'packs'),
+    path: path.join(path.dirname(arg), (process.platform == 'darwin' ? '..' : ''), 'packs'),
     writable: false
   });
   // Add User's data directory
