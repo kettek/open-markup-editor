@@ -1,0 +1,480 @@
+@import "../fonts/mplus-2c.css";
+
+:root {
+  --s: #0277bd;
+  --s-light: #58a5f0;
+  --s-dark: #004c8c;
+  --s-fg: #261312;
+  --s-dark-fg: #f4e9ea;
+  --s-light-fg: #261312;
+
+  --p: #212121;
+  --p-fg: #fbfbfb;
+  --p-light: #484848;
+  --p-light-fg: #fbfbfb;
+  --p-dark: #000;
+  --p-dark-fg: #fbfbfb;
+
+  --font-family: "M+ C Type-2 (basic latin)";
+}
+
+html, body { width: 100%; height: 100%; }
+body { 
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family);
+  background-color: var(--p);
+  color: var(--p-light-fg);
+}
+* { box-sizing: border-box }
+
+.tabs {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: .25em;
+  font-size: 10pt;
+  overflow: hidden;
+}
+
+.view-window section {
+}
+
+section {
+  position: relative;
+}
+section.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+section.view-window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+/*  animation: slideFromLeft 0.5s, fadeIn 0.5s;
+  animation-fill-mode: forwards;*/
+  display: flex;
+  padding: .1em 0;
+  background-color: var(--p);
+}
+section.view-window.closeElement {
+  animation: slideToLeft 0.5s, fadeOut 0.5s;
+}
+
+.view-window.focused {
+/*  display: flex;*/
+}
+
+.welcome {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 1px 0;
+  border-color: var(--s);
+  background-color: var(--p);
+  color: var(--p-fg);
+  font-size: 3vw;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 1px 1px 1px 0;
+  border-color: var(--s);
+  border-radius: 0 3px 3px 0;
+  display: flex;
+}
+
+.editor-wrapper {
+  flex: 1 1 auto;
+  width:100%;
+  height: 100%;
+  position: relative;
+}
+
+.editor-wrapper > * {
+  position: absolute !important;
+  height: auto !important;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 0 3px 3px 0;
+}
+
+.preview {
+  flex: 1;
+  background-color: #eee;
+  border-radius: 3px 0 0 3px;
+  border-style: solid;
+  border-width: 1px 0 1px  1px;
+  border-color: var(--s);
+  display: flex;
+}
+.preview browser-view {
+  flex: 1;
+  border-radius: 3px 0 0 3px;
+}
+
+.splitter {
+  width: 4px;
+  cursor: col-resize;
+  border-style: solid;
+  border-width: 0 1px;
+  border-color: var(--p);
+  border-radius: 100px;
+}
+.splitter:hover {
+  border-width: 0 1px;
+  border-color: var(--p-dark);
+  background-color: var(--p-dark);
+}
+
+nav {
+  background-color: var(--p);
+}
+
+.tab {
+  position: relative;
+  margin: 0 .25em;
+  background-color: var(--p);
+  color: var(--s-dark);
+  cursor: pointer;
+}
+.tab.focused {
+  color: var(--s-light);
+}
+span.unsaved:after {
+  content: '*';
+}
+.tab:after {
+  content: '';
+  display: block;
+  position: absolute; bottom: 0;
+  left: 50%;
+  width: 0%;
+  height: 5%;
+  background-color: var(--s-dark);
+  transition: .2s all;
+}
+.tab.focused:after {
+  left: 0%;
+  width: 100%;
+  background-color: var(--s-light);
+}
+.tab:not(.focused):hover {
+  color: var(--s);
+}
+
+.focused > .close:before {
+  color: var(--s-light);
+}
+button {
+  cursor: pointer;
+  background-color: var(--s);
+  color: var(--s-fg);
+  border: 0;
+  border-radius: 3px;
+  margin: .5em;
+  position: relative;
+  outline: none;
+  transition: .2s all;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button:before {
+  position: absolute;
+  line-height: 100%;
+  transition: .2s all;
+  color: var(--s);
+}
+button.close {
+  width: 1em;
+  height: 1em;
+}
+.tab > button {
+  margin: 0 0 0 .5em;
+}
+.close:before {
+  content: '✖';
+  color: var(--s-dark);
+}
+.close:hover:before {
+  color: var(--s-dark-fg);
+}
+button.new {
+  width: 1em;
+  height: 1em;
+  margin: 0;
+}
+.new {
+  font-size: 13pt;
+  margin: 0;
+  background-color: transparent;
+}
+.new:hover {
+  background-color: transparent;
+}
+.new:before {
+  content: '✚';
+}
+button:hover {
+  background-color: var(--s-light);
+  color: var(--s-dark-fg);
+}
+button:hover:before {
+  color: var(--s-dark-fg);
+}
+
+.tab.settings {
+  margin-left: auto;
+}
+button.settings:before {
+  content: '⚙';
+}
+button.settings {
+  width: 1em;
+  height: 1em;
+  font-size: 14pt;
+  margin: 0;
+  background-color: transparent;
+}
+button.settings:hover {
+  background-color: transparent;
+}
+section.settings {
+  position: absolute;
+  z-index: 1000;
+  left: 100%;
+  top: 0;
+  padding: 0 15vw;
+  min-width: 30em;
+  width: 100%;
+  height: 100%;
+  background: var(--p-dark);
+  overflow: auto;
+  border-color: var(--s);
+  border-style: solid;
+  border-width: 1px 0;
+}
+section.settings > header {
+  margin: .5em .5em 0 .25em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 200%;
+}
+section.settings > article {
+  position: relative;
+  padding: .125em;
+  color: var(--p-fg);
+}
+section.settings input[type=text], section.settings select, section.settings input[type=number] {
+  padding: .25em;
+}
+article > header {
+  margin: 0 .5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+*[disabled], .disabled {
+  cursor: no-drop;
+  opacity: 0.25;
+}
+
+section.disabled:after, article.disabled:after, section[disabled]:after, article[disabled]:after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+}
+
+section.settings section {
+  display: flex;
+  align-items: center;
+  margin: 0 .75em;
+  padding: 0 .25em;
+}
+section.settings button.reset {
+  margin-left: auto;
+}
+section.settings button.disable {
+  border: 1px solid #a22;
+}
+section.settings button.enable {
+  border: 1px solid #2a2;
+}
+
+footer {
+  user-select: none;
+  font-size: 75%;
+  background-color: var(--p);
+  color: var(--p-fg);
+  padding: 0.25em;
+  display: flex;
+  align-items: center;
+}
+
+footer > * {
+  flex: 1;
+}
+footer > span {
+  display: flex;
+  align-items: center;
+}
+
+label {
+  padding: 0 .25em;
+}
+
+input, select {
+  margin: .25em;
+  border: 0;
+  border-radius: 3px;
+}
+/* checkbox */
+input[type=checkbox] {
+  -webkit-appearance: none;
+  background-color: var(--s);
+  margin: 0;
+  border: 0;
+  border-radius: 3px;
+  width: 1em;
+  height: 1em;
+  position: relative;
+  transition: .3s all;
+}
+input[type=checkbox] + label {
+  color: var(--s);
+}
+input[type=checkbox]:checked {
+  background-color: var(--s);
+}
+input[type=checkbox]:checked + label {
+  color: var(--s);
+}
+
+input[type=checkbox]:disabled {
+  background-color: var(--s-dark);
+}
+
+input[type=checkbox]:disabled + label {
+  color: var(--p-dark);
+}
+
+input[type=checkbox]:after, input[type=checkbox]:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0; height: 0;
+  background-color: var(--s-dark-fg);
+  transition: .2s all;
+}
+input[type=checkbox]:checked:after {
+  top: 45%;
+  left: 10%;
+  width: 45%;
+  height: 20%;
+  transform: rotate(45deg);
+}
+input[type=checkbox]:checked:before {
+  top: 30%;
+  left: 30%;
+  width: 70%;
+  height: 20%;
+  transform: rotate(-45deg);
+}
+
+input[type=checkbox]:not(:disabled):hover {
+  background-color: var(--s-light);
+}
+input[type=checkbox]:not(:disabled):hover + label {
+  color: var(--s-light);
+}
+
+/* animation hoopla */
+@keyframes slideToLeft {
+  100% {
+    left: -100%;
+  }
+}
+@keyframes slideFromLeft {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 0%;
+  }
+}
+
+@keyframes slideFromRight {
+  0% {
+    left: 100%;
+  }
+  100% {
+    left: 0%;
+  }
+}
+@keyframes slideToRight {
+  0% {
+    left: 0%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1.0;
+  }
+}
+@keyframes fadeOut {
+  0% {
+    opacity: 1.0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+listbuilder {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+listbuilder select {
+  flex: 1;
+}
+
+section.closeElement {
+  animation: slideToRight 0.5s, fadeOut 0.5s;
+}

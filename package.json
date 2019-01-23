@@ -1,20 +1,22 @@
 {
   "name": "open-markup-editor",
-  "version": "1.0.0",
+  "productName": "Open Markup Editor",
+  "copyright": "Copyright 2018-2019 ${author}",
+  "version": "2.0.0",
   "description": "Pluggable markup editor",
-  "main": "app.js",
+  "main": "./app/main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "submodules-install",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "postinstall": "electron-builder install-app-deps && submodules-install"
+    "dist": "electron-builder"
   },
   "submodules": [
-    "render-packs/*",
-    "editor-packs/*",
-    "markup-packs/*",
-    "extensions/*"
+    "packs/render-packs/*",
+    "packs/editor-packs/*",
+    "packs/markup-packs/*",
+    "packs/extension-packs/*"
   ],
   "keywords": [
     "markup",
@@ -23,40 +25,63 @@
     "plugins",
     "pluggable"
   ],
-  "author": "kts of kettek",
+  "author": "Ketchetwahmeegwun T. Southall <kts@kettek.net> (https://kettek.net/)",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^1.8.8",
-    "electron-builder": "^20.13.3"
+    "electron": "^4.0.2",
+    "electron-builder": "^20.38.5",
+    "submodules-install": "^1.0.1"
   },
   "dependencies": {
-    "cryptiles": "^4.1.2",
+    "bezier-easing": "^2.1.0",
+    "cryptiles": "^4.1.3",
     "electron-app-settings": "^1.0.1",
-    "electron-is-dev": "^0.3.0",
-    "electron-log": "^2.2.14",
+    "electron-is-dev": "^1.0.1",
+    "electron-log": "^2.2.17",
     "mithril": "^1.1.6",
-    "rimraf": "^2.6.2",
-    "submodules-install": "^1.0.0",
-    "tar": "^4.4.4"
+    "rimraf": "^2.6.3",
+    "tar": "^4.4.8"
   },
   "build": {
-    "appId": "net.kettek.ome",
-    "productName": "Open Markup Editor",
-    "copyright": "Copyright © 2018 Ketchetwahmeegwun T. Southall",
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": false
+    "files": [
+      "node_modules",
+      "app"
+    ],
+    "extraFiles": [
+      "packs/**/*"
+    ],
+    "appId": "net.kettek.OpenMarkupEditor",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        { "target": "dmg" },
+        { "target": "zip" }
+      ]
+    },
+    "linux": {
+      "category": "Office",
+      "target": [
+        { "target": "AppImage" },
+        { "target": "tar.xz" }
+      ]
     },
     "win": {
       "target": [
-        "nsis",
-        "zip"
+        { "target": "nsis" },
+        { "target": "portable" },
+        { "target": "zip" }
       ]
     },
-    "mac": {
-      "category": "public.app-category.productivity",
-      "target": "dmg"
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "fileAssociations": {
+      "ext": "md",
+      "description": "Markdown",
+      "mimeType": "text/markdown",
+      "role": "Editor"
     }
   }
 }
