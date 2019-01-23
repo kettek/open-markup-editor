@@ -1,4 +1,4 @@
-# ![](build/background.png =32x32) Open Markup Editor
+# ![OME owl](build/background.png =32x32) Open Markup Editor
 An okay markup editor designed for multiple markup languages and fully customizable HTML rendering.
 
 ![Open Markup Editor in action!](screenshot.png)
