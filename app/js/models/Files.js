@@ -11,6 +11,12 @@ const main_window = require('electron').remote.getCurrentWindow()
 let Files = Emitter({
   focused: 0,
   should_redraw: true,
+  // Whether or not files are caching data rather than loading into the app. Can be released with releaseCache() or blocked with engageCache().
+  caching: true,
+  // Cached files for storing loading files when the app has not finished loading. Format is the result of buildFileEntry.
+  cachedFiles: [
+  ],
+  // In-memory files
   loadedFiles: [
   ],
   validateFileEntry: (index) => {
@@ -171,10 +177,14 @@ let Files = Emitter({
         console.log(err.message);
         return;
       }
-      Files.loadedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
-      Files.setFileFocus(Files.loadedFiles.length-1);
-      Files.emit("file-load", Files.loadedFiles.length-1);
-      Files.checkState();
+      if (Files.isCaching()) {
+        Files.cachedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
+      } else {
+        Files.loadedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
+        Files.setFileFocus(Files.loadedFiles.length-1);
+        Files.emit("file-load", Files.loadedFiles.length-1);
+        Files.checkState();
+      }
     });
   },
   newFile: () => {
@@ -206,6 +216,22 @@ let Files = Emitter({
       current_line: 0,
       is_dirty: true
     }, obj);
+  },
+  releaseCache: () => {
+    Files.caching = false;
+    for (let i = 0; i < Files.cachedFiles.length; i++) {
+      Files.loadedFiles.push(Files.cachedFiles[i]);
+      Files.setFileFocus(Files.loadedFiles.length-1);
+      Files.emit("file-load", Files.loadedFiles.length-1);
+    }
+    Files.cachedFiles = []
+    Files.checkState();
+  },
+  engageCache: () => {
+    Files.caching = true;
+  },
+  isCaching: () => {
+    return Files.caching;
   }
 })
 

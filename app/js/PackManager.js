@@ -9,37 +9,48 @@ const Emitter     = require('./emitter');
 function makePackManager(module_name, obj={}) {
   let mm = Emitter(Object.assign({
     packs: [],
+    // Packs that are pending loading. For each pack detected by populate, a number is added to this. For each pack that finishes loading, successfully or not, this number is decreased. When it reaches 0, "populated" is emitted.
+    pending_packs: 0,
+    reducePendingPacks: (on_finish) => {
+      mm.pending_packs = mm.pending_packs - 1;
+      if (mm.pending_packs <= 0) {
+        on_finish();
+      }
+    },
     mod_replace_string: "",
     populate: (dir, on_finish=()=>{}) => {
       DataManager.getFiles(dir, (errors, data_files) => {
+        mm.pending_packs += data_files.length
         data_files.forEach(data_file => {
           log.info(" Loading " + data_file.fullpath + "...");
           try {
             fs.accessSync(path.join(data_file.fullpath, 'package.json'), fs.constants.F_OK);
           } catch (err) {
             log.warn("  ...ignoring, missing 'package.json'.");
+            mm.reducePendingPacks(on_finish);
             return;
           }
 
           try {
-            mm.load(data_file);
+            mm.load(data_file, () => {
+              mm.reducePendingPacks(on_finish);
+            });
             log.info("  ...OK");
           } catch (e) {
+            mm.reducePendingPacks(on_finish);
             log.warn("  ...NOKAY");
             log.warn(e);
           }
         });
-        on_finish();
       });
     },
-    load: data_file => {
+    load: (data_file, on_packload=()=>{}) => {
       try {
         let extension = mm.create(data_file.fullpath);
-        console.log('WOW:');
-        console.log(data_file);
         extension.read_only = DataManager.paths[DataManager.paths.map(o => o.path).indexOf(data_file.root)].writable ? false : true;
         mm.packs.push(extension);
         mm.emit('load', extension);
+        on_packload(extension)
       } catch (e) {
         throw e;
       }

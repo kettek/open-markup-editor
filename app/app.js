@@ -62,7 +62,15 @@ ipcRenderer.on('init', (event, arg) => {
     path: app.getPath('userData'),
     writable: true
   }, 0);
-  // TODO: some "init" event
+  // Load in our packs and signal that we are ready to run when all are done loading.
+  let pending_packs = 4;
+  let isDone = () => {
+    pending_packs -= 1
+    if (pending_packs == 0) {
+      Files.releaseCache();
+      ipcRenderer.send('ready-to-run');
+    }
+  }
   ExtensionPackManager.populate('extension-packs', () => {
     for (let i = 0; i < ExtensionPackManager.packs.length; i++) {
       ExtensionPackManager.setup(i);
@@ -70,6 +78,7 @@ ipcRenderer.on('init', (event, arg) => {
         ExtensionPackManager.enable(i);
       }
     }
+    isDone();
   });
   EditorModuleManager.populate('editor-packs', () => {
     for (let i = 0; i < EditorModuleManager.packs.length; i++) {
@@ -77,6 +86,7 @@ ipcRenderer.on('init', (event, arg) => {
         EditorModuleManager.enable(i);
       }
     }
+    isDone();
   });
   MarkupPackManager.populate('markup-packs', () => {
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
@@ -84,10 +94,11 @@ ipcRenderer.on('init', (event, arg) => {
         MarkupPackManager.enable(i);
       }
     }
+    isDone();
   });
   RenderPackManager.populate('render-packs', () => {
+    isDone();
   });
-  ipcRenderer.send('ready-to-run');
 });
 
 // Drag and Drop support
