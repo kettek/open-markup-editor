@@ -166,8 +166,8 @@ let Files = Emitter({
     });
   },
   loadFile: filepath => {
-    fs.readFile(filepath, 'utf-8', (err, data) => {
-      if (err) {
+    fs.readFile(filepath, 'utf-8', (err, data="") => {
+      if (err && err.code != "ENOENT") {
         console.log(err.message);
         return;
       }
