@@ -1,7 +1,7 @@
 # Packs
 Open Markup Editor uses NPM modules referred to as **packs** for its main method to provide functionality for editing, parsing, rendering, and otherwise.
 
-All packs are located in the `packs` subdirectory in any of the paths documented in [Idiosyncrasies: Data Paths](idiosyncrasies#data-paths).
+All packs are located in the `packs` subdirectory in any of the paths documented in [Idiosyncrasies: Data Paths](idiosyncrasies.md#data-paths).
 
 Each pack type is listed [here](#pack-types).
 
@@ -49,21 +49,21 @@ Markup packs provide the functionality and configuration for rendering the raw t
 
 They are located in the `markup-packs` directory.
 
-See [Markup Packs](markup-packs) for additional information.
+See [Markup Packs](markup-packs.md) for additional information.
 
 ### Render Packs
 Render packs provide the rendering context of text parsed by a markup pack. These provide the right-hand "preview" rendering of markup in the application.
 
 They are located in the `render-packs` directory.
 
-See [Render Packs](render-packs) for additional information.
+See [Render Packs](render-packs.md) for additional information.
 
 ### Editor Packs
 Editor packs provide the editing context and controls of text read from a file. These provide the left-hand "editor" view of raw markup in the application.
 
 They are located in the `editor-packs` directory.
 
-See [Editor Packs](editor-packs) for additional information.
+See [Editor Packs](editor-packs.md) for additional information.
 
 ## Pack Methods
 All pack instances have access to the following methods.

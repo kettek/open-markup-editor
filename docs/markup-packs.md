@@ -1,5 +1,5 @@
 # Markup Packs
-See [Packs](packs) for more information on general pack structure.
+See [Packs](packs.md) for more information on general pack structure.
 
 ## Module Export
 The module should also export `supports` and `setup`.
@@ -79,7 +79,7 @@ Ex.
 ```
 
 ##### uiConf
-The `uiConf` argument should be a structured array that adheres to the [OME-UI](OME-UI) declarative syntax.
+The `uiConf` argument should be a structured array that adheres to the [Configuration System UI](idiosyncrasies.md#ui) declarative syntax.
 
 Ex.
 ```
