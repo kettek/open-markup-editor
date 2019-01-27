@@ -1,8 +1,8 @@
 # Render Packs
-Render packs provide the right-hand HTML preview of the markup language.
+Render packs provide the right-hand HTML preview of OME.
 
 ## Directory Hierarchy
-In addition to the standard `package.json` and `index.js`, a render pack must also have an HTML file and a special preload JavaScript file. These are defined in the main pack export object in `index.js`
+In addition to the standard pack structure, a render pack must also have an HTML file and a special preload JavaScript file. These are defined in the main pack object provided by the main module script.
 
 ## Module Export
 The module should also export `targets`, `preload`, and `preview`.
@@ -33,7 +33,7 @@ A string that defines the location of the preview HTML. A sane default is `__dir
 See [Preview HTML](#preview-html).
 
 ## Preload Script
-The preload script is what sets up the interaction between OME and the live HTML preview. 
+The preload script is what sets up the interaction between the editor and the live HTML preview. 
 
 Exposed in the global space is the `ome` object which is used to set up the interactions between OME and the web page.
 
@@ -81,7 +81,7 @@ The `filepath` event is emitted when OME wishes for the render pack to be aware 
 The `line` event is emitted when OME wishes for the render pack to scroll to a given line in the document. This line corresponds to the line in the source editor. The render pack and the markup pack must be written to use the same method for identifying line-to-element synchronization.
 
 ## Preview HTML
-The preview HTML is the template that the [preload script](#preload-script) updates to synchronize with OME.
+The preview HTML is the template that the [preload script](#preload-script) updates to synchronize with the editor.
 
 A basic document, presuming no external styling, would be:
 

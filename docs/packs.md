@@ -1,17 +1,21 @@
 # Packs
-Open Markup Editor uses `pack`s  as its main method to provide functionality for editing, parsing, rendering, and otherwise. Each type is listed [here](#pack-types).
+Open Markup Editor uses NPM modules referred to as **packs** for its main method to provide functionality for editing, parsing, rendering, and otherwise.
+
+All packs are located in the `packs` subdirectory in any of the paths documented in [Idiosyncrasies: Data Paths](idiosyncrasies#data-paths).
+
+Each pack type is listed [here](#pack-types).
 
 ## Structure
 Although the different pack types require specific properties, each type follows the following structuring.
 
 ### Directory Hierarchy
+The directory structure of a markup pack consists of, at minimum, a `package.json` file and an accompanying **main** JavaScript file as defined by `package.json` or the default of `index.js`.
+
 ```
 my_module/
     index.js
     package.json
 ```
-
-The directory structure of a markup pack consists of, at minimum, a `package.json` file and an accompanying **main** JavaScript file as defined by `package.json` or the default of `index.js`.
 
 #### package.json
 `package.json` is as per any other NPM module. The module naming scheme for markup packs is:
@@ -25,17 +29,12 @@ Type should be:
   * **ep** for editor packs
 
 ### index.js
-Your main file, which may or may not be named `index.js`, must export an object correspond to the following skeleton structure:
+Your main file, which may or may not be named `index.js`, must export an object that contains the following properties.
 
 | Property  | Type   | Notes | Description
 |-|-|-|-
 | name      | String |  | The "pretty" name of the pack, used for the heading of the configuration section UI.
 | setup     | function(packInstance) | optional | A function that recieves an instance of the pack. Used to setup callbacks, emitters, and configuration.
-
-    module.exports = {
-        name: 'my markup pack',
-        ...
-    }
 
 Each type of pack requires different properties, each of which is explained in the pack's corresponding section.
 
@@ -43,7 +42,7 @@ Each type of pack requires different properties, each of which is explained in t
 ### Extension Packs
 Extension packs are the most generic type of pack. They provide extended functionality for the entirity of OME, such as styling the interface or otherwise.
 
-They are located in in the `extension-packs` directory in any of the possible locations of OME data. See [OME](ome) for more information on these locations.
+They are located in in the `extension-packs` directory.
 
 ### Markup Packs
 Markup packs provide the functionality and configuration for rendering the raw text of an open file into HTML output.
@@ -66,24 +65,6 @@ They are located in the `editor-packs` directory.
 
 See [Editor Packs](editor-packs) for additional information.
 
-## Pack Listening Events
-For any pack that has a `setup(packInstance)` stage, the following events can be hooked into and used by the packInstance.
-
-### `global-conf-set`
-If a pack provides a listener to the `global-conf-set`, any configuration change will be reported to the packInstance with the following arguments:
-
-| Argument  | Name      | Type   | Description 
-|-----------|-----------|--------|-------------
-| 1         | key       | String | The updated key in the global configuration.
-| 2         | value     | Any    | The new value.
-| 3         | isDefault | Bool   | Whether or not the value is the default value.
-
-## Pack Emitting Events
-Any pack can emit the following events via the `emit(eventname, ...)` method.
-
-### `redraw`
-Causes OME to redraw the entire interface.
-
 ## Pack Methods
 All pack instances have access to the following methods.
 
@@ -99,7 +80,7 @@ Removes listening for a given event and callback.
 ### `conf(packConf, uiConf)`
 Sets up the pack's configuration and configuration UI.
 
-TODO
+See [Idiosyncrasies: Configuration System](idiosyncrasies#configuration-system) for information on the packConf and uiConf options.
  
 ### `reset()`
 Resets the pack to its default configuration as provided by `conf(...)`.
@@ -117,3 +98,22 @@ FIXME: only supports files ending in '.css'
 
 ### `unload(filepath)`
 Counterpart to `load(...)`. Removes the loaded file from the main DOM.
+
+
+## Pack Listening Events
+For any pack that has a `setup(packInstance)` stage, the following events can be hooked into and used by the packInstance.
+
+### `global-conf-set`
+If a pack provides a listener to the `global-conf-set`, any configuration change will be reported to the packInstance with the following arguments:
+
+| Argument  | Name      | Type   | Description 
+|-----------|-----------|--------|-------------
+| 1         | key       | String | The updated key in the global configuration.
+| 2         | value     | Any    | The new value.
+| 3         | isDefault | Bool   | Whether or not the value is the default value.
+
+## Pack Emitting Events
+Any pack can emit the following events via the `emit(eventname, ...)` method.
+
+### `redraw`
+Causes OME to redraw the entire interface.
