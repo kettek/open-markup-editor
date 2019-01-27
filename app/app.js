@@ -49,12 +49,12 @@ ipcRenderer.on('conf-show', (event, arg) => {
 ipcRenderer.on('init', (event, arg) => {
   // Add "project root/packs" for built-in packs.
   DataManager.addPath({
-    path: path.join(__dirname, '..', 'packs'),
+    path: path.join(__dirname, '..'),
     writable: false
   });
   // Add Application's CWD/packs (same as above if using `npm start`)
   DataManager.addPath({
-    path: path.join(path.dirname(arg), (process.platform == 'darwin' ? '..' : ''), 'packs'),
+    path: path.join(path.dirname(arg), (process.platform == 'darwin' ? '..' : '')),
     writable: false
   });
   // Add User's data directory
@@ -71,7 +71,7 @@ ipcRenderer.on('init', (event, arg) => {
       ipcRenderer.send('ready-to-run');
     }
   }
-  ExtensionPackManager.populate('extension-packs', () => {
+  ExtensionPackManager.populate(path.join('packs', 'extension-packs'), () => {
     for (let i = 0; i < ExtensionPackManager.packs.length; i++) {
       ExtensionPackManager.setup(i);
       if (!ExtensionPackManager.packs[i].get('disabled')) {
@@ -80,7 +80,7 @@ ipcRenderer.on('init', (event, arg) => {
     }
     isDone();
   });
-  EditorModuleManager.populate('editor-packs', () => {
+  EditorModuleManager.populate(path.join('packs', 'editor-packs'), () => {
     for (let i = 0; i < EditorModuleManager.packs.length; i++) {
       if (!EditorModuleManager.packs[i].get('disabled')) {
         EditorModuleManager.enable(i);
@@ -88,7 +88,7 @@ ipcRenderer.on('init', (event, arg) => {
     }
     isDone();
   });
-  MarkupPackManager.populate('markup-packs', () => {
+  MarkupPackManager.populate(path.join('packs', 'markup-packs'), () => {
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
       if (!MarkupPackManager.packs[i].get('disabled')) {
         MarkupPackManager.enable(i);
@@ -96,7 +96,7 @@ ipcRenderer.on('init', (event, arg) => {
     }
     isDone();
   });
-  RenderPackManager.populate('render-packs', () => {
+  RenderPackManager.populate(path.join('packs', 'render-packs'), () => {
     isDone();
   });
 });

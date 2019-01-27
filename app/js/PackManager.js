@@ -193,7 +193,7 @@ function makePackManager(module_name, obj={}) {
     install: files => {
       if (!files || files.length == 0) return;
       let file = files[0];
-      DataManager.unpackFile(file, module_name, (err, pack_path) => {
+      DataManager.unpackFile(file, path.join('packs', module_name), (err, pack_path) => {
         if (err) {
           alert(err);
         } else {
