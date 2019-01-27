@@ -9,13 +9,25 @@ module.exports = {
   setup: pack => {
     let asciidoctor = null;
     let registry = null;
+    let attributes = {};
 
     pack.conf({
       active_extensions: pack.extensions.map((lib, index) => {
         return lib.name;
-      })
+      }),
+      showtitle: true,
+      icons: false,
     },
     ['section', {style: 'flex-direction: column;align-items:flex-start', title: "Available and active Asciidoctor.js extensions"},
+      ['label', 'Convert Options', ''],
+      ['section', {title: 'Display the title of an embedded document.'}, [
+        ['label', 'Show Title', 'showtitle'],
+        ['checkbox', '', 'showtitle'],
+      ]],
+      ['section', {title: 'Use font icons instead of text for admonitions.'}, [
+        ['label', 'Icons', 'icons'],
+        ['checkbox', '', 'icons']
+      ]],
       ['label', 'Extensions', ''],
       ['listbuilder', '', '', {
         left_items: () => {
@@ -43,7 +55,10 @@ module.exports = {
     ]);
 
     pack.render = (text) => {
-      return asciidoctor.convert(text, {'extension_registry': registry});
+      return asciidoctor.convert(text, {
+        extension_registry: registry,
+        attributes: attributes
+      });
     };
 
     pack.cheatsheet = () => {
@@ -56,6 +71,8 @@ module.exports = {
 
     pack.on('enable', () => {
       asciidoctor = require('asciidoctor.js')();
+      if (pack.get('showtitle') == true) attributes.showtitle = pack.get('showtitle');
+      if (pack.get('icons') == true) attributes.icons = 'font';
       setRegistry();
     });
 
@@ -71,6 +88,15 @@ module.exports = {
     }
 
     pack.on('conf-set', (key, value) => {
+      if (key == 'showtitle') {
+        attributes.showtitle = value;
+      } else if (key == 'icons') {
+        if (value == true) {
+          attributes.icons = 'font';
+        } else {
+          if (attributes.icons) delete attributes.icons;
+        }
+      }
       setRegistry();
     });
 
