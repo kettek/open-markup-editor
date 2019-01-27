@@ -32,7 +32,7 @@ Packs are read from a directory named `packs` in any of the [Data Paths](#data-p
 ## Configuration System
 Configuration within OME is done via a two-part configuration system.
 
-The first part is that of declaration, where a particular key is defined with default values. For [packs](packs) this is the first parameter of the `conf(...)` method.
+The first part is that of declaration, where a particular key is defined with default values. For [packs](packs.md) this is the first parameter of the `conf(...)` method.
 
 The second part is that of the UI, where a special array tree is used to define the UI and handle user interactions. This is the second paramter of the `pack.conf(...)` method.
 
