@@ -1,0 +1,14 @@
+{
+  "name": "ome-mp-Textile",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ketchetwahmeegwun T. Southall",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "textile-js": "^2.0.4"
+  }
+}
