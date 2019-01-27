@@ -1,0 +1,15 @@
+{
+  "name": "ome-mp-AsciiDoc",
+  "version": "1.0.0",
+  "description": "AsciiDoc markup pack for Open Markup Editor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ketchetwahmeegwun T. Southall",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "asciidoctor-emoji": "^0.1.4",
+    "asciidoctor.js": "^1.5.9"
+  }
+}
