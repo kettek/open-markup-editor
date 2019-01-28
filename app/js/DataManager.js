@@ -1,10 +1,9 @@
 const settings  = require('electron-app-settings');
 const path      = require('path');
-const fs        = require('fs');
+const fs        = require('fs-extra');
 const log       = require('electron-log');
 const Emitter   = require('./emitter');
 const tar       = require('tar');
-const rimraf    = require('rimraf');
 
 const DataManager = Emitter({
   paths: [
@@ -57,7 +56,6 @@ const DataManager = Emitter({
   unpackFile: (source, target, on_finish=()=>{}) => {
     // FIXME: This is pretty ugly. Also we're not properly handling errors because node tar is weird.
     let output_dir    = path.join(DataManager.paths[0].path, target);
-    console.log(DataManager.paths);
     let package_type  = 0;
     let package_root  = '';
     let errors        = [];
@@ -89,26 +87,11 @@ const DataManager = Emitter({
           on_finish(errors.length > 0 ? errors : null, { root: DataManager.paths[0].path, path: package_root, fullpath: output_path });
         });
       }
-      // Let's always attempt to create the base output dir first just in case the user deletes it while OME is running.
-      fs.access(output_dir, fs.constants.W_OK, (err) => {
+      // Ensure that the output directory ("DataPath/packs/") exists.
+      fs.ensureDir(output_dir, 0o2775, err => {
         if (err) {
-          if (err.code !== 'ENOENT') {
-            errors.push(err)
-            on_finish(errors, { root: DataManager.paths[0].path, path: package_root, fullpath: output_path });
-          } else {
-            fs.mkdir(output_dir, (err) => {
-              if (err) {
-                errors.push(err)
-                on_finish(errors, { root: DataManager.paths[0].path, path: package_root, fullpath: output_path });
-                return;
-              }
-              if (package_type == 1) {
-                fs.mkdir(output_path, { recursive: true }, extract);
-              } else {
-                extract();
-              }
-            });
-          }
+          errors.push(err)
+          on_finish(errors, { root: DataManager.paths[0].path, path: package_root, fullpath: output_path });
         } else {
           if (package_type == 1) {
             fs.mkdir(output_path, { recursive: true }, extract);
@@ -131,7 +114,7 @@ const DataManager = Emitter({
   deleteDirectory: (target, on_finish=()=>{}) => {
     DataManager.constrained(target, true).forEach(file => {
       console.log('delete ' + file);
-      rimraf(file, on_finish);
+      fs.remove(file, on_finish);
     });
   }
 });

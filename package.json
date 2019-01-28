@@ -2,7 +2,7 @@
   "name": "open-markup-editor",
   "productName": "Open Markup Editor",
   "copyright": "Copyright 2018-2019 ${author}",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Pluggable markup editor",
   "main": "./app/main.js",
   "scripts": {
@@ -38,8 +38,8 @@
     "electron-app-settings": "^1.0.1",
     "electron-is-dev": "^1.0.1",
     "electron-log": "^2.2.17",
+    "fs-extra": "^7.0.1",
     "mithril": "^1.1.6",
-    "rimraf": "^2.6.3",
     "tar": "^4.4.8"
   },
   "build": {
@@ -54,21 +54,33 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
-        { "target": "dmg" }
+        {
+          "target": "dmg"
+        }
       ]
     },
     "linux": {
       "category": "Office",
       "target": [
-        { "target": "AppImage" },
-        { "target": "pacman" },
-        { "target": "tar.xz" }
+        {
+          "target": "AppImage"
+        },
+        {
+          "target": "pacman"
+        },
+        {
+          "target": "tar.xz"
+        }
       ]
     },
     "win": {
       "target": [
-        { "target": "nsis" },
-        { "target": "portable" }
+        {
+          "target": "nsis"
+        },
+        {
+          "target": "portable"
+        }
       ]
     },
     "nsis": {
