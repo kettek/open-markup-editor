@@ -132,9 +132,10 @@ let Files = Emitter({
   saveFile: (index, save_as=false, cb=()=>{}) => {
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return;
-    if (Files.loadedFiles[index].filepath.length == 0 || save_as == true) {
-      dialog.showSaveDialog(main_window, filename => {
+    if (Files.loadedFiles[index].filepath.length == 0 || Files.loadedFiles[index].saveAs == true || save_as == true) {
+      dialog.showSaveDialog(main_window, {defaultPath: Files.loadedFiles[index].filepath}, filename => {
         if (filename === undefined) return;
+        Files.loadedFiles[index].saveAs = false;
         Files.setFilePath(index, filename);
         Files.saveFile(index, false, cb);
       });
@@ -190,6 +191,22 @@ let Files = Emitter({
   newFile: () => {
     Files.loadedFiles.push(
       Files.buildFileEntry({name: "Untitled.md"})
+    );
+    Files.setFileFocus(Files.loadedFiles.length-1);
+    Files.emit("file-load", Files.loadedFiles.length-1);
+    Files.checkState();
+  },
+  duplicateFile: () => {
+    let index = Files.focused;
+    if (index < 0) return
+    Files.loadedFiles.push(
+      Files.buildFileEntry({
+        name: Files.loadedFiles[index].name,
+        filepath: Files.loadedFiles[index].filepath,
+        text: Files.loadedFiles[index].text,
+        saveAs: true,
+        saved: false
+      })
     );
     Files.setFileFocus(Files.loadedFiles.length-1);
     Files.emit("file-load", Files.loadedFiles.length-1);

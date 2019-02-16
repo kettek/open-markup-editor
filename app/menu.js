@@ -65,6 +65,13 @@ function getMenuTemplate () {
           })}
         },
         {
+          label: 'Duplicate...',
+          accelerator: 'CmdOrCtrl+D',
+          click: () => {
+            windows.list[windows.MAIN_WINDOW].webContents.send('file-duplicate');
+          }
+        },
+        {
           type: 'separator'
         },
         {

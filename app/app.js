@@ -30,6 +30,9 @@ ipcRenderer.on('file-open', (event, arg) => {
 ipcRenderer.on('file-import', (event, arg) => {
   Files.importFile(arg);
 });
+ipcRenderer.on('file-duplicate', (event, arg) => {
+  Files.duplicateFile();
+});
 ipcRenderer.on('file-save', (event, arg) => {
   Files.saveFile(arg, false);
 });
