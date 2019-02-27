@@ -5,6 +5,8 @@ const m = require('mithril');
 
 const Emitter = require('../emitter.js');
 
+const MarkupPacksManager = require('../MarkupPackManager.js');
+
 const {dialog} = require('electron').remote;
 const main_window = require('electron').remote.getCurrentWindow()
 
@@ -133,7 +135,29 @@ let Files = Emitter({
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return;
     if (Files.loadedFiles[index].filepath.length == 0 || Files.loadedFiles[index].saveAs == true || save_as == true) {
-      dialog.showSaveDialog(main_window, {defaultPath: Files.loadedFiles[index].filepath}, filename => {
+      // Get our target file extension and filter it against our supported extensions so it shows up as the first target in the save dialog.
+      // TODO: I don't exactly like this solution as it adds an entry for each individual file extension. It would be nicer to have mappings to sets of file extensions (such as "md" and "markdown"). Perhaps it should just map filename filters to each Markup Pack's supports property?
+      let fileext = path.extname(Files.loadedFiles[index].filepath || Files.loadedFiles[index].name)
+      fileext = (fileext.length > 0 ? fileext.substring(1) : fileext)
+      let desiredExtension;
+      let extensions = MarkupPacksManager.getSupportedExtensions().filter(ext => {
+        if (ext == fileext) {
+          desiredExtension = ext;
+          return false;
+        }
+        return true;
+      });
+      if (desiredExtension) extensions.unshift(desiredExtension);
+      let filters = extensions.map(ext => {
+        return {
+          name: ext,
+          extensions: [ ext ],
+        }
+      });
+      dialog.showSaveDialog(main_window, {
+        defaultPath: Files.loadedFiles[index].filepath,
+        filters: filters
+      }, filename => {
         if (filename === undefined) return;
         Files.loadedFiles[index].saveAs = false;
         Files.setFilePath(index, filename);

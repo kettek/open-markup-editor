@@ -7,6 +7,18 @@ const MarkupPackManager = MM('markup-packs', {
     if (!pack) return text;
     return pack.render(text);
   },
+  getSupportedExtensions: () => {
+    let extensions = []
+    for (let i = 0; i < MarkupPackManager.packs.length; i++) {
+      for (let j = 0; j < MarkupPackManager.packs[i].supports.length; j++) {
+        let extension = MarkupPackManager.packs[i].supports[j].toLowerCase();
+        if (!extensions.includes(extension)) {
+          extensions.push(extension);
+        }
+      }
+    }
+    return extensions;
+  },
   getMarkup: (type) => {
     if (MarkupPackManager.cached_packs[type]) {
       return MarkupPackManager.packs[MarkupPackManager.cached_packs[type]];
