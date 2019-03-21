@@ -21,12 +21,12 @@ module.exports = {
     ['section', {style: 'flex-direction: column;align-items:flex-start', title: "Available and active Asciidoctor.js extensions"},
       ['label', 'Convert Options', ''],
       ['section', {title: 'Display the title of an embedded document.'}, [
-        ['label', 'Show Title', 'showtitle'],
         ['checkbox', '', 'showtitle'],
+        ['label', 'Show Title', 'showtitle'],
       ]],
       ['section', {title: 'Use font icons instead of text for admonitions.'}, [
+        ['checkbox', '', 'icons'],
         ['label', 'Icons', 'icons'],
-        ['checkbox', '', 'icons']
       ]],
       ['label', 'Extensions', ''],
       ['listbuilder', '', '', {

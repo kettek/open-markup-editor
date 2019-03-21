@@ -4,26 +4,29 @@ const settings  = require('electron-app-settings');
 function refreshCSS(props) {
   let style = document.getElementsByTagName('head')[0].querySelector('#OME-FontManager');
   if (style) style.parentNode.removeChild(style);
-  if (!props) return;
-  // Build our CSS string
-  let css = '\n:root {\n';
-  if (props.family) {
-    css += '\t--editor-font-family: ' + props.family + ';\n';
-  }
-  if (props.size) {
-    css += '\t--editor-font-size: ' + props.size + ';\n';
-  }
-  if (props.color) {
-    css += '\t--editor-font-color: ' + props.color + ';\n';
-  }
-  css += '\n}\n';
+  if (props) {
+    // Build our CSS string
+    let css = '\n:root {\n';
+    if (props.family) {
+      css += '\t--editor-font-family: ' + props.family + ';\n';
+    }
+    if (props.size) {
+      css += '\t--editor-font-size: ' + props.size + ';\n';
+    }
+    if (props.color) {
+      css += '\t--editor-font-color: ' + props.color + ';\n';
+    }
+    css += '\n}\n';
 
-  // Append to the head!
-  style = document.createElement('style');
-  style.setAttribute('type', 'text/css');
-  style.appendChild(document.createTextNode(css));
-  style.setAttribute('id', 'OME-FontManager');
-  document.getElementsByTagName('head')[0].appendChild(style);
+    // Append to the head!
+    style = document.createElement('style');
+    style.setAttribute('type', 'text/css');
+    style.appendChild(document.createTextNode(css));
+    style.setAttribute('id', 'OME-FontManager');
+    document.getElementsByTagName('head')[0].appendChild(style);
+  }
+  // This is hacky, but we need to let our editor know we've updating the CSS.
+  settings.set('editor.updateTheming', true)
 }
 
 module.exports = {
@@ -45,8 +48,9 @@ module.exports = {
           ['label', 'Editor', ''],
           ['section', { style: "align-items: stretch;" },
             ['section', {style: "flex-direction: column; align-items: flex-start;", title: "Family"},
-              ['label', 'Family', 'editor_family', [
-                ['checkbox', '', 'use_editor_family']
+              ['label', [
+                ['checkbox', '', 'use_editor_family'],
+                ['label', 'Family', 'use_editor_family']
               ]],
               ['select', '', 'editor_family_index', {
                   'size': 8,
@@ -62,9 +66,10 @@ module.exports = {
               ]
             ],
             ['section', {style: "flex-direction: column; align-items: flex-start;", title: "Size and Color"},
-              ['label', 'Size', 'editor_size',
-                ['checkbox', '', 'use_editor_size']
-              ],
+              ['label', [
+                ['checkbox', '', 'use_editor_size'],
+                ['label', 'Size', 'editor_size']
+              ]],
               ['section', 
                 ['number', '', 'editor_size', {
                   'onchange': (e) => {
@@ -85,9 +90,10 @@ module.exports = {
                   ]
                 }]
               ],
-              ['label', 'Color', '', 
-                ['checkbox', '', 'use_editor_color']
-              ],
+              ['label', [
+                ['checkbox', '', 'use_editor_color'],
+                ['label', 'Color', '']
+              ]],
               ['section', 
                 ['color', '', 'editor_color'],
                 ['hex', '', 'editor_color'],
@@ -130,8 +136,6 @@ module.exports = {
       if (ex.get('use_editor_size')) props.size = ex.get('editor_size') + ex.get('editor_size_units')
       if (ex.get('use_editor_color')) props.color = ex.get('editor_color')
       refreshCSS(props)
-      // This is hacky, but we need to let our editor know we've updating the CSS.
-      settings.set('editor.updateTheming', true)
     });
   }
 }
