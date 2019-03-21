@@ -25,7 +25,7 @@ module.exports = {
       'keymap_index': 0,
       'keymap': 'default',
       'use_tabs': false,
-			'indent_size': 2
+      'indent_size': 2
     }, [
       ['section', {title: "The theme used by CodeMirror"},
         ['select', '', 'theme_index', {
@@ -100,6 +100,24 @@ module.exports = {
         pack.cm.setOption('keyMap', pack.keymap);
       }
     }
+    function unloadCustomTheming() {
+      let style = document.getElementsByTagName('head')[0].querySelector('#ome-ep-codemirror');
+      if (style) style.parentNode.removeChild(style);
+    }
+    function loadCustomTheming() {
+      // Build our CSS string
+      let css = '\n.CodeMirror {\n';
+      css += '\tfont-family: var(--editor-font-family);';
+      css += '\tfont-size: var(--editor-font-size);';
+      //css += '\tcolor: var(--editor-font-color) !important;';
+      css += '\n}\n';
+      // Append to the head!
+      let style = document.createElement('style');
+      style.setAttribute('type', 'text/css');
+      style.appendChild(document.createTextNode(css));
+      style.setAttribute('id', 'ome-ep-codemirror');
+      document.getElementsByTagName('head')[0].appendChild(style);
+    }
     pack.on('enable', () => {
       if (!CodeMirror) {
         CodeMirror = require('codemirror');
@@ -108,11 +126,13 @@ module.exports = {
       pack.load(path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
       loadTheme(pack.theme);
       loadKeymap(pack.keymap);
+      loadCustomTheming();
       pack.emit('ready');
     });
     pack.on('disable', () => {
       pack.unload(path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
       unloadTheme(pack.theme);
+      unloadCustomTheming();
     });
     const newFile = (filename="", content="", mode="markdown") => {
       let meta_info = CodeMirror.findModeByFileName(filename);
