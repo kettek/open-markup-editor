@@ -105,11 +105,24 @@ module.exports = {
       if (style) style.parentNode.removeChild(style);
     }
     function loadCustomTheming() {
-      // Build our CSS string
+      // Only load our theming overrides if the Font Manager extension is loaded.
+      let fm_style = document.getElementById("OME-FontManager");
+      if (!fm_style) return;
+      // Let's build our CSS!
       let css = '\n.CodeMirror {\n';
-      css += '\tfont-family: var(--editor-font-family);';
-      css += '\tfont-size: var(--editor-font-size);';
-      //css += '\tcolor: var(--editor-font-color) !important;';
+      for (let i = 0; i < fm_style.sheet.rules[0].style.length; i++) {
+        switch(fm_style.sheet.rules[0].style[i]) {
+          case "--editor-font-family":
+            css += '\tfont-family: var(--editor-font-family);\n';
+            break;
+          case "--editor-font-size":
+            css += '\tfont-size: var(--editor-font-size);\n';
+            break;
+          case "--editor-font-color":
+            css += '\tcolor: var(--editor-font-color) !important;\n';
+            break;
+        }
+      }
       css += '\n}\n';
       // Append to the head!
       let style = document.createElement('style');
@@ -225,6 +238,9 @@ module.exports = {
     pack.on('global-conf-set', (key, value) => {
       if (key === 'editor.linewrapping') {
         pack.cm.setOption('lineWrapping', value);
+      } else if (key === 'editor.updateTheming') { // FIXME: this is hacky to use a configuration to propagate updates.
+        unloadCustomTheming();
+        loadCustomTheming();
       }
     });
     pack.on('conf-set', (key, value) => {
