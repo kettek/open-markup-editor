@@ -9,7 +9,6 @@
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
-    "codemirror": "^5.37.0",
-    "electron-app-settings": "^1.0.1"
+    "codemirror": "^5.37.0"
   }
 }

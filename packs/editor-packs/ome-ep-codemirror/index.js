@@ -1,6 +1,5 @@
 let CodeMirror = null;
 
-const settings  = require('electron-app-settings');
 const fs        = require('fs');
 const path      = require('path');
 
@@ -106,7 +105,7 @@ module.exports = {
     }
     function loadCustomTheming() {
       // Only load our theming overrides if the Font Manager extension is loaded.
-      let fm_style = document.getElementById("OME-FontManager");
+      let fm_style = document.getElementsByTagName('head')[0].querySelector('#OME-FontManager');
       if (!fm_style) return;
       // Let's build our CSS!
       let css = '\n.CodeMirror {\n';
@@ -163,7 +162,7 @@ module.exports = {
       if (!pack.cm) {
         pack.cm = CodeMirror.fromTextArea(dom, {
           lineNumbers: true,
-          lineWrapping: settings.get('editor.linewrapping') ? true : false,
+          lineWrapping: pack.getGlobal('editor.linewrapping') ? true : false,
           theme: pack.theme,
           keyMap: pack.keymap
         });

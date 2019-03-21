@@ -91,6 +91,12 @@ Sets a configuration entry for the pack.
 ### `get(key)`
 Returns the stored value for a configuration entry.
 
+### `getGlobal(key, value)`
+Sets a global configuration entry.
+
+### `setGlobal(key)`
+Returns the stored value for a global configuration entry.
+
 ### `load(filepath)`
 Dynamically loads the given file into the main DOM. Used for loading external scripts and CSS.
 

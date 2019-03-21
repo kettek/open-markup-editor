@@ -1,5 +1,4 @@
 var fontManager = require('font-manager');
-const settings  = require('electron-app-settings');
 
 function refreshCSS(props) {
   let style = document.getElementsByTagName('head')[0].querySelector('#OME-FontManager');
@@ -25,8 +24,6 @@ function refreshCSS(props) {
     style.setAttribute('id', 'OME-FontManager');
     document.getElementsByTagName('head')[0].appendChild(style);
   }
-  // This is hacky, but we need to let our editor know we've updating the CSS.
-  settings.set('editor.updateTheming', true)
 }
 
 module.exports = {
@@ -127,9 +124,13 @@ module.exports = {
       if (ex.get('use_editor_size')) props.size = ex.get('editor_size') + ex.get('editor_size_units')
       if (ex.get('use_editor_color')) props.color = ex.get('editor_color')
       refreshCSS(props)
+      // This is hacky, but we need to let our editor know we've updating the CSS.
+      ex.setGlobal('editor.updateTheming', true)
     });
     ex.on('disable', () => {
       refreshCSS(null)
+      // This is hacky, but we need to let our editor know we've updating the CSS.
+      ex.setGlobal('editor.updateTheming', true)
     });
     ex.on('conf-set', (k, v) => {
       let props = {}
@@ -137,6 +138,8 @@ module.exports = {
       if (ex.get('use_editor_size')) props.size = ex.get('editor_size') + ex.get('editor_size_units')
       if (ex.get('use_editor_color')) props.color = ex.get('editor_color')
       refreshCSS(props)
+      // This is hacky, but we need to let our editor know we've updating the CSS.
+      ex.setGlobal('editor.updateTheming', true)
     });
   }
 }

@@ -120,6 +120,8 @@ function makePackManager(module_name, obj={}) {
         reset:      () => { },
         set:        (key, value) => { },
         get:        (key) => { },
+        setGlobal:  (key, value) => { },
+        getGlobal:  (key) => { },
         load:       (file) => { },
         unload:     (file) => { }
       }, require(filepath)));
@@ -155,6 +157,13 @@ function makePackManager(module_name, obj={}) {
         }
         mod.get = (key=null) => {
           return settings.get(mod.key+(key === null ? '' : '.'+key));
+        }
+        mod.setGlobal = (key, value) => {
+          settings.set(key, value);
+          m.redraw();
+        }
+        mod.getGlobal = (key) => {
+          return settings.get(key)
         }
         mod.load = (file) => {
           let type = path.extname(file);
