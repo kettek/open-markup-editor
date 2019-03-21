@@ -32,24 +32,19 @@ module.exports = {
     ex.fonts = []
     ex.conf(
       {
-        'use_defaults': true,
-        'use_editor_family': true,
+        'use_editor_family': false,
         'editor_family': 'Monospace',
-        'use_editor_size': true,
+        'use_editor_size': false,
         'editor_size': '12',
         'editor_size_units': 'pt',
         'use_editor_color': false,
         'editor_color': '#010101'
       },
       [
-        ['section', {title: "Use default font settings."},
-          ['checkbox', '', 'use_defaults'],
-          ['label', 'Use Defaults', 'use_defaults']
-        ],
-        ['section', {title: "Editor font overrides", style: "flex-direction: column; align-items: flex-start;", disabled: () => { return ex.get('use_defaults') }},
+        ['section', {title: "Editor font overrides", style: "flex-direction: column; align-items: flex-start;" },
           ['label', 'Editor', ''],
           ['section', { style: "align-items: stretch;" },
-            ['section', {style: "flex-direction: column; align-items: flex-start;", title: "Family", disabled: () => { return ex.get('use_defaults') }},
+            ['section', {style: "flex-direction: column; align-items: flex-start;", title: "Family"},
               ['label', 'Family', 'editor_family', [
                 ['checkbox', '', 'use_editor_family']
               ]],
@@ -66,7 +61,7 @@ module.exports = {
                 })}
               ]
             ],
-            ['section', {style: "flex-direction: column; align-items: flex-start;", title: "Size and Color", disabled: () => { return ex.get('use_defaults') }},
+            ['section', {style: "flex-direction: column; align-items: flex-start;", title: "Size and Color"},
               ['label', 'Size', 'editor_size',
                 ['checkbox', '', 'use_editor_size']
               ],
@@ -90,10 +85,10 @@ module.exports = {
                   ]
                 }]
               ],
-              ['label', 'Color', '', { disabled: true },
-                ['checkbox', '', 'use_editor_color', { disabled: true }]
+              ['label', 'Color', '', 
+                ['checkbox', '', 'use_editor_color']
               ],
-              ['section', { disabled: true }, 
+              ['section', 
                 ['color', '', 'editor_color'],
                 ['hex', '', 'editor_color'],
               ]
@@ -124,7 +119,7 @@ module.exports = {
       if (ex.get('use_editor_family')) props.family = ex.get('editor_family')
       if (ex.get('use_editor_size')) props.size = ex.get('editor_size') + ex.get('editor_size_units')
       if (ex.get('use_editor_color')) props.color = ex.get('editor_color')
-      refreshCSS(ex.get('use_defaults') ? null : props)
+      refreshCSS(props)
     });
     ex.on('disable', () => {
       refreshCSS(null)
@@ -134,7 +129,9 @@ module.exports = {
       if (ex.get('use_editor_family')) props.family = ex.get('editor_family')
       if (ex.get('use_editor_size')) props.size = ex.get('editor_size') + ex.get('editor_size_units')
       if (ex.get('use_editor_color')) props.color = ex.get('editor_color')
-      refreshCSS(ex.get('use_defaults') ? null : props)
+      refreshCSS(props)
+      // This is hacky, but we need to let our editor know we've updating the CSS.
+      settings.set('editor.updateTheming', true)
     });
   }
 }
