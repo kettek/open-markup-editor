@@ -72,6 +72,7 @@ module.exports = {
               ]],
               ['section', 
                 ['number', '', 'editor_size', {
+                  'style': 'width: 3em;',
                   'onchange': (e) => {
                     ex.set('editor_size', e.target.value);
                   }
