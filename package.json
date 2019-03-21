@@ -28,7 +28,7 @@
   "author": "Ketchetwahmeegwun T. Southall <kts@kettek.net> (https://kettek.net/)",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^4.0.2",
+    "electron": "^4.1.0",
     "electron-builder": "^20.38.5",
     "submodules-install": "^1.0.1"
   },
@@ -63,13 +63,21 @@
       "category": "Office",
       "target": [
         {
-          "target": "AppImage"
+          "target": "AppImage",
+          "arch": [
+            "ia32",
+            "x64"
+          ]
         },
         {
           "target": "pacman"
         },
         {
-          "target": "tar.xz"
+          "target": "tar.xz",
+          "arch": [
+            "ia32",
+            "x64"
+          ]
         }
       ]
     },

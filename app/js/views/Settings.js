@@ -35,7 +35,10 @@ const defined_elements = {
     }
   },
   'option': {
-    tag: 'option'
+    tag: 'option',
+  },
+  'pre': {
+    tag: 'pre',
   },
   'listbuilder': {
     mithril: ListBuilder,
