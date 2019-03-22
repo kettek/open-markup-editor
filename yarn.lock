@@ -528,10 +528,10 @@ ejs@^2.6.1:
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.1.tgz#498ec0d495655abc6f23cd61868d926464071aa0"
   integrity sha512-0xy4A/twfrRCnkhfk8ErDi5DqdAsAqeGxht4xkCUrsvhhbQNs7E+4jV0CN7+NKIY0aHE72+XvqtBIXzD31ZbXQ==
 
-electron-app-settings@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/electron-app-settings/-/electron-app-settings-1.0.1.tgz#325ba87ab85ce002cdc4743db278781e57995d83"
-  integrity sha512-YEiMkQSao8+sPPic8UMAmSvVDFOzVmxpUGaRvoKm268KxS79Wkp6zXORMcBphNLCKB5X0L4jnoEdbkUv71ViSw==
+electron-app-settings@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/electron-app-settings/-/electron-app-settings-1.0.2.tgz#f521e47d4704b6a9a5fdea98e3587e9be039ee87"
+  integrity sha512-tDPqvPfNk7xYWzBz+X/TreTbjxVxwdeJTfDJ+gFjpuaTBRwyC6anC3pPbnATpPdSECSddXUPhr7LLC99KMzqRw==
 
 electron-builder@^20.38.5:
   version "20.38.5"

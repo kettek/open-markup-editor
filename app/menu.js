@@ -6,12 +6,15 @@ let electron = require('electron')
 
 const {app, dialog, shell, remote, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
+const path = require('path')
 
 let windows = require('./windows');
 
+let settings;
 let menu;
 
 function init () {
+  settings = require('electron-app-settings');
   menu = electron.Menu.buildFromTemplate(getMenuTemplate())
   electron.Menu.setApplicationMenu(menu)
 }
@@ -23,6 +26,49 @@ function getMenuItem (label) {
     })
     if (menuItem) return menuItem
   }
+}
+
+function addRecentFile(file) {
+  let recents = settings.get('recent_files');
+  recents = recents.filter(recent => recent.filepath !== file);
+  recents.unshift({
+    filepath: file,
+    name: path.basename(file)
+  });
+  if (recents.length > 8) {
+    recents.splice(8);
+  }
+  settings.set('recent_files', recents);
+  updateOpenRecentMenu();
+}
+
+function clearRecent() {
+  settings.get('recent_files').length = 0
+  updateOpenRecentMenu();
+}
+
+function updateOpenRecentMenu() {
+  let recent_menu = getMenuItem("Open Recent");
+  if (!recent_menu) return;
+  recent_menu.submenu.clear();
+  let recents = settings.get('recent_files');
+  for (var i = 0; i < recents.length; i++) {
+    let label     = recents[i].name;
+    let filepath  = recents[i].filepath;
+    recent_menu.submenu.insert(i, new electron.MenuItem({
+      label: label,
+      click: () => {
+        windows.list[windows.MAIN_WINDOW].webContents.send('file-open', filepath);
+        addRecentFile(filepath);
+      }
+    }));
+  }
+  recent_menu.submenu.append(new electron.MenuItem({ type: "separator" }));
+  recent_menu.submenu.append(new electron.MenuItem({
+    label: "Clear",
+    click: clearRecent
+  }));
+  electron.Menu.setApplicationMenu(menu);
 }
 
 function getMenuTemplate () {
@@ -46,8 +92,29 @@ function getMenuTemplate () {
               if (fileNames === undefined) return;
               for (let i = 0; i < fileNames.length; i++) {
                 windows.list[windows.MAIN_WINDOW].webContents.send('file-open', fileNames[i]);
+                addRecentFile(fileNames[i]);
               }
           })}
+        },
+        {
+          label: 'Open Recent',
+          submenu: settings.get('recent_files').map(el => {
+            return {
+              label: el.name,
+              click: () => {
+                windows.list[windows.MAIN_WINDOW].webContents.send('file-open', el.filepath);
+                addRecentFile(el.filepath);
+              }
+            }
+          }).concat([
+            {
+              type: 'separator'
+            },
+            {
+              label: "Clear",
+              click: clearRecent
+            }
+          ])
         },
         {
           type: 'separator'
