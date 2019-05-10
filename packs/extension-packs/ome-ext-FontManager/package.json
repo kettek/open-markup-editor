@@ -10,7 +10,9 @@
   "author": "",
   "license": "GPL-3.0",
   "dependencies": {
-    "electron-rebuild": "^1.8.4",
     "font-manager": "^0.3.0"
+  },
+  "devDependencies": {
+    "electron-rebuild": "git+https://github.com/electron/electron-rebuild.git#7433977f1995b242a881dfb13ba9277de133f43c"
   }
 }
