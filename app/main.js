@@ -71,8 +71,21 @@ function createProtocol() {
 }
 protocol.registerStandardSchemes(["ome"], { secure: true });
 
+function createSplashWindow() {
+  windows.list[windows.SPLASH_WINDOW] = new BrowserWindow({ width: 320, height: 320, show: false, frame: false, transparent: true });
+  windows.list[windows.SPLASH_WINDOW].webContents.on('did-finish-load', () => {
+    windows.list[windows.SPLASH_WINDOW].show();
+    createMainWindow();
+  })
+  windows.list[windows.SPLASH_WINDOW].loadURL(url.format({
+    pathname: path.join(__dirname, 'splash.html'),
+    protocol: 'file:',
+    slashes: true
+  }))
+}
+
 function createMainWindow() {
-  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: true });
+  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false });
   windows.list[windows.MAIN_WINDOW].setBounds({x: settings.get("window.left"), y: settings.get("window.top"), width: settings.get("window.width"), height: settings.get("window.height")});
 
   windows.list[windows.MAIN_WINDOW].loadURL(url.format({
@@ -207,7 +220,7 @@ if (is_main_instance) {
     //
     menu.init();
   
-    createMainWindow();
+    createSplashWindow();
   });
   
   app.on('window-all-closed', () => {
@@ -234,6 +247,7 @@ if (is_main_instance) {
   });
   ipcMain.on('ready-to-run', (event) => {
     windows.list[windows.MAIN_WINDOW].show();
+    windows.list[windows.SPLASH_WINDOW].hide();
     if (isDev) windows.list[windows.MAIN_WINDOW].toggleDevTools();
   });
 } else {

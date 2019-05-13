@@ -53,6 +53,7 @@
     "appId": "net.kettek.OpenMarkupEditor",
     "mac": {
       "category": "public.app-category.productivity",
+      "darkModeSupport": true,
       "target": [
         {
           "target": "dmg"

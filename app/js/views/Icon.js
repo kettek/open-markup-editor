@@ -7,7 +7,7 @@ module.exports = {
         id: vnode.attrs.id,
       }, vnode.attrs.attrs),
       m('use', {
-        href: './icons.svg#' + vnode.attrs.iconName
+        href: './images/icons.svg#' + vnode.attrs.iconName
       })
     )
   }
