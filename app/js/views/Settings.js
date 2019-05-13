@@ -11,6 +11,8 @@ let ExtensionPackManager = require('../ExtensionPackManager');
 
 let ListBuilder = require('./ListBuilder');
 
+const Icon = require('./Icon');
+
 const defined_elements = {
   'section': {
     tag: 'section',
@@ -200,13 +202,17 @@ module.exports = {
     return(
       m("section.settings",
         // Editor Packs
-        m("header", "Editor Packs", m("button.new", {
-          onclick: () => {
-            dialog.showOpenDialog({
-              title: "Install Editor Pack archive",
-              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
-              properties: ["openFile", "showHiddenFiles"]
-            }, EditorPackManager.install);
+        m("header", "Editor Packs", m(Icon, {
+          iconName: "add",
+          className: "button new",
+          attrs: {
+            onclick: () => {
+              dialog.showOpenDialog({
+                title: "Install Editor Pack archive",
+                filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+                properties: ["openFile", "showHiddenFiles"]
+              }, EditorPackManager.install);
+            }
           }
         }) ),
         EditorPackManager.packs.map((pack, index) => {
@@ -214,13 +220,17 @@ module.exports = {
             'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
         }),
         // Markup Packs
-        m("header", "Markup Packs", m("button.new", {
-          onclick: () => {
-            dialog.showOpenDialog({
-              title: "Install Editor Pack archive",
-              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
-              properties: ["openFile", "showHiddenFiles"]
-            }, EditorPackManager.install);
+        m("header", "Markup Packs", m(Icon, {
+          iconName: "add",
+          className: "button new",
+          attrs: {
+            onclick: () => {
+              dialog.showOpenDialog({
+                title: "Install Editor Pack archive",
+                filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+                properties: ["openFile", "showHiddenFiles"]
+              }, EditorPackManager.install);
+            }
           }
         }) ),
         MarkupPackManager.packs.map((pack, index) => {
@@ -229,13 +239,17 @@ module.exports = {
           ]);
         }),
         // Render Packs
-        m("header", "Render Packs", m("button.new", {
-          onclick: () => {
-            dialog.showOpenDialog({
-              title: "Install Render Pack archive",
-              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
-              properties: ["openFile", "showHiddenFiles"]
-            }, RenderPackManager.install);
+        m("header", "Render Packs", m(Icon, {
+          iconName: "add",
+          className: "button new",
+          attrs: {
+            onclick: () => {
+              dialog.showOpenDialog({
+                title: "Install Render Pack archive",
+                filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+                properties: ["openFile", "showHiddenFiles"]
+              }, RenderPackManager.install);
+            }
           }
         })),
         RenderPackManager.packs.map((pack, index) => {
@@ -254,13 +268,17 @@ module.exports = {
           ]);
         }),
         // ExtensionPackManager
-        m("header", "Extensions", m("button.new", {
-          onclick: () => {
-            dialog.showOpenDialog({
-              title: "Install Render Pack archive",
-              filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
-              properties: ["openFile", "showHiddenFiles"]
-            }, RenderPackManager.install);
+        m("header", "Extensions", m(Icon, {
+          iconName: "add",
+          className: "button new",
+          attrs: {
+            onclick: () => {
+              dialog.showOpenDialog({
+                title: "Install Render Pack archive",
+                filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+                properties: ["openFile", "showHiddenFiles"]
+              }, RenderPackManager.install);
+            }
           }
         })),
         ExtensionPackManager.packs.map((extension, index) => {

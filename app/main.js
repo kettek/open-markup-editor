@@ -1,11 +1,13 @@
 const { 
   app, 
+  protocol,
   BrowserWindow, 
   BrowserView, 
   Menu, 
   dialog, 
   ipcMain 
 } = require('electron');
+
 const isDev     = require('electron-is-dev');
 const log       = require('electron-log');
                 log.transports.console.level = 'info';
@@ -21,6 +23,53 @@ const fs        = require('fs');
 const asyncReadFile = util.promisify(fs.readFile)
 
 console.log(process.versions.electron)
+
+function createProtocol() {
+  protocol.registerBufferProtocol("ome",
+    (request, respond) => {
+      let furl  = new URL(request.url);
+      console.log(furl)
+      //var fpath = furl.hostname + furl.pathname
+      var fpath = furl.hostname
+      console.log(fpath)
+
+      asyncReadFile(path.join(__dirname, fpath))
+        .then(data => {
+        let extension = path.extname(fpath).toLowerCase();
+        let mimeType = "";
+
+        if (extension === ".js") {
+          mimeType = "text/javascript";
+        }
+        else if (extension === ".html") {
+          mimeType = "text/html";
+        }
+        else if (extension === ".css") {
+          mimeType = "text/css";
+        }
+        else if (extension === ".svg" || extension === ".svgz") {
+          mimeType = "image/svg+xml";
+        }
+        else if (extension === ".json") {
+          mimeType = "application/json";
+        }
+        console.log("sending" + extension)
+
+        respond({mimeType, data}); 
+      })
+      .catch(err => {
+        console.log(err)
+        //respond(
+      });
+    },
+    (error) => {
+      if (error) {
+        console.error(`Failed to register ${scheme} protocol`, error);
+      }
+    }
+  );
+}
+protocol.registerStandardSchemes(["ome"], { secure: true });
 
 function createMainWindow() {
   windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: true });
@@ -153,6 +202,9 @@ if (is_main_instance) {
       editorpack: "$OME_EDITOR_PACKS/ome-ep-codemirror"
     }, true);
     // ---- ----
+    // Protocol override for SVGs... :S
+    createProtocol();
+    //
     menu.init();
   
     createMainWindow();

@@ -1,7 +1,3 @@
-module.exports = {
-  init: init
-}
-
 let electron = require('electron')
 
 const {app, dialog, shell, remote, ipcMain } = require('electron');
@@ -357,4 +353,9 @@ function getMenuTemplate () {
   }
 
   return template
+}
+
+module.exports = {
+  init: init,
+  addRecentFile: addRecentFile
 }

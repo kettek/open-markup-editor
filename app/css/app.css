@@ -39,7 +39,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: .25em;
   font-size: 10pt;
   overflow: hidden;
 }
@@ -67,7 +66,6 @@ section.view-window {
 /*  animation: slideFromLeft 0.5s, fadeIn 0.5s;
   animation-fill-mode: forwards;*/
   display: flex;
-  padding: .1em 0;
   background-color: var(--p);
 }
 section.view-window.closeElement {
@@ -156,7 +154,7 @@ nav {
 
 .tab {
   position: relative;
-  margin: 0 .25em;
+  margin: 0 .5em;
   background-color: var(--p);
   color: var(--s-dark);
   cursor: pointer;
@@ -186,10 +184,31 @@ span.unsaved:after {
   color: var(--s);
 }
 
-.focused > .close:before {
+.focused .close:before {
   color: var(--s-light);
 }
+.button {
+  display: flex;
+  cursor: pointer;
+  color: var(--s);
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0.25em;
+}
+.button:hover {
+  transition: .2s all;
+  color: var(--s-dark-fg);
+}
+
+.button.new {
+  font-size: 12pt;
+}
+
+svg {
+  fill: currentColor;
+}
 button {
+  display: inline-block;
   cursor: pointer;
   background-color: var(--s);
   color: var(--s-fg);
@@ -209,36 +228,6 @@ button:before {
   transition: .2s all;
   color: var(--s);
 }
-button.close {
-  width: 1em;
-  height: 1em;
-}
-.tab > button {
-  margin: 0 0 0 .5em;
-}
-.close:before {
-  content: '✖';
-  color: var(--s-dark);
-}
-.close:hover:before {
-  color: var(--s-dark-fg);
-}
-button.new {
-  width: 1em;
-  height: 1em;
-  margin: 0;
-}
-.new {
-  font-size: 13pt;
-  margin: 0;
-  background-color: transparent;
-}
-.new:hover {
-  background-color: transparent;
-}
-.new:before {
-  content: '✚';
-}
 button:hover {
   background-color: var(--s-light);
   color: var(--s-dark-fg);
@@ -247,21 +236,24 @@ button:hover:before {
   color: var(--s-dark-fg);
 }
 
+.button.settings {
+  width: 2em;
+  height: 2em;
+  padding: .1em;
+}
 .tab.settings {
-  margin-left: auto;
+  margin: 0 0 0 auto;
 }
-button.settings:before {
-  content: '⚙';
-}
-button.settings {
-  width: 1em;
-  height: 1em;
-  font-size: 14pt;
+.tab.new, .tab.open {
+  padding: 0;
   margin: 0;
-  background-color: transparent;
 }
-button.settings:hover {
-  background-color: transparent;
+.tab.new .button, .tab.open .button {
+  padding: 0;
+  margin: 0;
+}
+.tab.open {
+  margin-right: .5em;
 }
 section.settings {
   position: absolute;

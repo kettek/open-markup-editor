@@ -8,6 +8,7 @@ const Emitter = require('../emitter.js');
 const MarkupPacksManager = require('../MarkupPackManager.js');
 
 const {dialog} = require('electron').remote;
+const menu = require('electron').remote.require('./menu')
 const main_window = require('electron').remote.getCurrentWindow()
 
 let Files = Emitter({
@@ -195,6 +196,17 @@ let Files = Emitter({
       }
       Files.checkState();
     });
+  },
+  openFile: () => {
+    dialog.showOpenDialog(main_window, {
+      properties: ['openFile', 'multiSelections']
+    }, fileNames => {
+      if (fileNames === undefined) return;
+      for (let i = 0; i < fileNames.length; i++) {
+        main_window.webContents.send('file-open', fileNames[i]);
+        menu.addRecentFile(fileNames[i]);
+      }
+    })
   },
   loadFile: filepath => {
     fs.readFile(filepath, 'utf-8', (err, data="") => {
