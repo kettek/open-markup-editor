@@ -347,6 +347,12 @@ input, select {
   margin: .25em;
   border: 0;
   border-radius: 3px;
+  background: var(--p);
+  color: var(--s);
+}
+footer input, footer select {
+  background: var(--p-light);
+  color: var(--p-light-fg);
 }
 /* checkbox */
 input[type=checkbox] {
