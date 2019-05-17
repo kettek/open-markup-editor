@@ -220,7 +220,14 @@ if (is_main_instance) {
     //
     menu.init();
   
-    createSplashWindow();
+    // This is a bit unfortunate, but the window will show up with
+    // a white background if we do not delay the splash window
+    // creation.
+    if (process.platform === "linux") {
+      setTimeout(createSplashWindow, 200);
+    } else {
+      createSplashWindow();
+    }
   });
   
   app.on('window-all-closed', () => {
