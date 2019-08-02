@@ -1,5 +1,5 @@
 {
-  "name": "ome-mp-Textile",
+  "name": "ome-mp-creole",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "Ketchetwahmeegwun T. Southall",
   "license": "GPL-3.0",
   "dependencies": {
-    "textile-js": "^2.0.4"
+    "npm-creole": "^0.3.6"
   }
 }

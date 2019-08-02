@@ -1,5 +1,5 @@
 {
-  "name": "ome-mp-AsciiDoc",
+  "name": "ome-mp-asciidoc",
   "version": "1.0.0",
   "description": "AsciiDoc markup pack for Open Markup Editor",
   "main": "index.js",
