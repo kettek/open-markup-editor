@@ -217,7 +217,7 @@ module.exports = {
         }) ),
         EditorPackManager.packs.map((pack, index) => {
           return build(pack, [
-            'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
+            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]], ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
         }),
         // Markup Packs
         m("header", "Markup Packs", m(Icon, {
@@ -235,7 +235,7 @@ module.exports = {
         }) ),
         MarkupPackManager.packs.map((pack, index) => {
           return build(pack, [
-            'article', ['header', pack.name, ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui
+            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]], ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui
           ]);
         }),
         // Render Packs
@@ -254,7 +254,7 @@ module.exports = {
         })),
         RenderPackManager.packs.map((pack, index) => {
           return build(pack, [
-            'article', ['header', pack.name, 
+            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]],
             (pack.read_only
               ? ['button.disabled', 'Built-in']
               : ['button', 'Uninstall', {
@@ -283,7 +283,7 @@ module.exports = {
         })),
         ExtensionPackManager.packs.map((extension, index) => {
           return build(extension, [
-            'article', ['header', extension.name, ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
+            'article', ['header', ['span.name', extension.name, ['span.version', extension.version]], ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
           ]);
         })
       )

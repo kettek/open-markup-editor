@@ -108,8 +108,10 @@ function makePackManager(module_name, obj={}) {
       return mm.packs.filter(mod => {return mod.short_name == short_name});
     },
     create: filepath => {
+      let pkg = JSON.parse(fs.readFileSync(path.join(filepath, 'package.json'), 'utf8'))
       let mod = Emitter(Object.assign({
-        short_name: path.basename(filepath),
+        short_name: pkg.name,
+        version:    '',
         filepath:   filepath,
         name:       '',
         key:        module_name+'.undefined',
@@ -129,6 +131,9 @@ function makePackManager(module_name, obj={}) {
         if (mod.name == "") {
           log.warn('Blank ' + module_name + ' mod name, will use generated or provided short_name.');
           mod.name = mod.short_name;
+        }
+        if (mod.version == "") {
+          mod.version = pkg.version
         }
         mod.key = module_name + '.' + mod.short_name;
 

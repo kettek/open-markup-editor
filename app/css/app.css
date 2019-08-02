@@ -291,6 +291,11 @@ article > header {
   align-items: center;
   justify-content: space-between;
 }
+article > header .version {
+  margin-left: .25em;
+  opacity: 0.5;
+  font-size: 75%;
+}
 
 *[disabled], .disabled {
   cursor: no-drop;
