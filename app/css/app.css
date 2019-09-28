@@ -162,6 +162,9 @@ nav {
 .tab.focused {
   color: var(--s-light);
 }
+span.changed {
+  font-style: italic;
+}
 span.unsaved:after {
   content: '*';
 }

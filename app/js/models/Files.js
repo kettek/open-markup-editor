@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const chokidar = require('chokidar');
 
 const m = require('mithril');
 
@@ -13,6 +14,11 @@ const main_window = require('electron').remote.getCurrentWindow()
 
 let Files = Emitter({
   focused: 0,
+  watcher: chokidar.watch([], {
+    persistent: false,
+    disableGlobbing: true,
+    ignoreInitial: true,
+  }),
   should_redraw: true,
   // Whether or not files are caching data rather than loading into the app. Can be released with releaseCache() or blocked with engageCache().
   caching: true,
@@ -52,7 +58,9 @@ let Files = Emitter({
   },
   setFilePath: (index, filepath) => {
     if (!Files.validateFileEntry(index)) return false;
+    Files.unwatchFile(index)
     Files.loadedFiles[index].filepath = filepath;
+    Files.watchFile(index)
     Files.setFileName(index, path.basename(filepath));
   },
   getFileDirectory: (index) => {
@@ -95,6 +103,18 @@ let Files = Emitter({
     if (!Files.validateFileEntry(index)) return false;
     return Files.loadedFiles[index].saved;
   },
+  isFileChanged: index => {
+    if (!Files.validateFileEntry(index)) return false;
+    return Files.loadedFiles[index].changed;
+  },
+  watchFile: index => {
+    if (!Files.validateFileEntry(index)) return false;
+    Files.watcher.add(Files.loadedFiles[index].filepath)
+  },
+  unwatchFile: index => {
+    if (!Files.validateFileEntry(index)) return false;
+    Files.watcher.unwatch(Files.loadedFiles[index].filepath)
+  },
   closeFile: (index, force=false) => {
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return false;
@@ -120,6 +140,8 @@ let Files = Emitter({
       });
       return;
     }
+
+    Files.unwatchFile(index);
 
     Files.loadedFiles.splice(index, 1);
     if (index >= Files.loadedFiles.length) {
@@ -165,13 +187,16 @@ let Files = Emitter({
         Files.saveFile(index, false, cb);
       });
     } else {
+      Files.loadedFiles[index].saving = true
       fs.writeFile(Files.loadedFiles[index].filepath, Files.getFileText(index), (err) => {
+        Files.loadedFiles[index].saving = false
         if (err) {
           console.log(err.message);
           Files.loadedFiles[index].saved = false;
           return;
         }
         Files.loadedFiles[index].saved = true;
+        Files.loadedFiles[index].changed = false;
         cb(index);
         Files.checkState();
       });
@@ -216,8 +241,10 @@ let Files = Emitter({
       }
       if (Files.isCaching()) {
         Files.cachedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
+        Files.watchFile(Files.cachedFiles.length-1)
       } else {
         Files.loadedFiles.push(Files.buildFileEntry({filepath: filepath, text: data}));
+        Files.watchFile(Files.loadedFiles.length-1)
         Files.setFileFocus(Files.loadedFiles.length-1);
         Files.emit("file-load", Files.loadedFiles.length-1);
         Files.checkState();
@@ -266,6 +293,8 @@ let Files = Emitter({
       filepath: "",
       text: "",
       saved: true,
+      saving: false,  // if the file is currently saving
+      changed: false, // on-disk file differs from in-memory
       current_line: 0,
       is_dirty: true
     }, obj);
@@ -285,6 +314,22 @@ let Files = Emitter({
   },
   isCaching: () => {
     return Files.caching;
+  }
+})
+
+Files.watcher.on('change', (path, stats) => {
+  for (let i = 0; i < Files.loadedFiles.length; i++) {
+    if (Files.loadedFiles[i].filepath == path) {
+      fs.readFile(path, 'utf-8', (err, data="") => {
+        if (err && err.code != "ENOENT") {
+          console.log(err.message);
+          return;
+        }
+        Files.loadedFiles[i].changed = data !== Files.getFileText(i);
+        Files.should_redraw = true;
+        m.redraw();
+      });
+    }
   }
 })
 
