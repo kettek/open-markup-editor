@@ -112,7 +112,7 @@ let Files = Emitter({
   setFileChanged: (index, changed, data=null) => {
     Files.loadedFiles[index].changed = changed ? true : false;
     if (changed) {
-      if (settings.get('editor.reload_on_change')) {
+      if (settings.get('files.reload_on_change')) {
         // Only set text if the file is saved and our data arg is non-null.
         if (Files.isFileSaved(index) && data != null) {
           Files.setFileText(index, data)
@@ -122,7 +122,7 @@ let Files = Emitter({
         }
       }
 
-      if (settings.get('editor.notify_on_change')) {
+      if (settings.get('files.notify_on_change')) {
         const isSuperior = process.platform !== 'win32'; // ;)
         let options = {
            type: "info",
@@ -358,7 +358,7 @@ let Files = Emitter({
 })
 
 Files.watcher.on('change', (path, stats) => {
-  if (!settings.get('editor.watch_files')) {
+  if (!settings.get('files.watch')) {
     return
   }
   for (let i = 0; i < Files.loadedFiles.length; i++) {

@@ -146,8 +146,11 @@ function build(extension, obj) {
           item.attrs[e_handler.map.value] = item.value;
         }
         for (let i = 0; e_handler.events && i < e_handler.events.length; i++) {
-          item.attrs['on'+e_handler.events[i]] = (e) => {
-            extension.set(item.key, e.target[e_handler.map.value]);
+          // Only add our handler if the user has not overridden it.
+          if (!item.attrs['on'+e_handler.events[i]]) {
+            item.attrs['on'+e_handler.events[i]] = (e) => {
+              extension.set(item.key, e.target[e_handler.map.value]);
+            }
           }
         }
       }
