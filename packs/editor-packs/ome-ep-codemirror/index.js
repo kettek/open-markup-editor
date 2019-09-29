@@ -236,7 +236,7 @@ module.exports = {
     /* --- */
     pack.on('global-conf-set', (key, value) => {
       if (key === 'editor.linewrapping') {
-        pack.cm.setOption('lineWrapping', value);
+        if (pack.cm) pack.cm.setOption('lineWrapping', value);
       } else if (key === 'editor.updateTheming') { // FIXME: this is hacky to use a configuration to propagate updates.
         unloadCustomTheming();
         loadCustomTheming();
