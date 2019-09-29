@@ -4,6 +4,8 @@ const chokidar = require('chokidar');
 
 const m = require('mithril');
 
+const settings    = require('electron-app-settings');
+
 const Emitter = require('../emitter.js');
 
 const MarkupPacksManager = require('../MarkupPackManager.js');
@@ -106,6 +108,44 @@ let Files = Emitter({
   isFileChanged: index => {
     if (!Files.validateFileEntry(index)) return false;
     return Files.loadedFiles[index].changed;
+  },
+  setFileChanged: (index, changed, data=null) => {
+    Files.loadedFiles[index].changed = changed ? true : false;
+    if (changed) {
+      if (settings.get('editor.reload_on_change')) {
+        // Only set text if the file is saved and our data arg is non-null.
+        if (Files.isFileSaved(index) && data != null) {
+          Files.setFileText(index, data)
+          Files.setFileSaved(index, true)
+          Files.setFileChanged(index, false)
+          return
+        }
+      }
+
+      if (settings.get('editor.notify_on_change')) {
+        const isSuperior = process.platform !== 'win32'; // ;)
+        let options = {
+           type: "info",
+           title: "File Changed",
+           message: "The Document \"" + Files.getFileName(index) + "\" has been changed by an outside entity.",
+           detail: "Do you want to reload the file?",
+           buttons: isSuperior ?  ["Ignore", "Reload"] : ["Reload", "Ignore"],
+           defaultId: isSuperior ? 1 : 0
+        };
+        dialog.showMessageBox(main_window, options, (response) => {
+          if (response === (isSuperior ? 0 : 1)) {          // Ignore
+          } else if (response === (isSuperior ? 1 : 0)) {   // Reload
+            if (data != null) {
+              Files.setFileText(index, data)
+              Files.setFileSaved(index, true)
+              Files.setFileChanged(index, false)
+            }
+          }
+        });
+      }
+    }
+    Files.should_redraw = true;
+    m.redraw();
   },
   watchFile: index => {
     if (!Files.validateFileEntry(index)) return false;
@@ -318,6 +358,9 @@ let Files = Emitter({
 })
 
 Files.watcher.on('change', (path, stats) => {
+  if (!settings.get('editor.watch_files')) {
+    return
+  }
   for (let i = 0; i < Files.loadedFiles.length; i++) {
     if (Files.loadedFiles[i].filepath == path) {
       fs.readFile(path, 'utf-8', (err, data="") => {
@@ -325,9 +368,7 @@ Files.watcher.on('change', (path, stats) => {
           console.log(err.message);
           return;
         }
-        Files.loadedFiles[i].changed = data !== Files.getFileText(i);
-        Files.should_redraw = true;
-        m.redraw();
+        Files.setFileChanged(i, data !== Files.getFileText(i), data);
       });
     }
   }

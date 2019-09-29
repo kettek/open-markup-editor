@@ -14,6 +14,9 @@ function onFileLoad(index) {
 function onFileImport(index, text) {
   current_editor.emit('doc-insert', index, text);
 }
+function onFileSet(index, text) {
+  current_editor.emit("doc-set", index, text);
+}
 function onFileClose(index) {
   current_editor.emit("doc-close", index);
   current_editor.emit("doc-focus", Files.focused);
@@ -44,6 +47,7 @@ function attachEditor(dom) {
   Files.on('file-load', onFileLoad);
   Files.on('file-close', onFileClose);
   Files.on('file-import', onFileImport);
+  Files.on('set-text', onFileSet);
   // 2. Hook Files up to editor.
   if (current_editor.getText) {
     Files.on("get-text", current_editor.getText);
@@ -60,6 +64,7 @@ function detachEditor() {
   if (current_editor.getText) {
     Files.off("get-text", current_editor.getText);
   }
+  Files.off('set-text', onFileSet);
   Files.off('file-import', onFileImport);
   Files.off('file-close', onFileClose);
   Files.off('file-load', onFileLoad);
