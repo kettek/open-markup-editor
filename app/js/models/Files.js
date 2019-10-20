@@ -204,7 +204,7 @@ let Files = Emitter({
     m.redraw();
     return true;
   },
-  saveFile: (index, save_as=false, rename=false, cb=()=>{}) => {
+  saveFile: (index=-1, save_as=false, rename=false, cb=()=>{}) => {
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return;
     if (Files.loadedFiles[index].filepath.length == 0 || Files.loadedFiles[index].saveAs == true || save_as == true) {

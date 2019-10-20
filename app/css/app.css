@@ -206,10 +206,6 @@ span.deleted {
   color: var(--s-dark-fg);
 }
 
-.button.new {
-  font-size: 12pt;
-}
-
 svg {
   fill: currentColor;
 }
@@ -250,15 +246,16 @@ button:hover:before {
 .tab.settings {
   margin: 0 0 0 auto;
 }
-.tab.new, .tab.open {
+.tab.new, .tab.open, .tab.save, .tab.save-as {
   padding: 0;
   margin: 0;
 }
-.tab.new .button, .tab.open .button {
+.tab.new .button, .tab.open .button, .tab.save .button, .tab.save-as .button {
   padding: 0;
   margin: 0;
+  font-size: 12pt;
 }
-.tab.open {
+.tab.save-as {
   margin-right: .5em;
 }
 section.settings {

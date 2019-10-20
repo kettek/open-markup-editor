@@ -19,9 +19,23 @@ module.exports = {
         { onclick: Files.openFile },
         m(Icon, {
           iconName: 'file-open',
-          className: 'button new'
+          className: 'button open'
         })
       ),
+      m('.tab.save' + (Files.isFileSaved(Files.focused) ? '.disabled' : ''), 
+        { onclick: ()=>{Files.saveFile()} },
+        m(Icon, {
+          iconName: 'file-save',
+          className: 'button save'
+        })
+      ),
+      /*m('.tab.save-as', 
+        { onclick: Files.saveFileAs },
+        m(Icon, {
+          iconName: 'file-save-as',
+          className: 'button save-as'
+        })
+      ),*/
       vnode.children,
       m('.tab.settings',
         { onclick: () => AppState.show_config = !AppState.show_config },
