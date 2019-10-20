@@ -280,6 +280,9 @@ section.settings > header {
   justify-content: space-between;
   font-size: 200%;
 }
+section.settings > header > .button.new {
+  font-size: 12pt;
+}
 section.settings > article {
   position: relative;
   padding: .125em;
