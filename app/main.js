@@ -36,6 +36,18 @@ function createSplashWindow() {
   }))
 }
 
+function createAboutWindow() {
+  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false });
+  windows.list[windows.ABOUT_WINDOW].loadURL(url.format({
+    pathname: path.join(__dirname, 'about.html'),
+    protocol: 'file:',
+    slashes: true
+  }))
+  ipcMain.on('about-hide', (event) => {
+    windows.list[windows.ABOUT_WINDOW].hide();
+  });
+}
+
 function createMainWindow() {
   windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false });
   windows.list[windows.MAIN_WINDOW].setBounds({x: settings.get("window.left"), y: settings.get("window.top"), width: settings.get("window.width"), height: settings.get("window.height")});
@@ -62,6 +74,9 @@ function createMainWindow() {
     settings.set("window", {left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height });
     windows.list[windows.MAIN_WINDOW] = null;
   });
+
+  // Might as well create our about window for future use here.
+  createAboutWindow();
 }
 
 function createPreviewView() {

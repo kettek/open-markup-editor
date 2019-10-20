@@ -279,7 +279,14 @@ function getMenuTemplate () {
       submenu: [
         {
           label: 'About ' + 'OME',
-          role: 'about'
+          click: () => {
+            let size = windows.list[windows.MAIN_WINDOW].getSize()
+            size[0] = Math.round(size[0]*.5)
+            size[1] = Math.round(size[1]*.5)
+            windows.list[windows.ABOUT_WINDOW].setSize(size[0], size[1], false);
+            windows.list[windows.ABOUT_WINDOW].webContents.send('about-show');
+            windows.list[windows.ABOUT_WINDOW].show();
+          }
         },
         {
           type: 'separator'
