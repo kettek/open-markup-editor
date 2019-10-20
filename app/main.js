@@ -37,7 +37,7 @@ function createSplashWindow() {
 }
 
 function createAboutWindow() {
-  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false });
+  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false, resizable: false, frame: false  });
   windows.list[windows.ABOUT_WINDOW].loadURL(url.format({
     pathname: path.join(__dirname, 'about.html'),
     protocol: 'file:',
@@ -46,6 +46,22 @@ function createAboutWindow() {
   ipcMain.on('about-hide', (event) => {
     windows.list[windows.ABOUT_WINDOW].hide();
   });
+  function syncAboutSize() {
+    let bounds = windows.list[windows.MAIN_WINDOW].getBounds()
+    let abounds = {
+      width: Math.round(bounds.width / 2),
+      height: Math.round(bounds.height / 2),
+      x: Math.round(bounds.x + bounds.width / 4),
+      y: Math.round(bounds.y + bounds.height / 4),
+    }
+    windows.list[windows.ABOUT_WINDOW].setBounds(abounds)
+  }
+  windows.list[windows.MAIN_WINDOW].on('resize', (e) => {
+    syncAboutSize()
+  })
+  windows.list[windows.MAIN_WINDOW].on('move', (e) => {
+    syncAboutSize()
+  })
 }
 
 function createMainWindow() {

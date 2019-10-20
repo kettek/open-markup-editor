@@ -268,10 +268,25 @@ function getMenuTemplate () {
         {
           label: 'Report an Issue...',
           click: () => shell.openExternal("https://github.com/kettek/open-markup-editor/issues/new")
-        }
+        },
       ]
     }
   ]
+
+  if (process.platform !== 'darwin') {
+    template[template.length-1].submenu.push(
+      {
+        type: 'separator'
+      },
+      {
+        label: 'About ' + 'OME',
+        click: () => {
+          windows.list[windows.ABOUT_WINDOW].webContents.send('about-show');
+          windows.list[windows.ABOUT_WINDOW].show();
+        }
+      }
+    )
+  }
 
   if (process.platform === 'darwin') {
     template.unshift({
