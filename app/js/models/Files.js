@@ -171,7 +171,7 @@ let Files = Emitter({
       dialog.showMessageBox(main_window, options, (response) => {
         if (response === (isSuperior ? 1 : 2)) {          // Cancel
         } else if (response === (isSuperior ? 2 : 0)) {   // Save
-          Files.saveFile(index, false, (saved_index) => {
+          Files.saveFile(index, false, false, (saved_index) => {
             Files.closeFile(saved_index);
           });
         } else if (response === (isSuperior ? 0 : 1)) {   // Discard
@@ -194,7 +194,7 @@ let Files = Emitter({
     m.redraw();
     return true;
   },
-  saveFile: (index, save_as=false, cb=()=>{}) => {
+  saveFile: (index, save_as=false, rename=false, cb=()=>{}) => {
     if (index == -1) index = Files.focused;
     if (!Files.validateFileEntry(index)) return;
     if (Files.loadedFiles[index].filepath.length == 0 || Files.loadedFiles[index].saveAs == true || save_as == true) {
@@ -217,14 +217,18 @@ let Files = Emitter({
           extensions: [ ext ],
         }
       });
-      dialog.showSaveDialog(main_window, {
+      let options = {
         defaultPath: Files.loadedFiles[index].filepath,
-        filters: filters
-      }, filename => {
+        filters: filters,
+      }
+      if (rename) {
+        options.buttonLabel = "Rename";
+      }
+      dialog.showSaveDialog(main_window, options, filename => {
         if (filename === undefined) return;
         Files.loadedFiles[index].saveAs = false;
         Files.setFilePath(index, filename);
-        Files.saveFile(index, false, cb);
+        Files.saveFile(index, false, rename, cb);
       });
     } else {
       Files.loadedFiles[index].saving = true
@@ -241,6 +245,19 @@ let Files = Emitter({
         Files.checkState();
       });
     }
+  },
+  renameFile: (index) => {
+    if (index == -1) index = Files.focused;
+    let oldFilepath = Files.loadedFiles[index].filepath;
+    Files.saveFile(index, true, true, () => {
+      if (oldFilepath == Files.loadedFiles[index].filepath) return;
+      fs.unlink(oldFilepath, (err) => {
+        if (err) {
+          console.log(err.message);
+          return;
+        }
+      });
+    });
   },
   importFile: filepath => {
     let index = Files.focused;

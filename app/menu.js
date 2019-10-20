@@ -152,6 +152,12 @@ function getMenuTemplate () {
           }
         },
         {
+          label: 'Rename',
+          click: () => {
+            windows.list[windows.MAIN_WINDOW].webContents.send('file-rename', -1);
+          }
+        },
+        {
           type: 'separator'
         },
         {

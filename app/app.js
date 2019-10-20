@@ -39,6 +39,9 @@ ipcRenderer.on('file-save', (event, arg) => {
 ipcRenderer.on('file-save-as', (event, arg) => {
   Files.saveFile(-1, true);
 });
+ipcRenderer.on('file-rename', (event, arg) => {
+  Files.renameFile(arg);
+});
 ipcRenderer.on('file-close', (event, arg) => {
   if (Files.closeFile(-1) == false) {
     // Quit if there are no more files?
