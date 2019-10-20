@@ -168,6 +168,9 @@ span.changed {
 span.unsaved:after {
   content: '*';
 }
+span.deleted {
+  text-decoration: line-through;
+}
 .tab:after {
   content: '';
   display: block;

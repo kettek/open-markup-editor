@@ -109,6 +109,10 @@ let Files = Emitter({
     if (!Files.validateFileEntry(index)) return false;
     return Files.loadedFiles[index].changed;
   },
+  isFileDeleted: index => {
+    if (!Files.validateFileEntry(index)) return true;
+    return Files.loadedFiles[index].deleted;
+  },
   setFileChanged: (index, changed, data=null) => {
     Files.loadedFiles[index].changed = changed ? true : false;
     if (changed) {
@@ -145,6 +149,12 @@ let Files = Emitter({
       }
     }
     Files.should_redraw = true;
+    m.redraw();
+  },
+  setFileDeleted: (index, isDeleted) => {
+    if (!Files.validateFileEntry(index)) return false;
+    Files.setFileSaved(index, false)
+    Files.loadedFiles[index].deleted = isDeleted;
     m.redraw();
   },
   watchFile: index => {
@@ -240,6 +250,7 @@ let Files = Emitter({
           return;
         }
         Files.loadedFiles[index].saved = true;
+        Files.loadedFiles[index].deleted = false;
         Files.loadedFiles[index].changed = false;
         cb(index);
         Files.checkState();
@@ -352,6 +363,7 @@ let Files = Emitter({
       saved: true,
       saving: false,  // if the file is currently saving
       changed: false, // on-disk file differs from in-memory
+      deleted: false, // on-disk file has been deleted
       current_line: 0,
       is_dirty: true
     }, obj);
@@ -390,5 +402,16 @@ Files.watcher.on('change', (path, stats) => {
     }
   }
 })
+
+Files.watcher.on('unlink', (path) => {
+  if (!settings.get('files.watch')) {
+    return
+  }
+  for (let i = 0; i < Files.loadedFiles.length; i++) {
+    if (Files.loadedFiles[i].filepath == path) {
+      Files.setFileDeleted(i, true);
+    }
+  }
+});
 
 module.exports = Files;
