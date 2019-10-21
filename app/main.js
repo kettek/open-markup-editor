@@ -45,6 +45,7 @@ function createAboutWindow() {
   }))
   ipcMain.on('about-hide', (event) => {
     windows.list[windows.ABOUT_WINDOW].hide();
+    windows.list[windows.MAIN_WINDOW].focus();
   });
   function syncAboutSize() {
     let bounds = windows.list[windows.MAIN_WINDOW].getBounds()
