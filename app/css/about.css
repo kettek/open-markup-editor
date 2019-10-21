@@ -2,6 +2,10 @@
 
 :root {
   --font-family: "M+ C Type-2 (basic latin)";
+  --p: #212121;
+  --p-fg: #fbfbfb;
+  --p-dark: #000;
+  --p-dark-fg: #fbfbfb;
 }
 
 * {
@@ -21,6 +25,9 @@ body {
   grid-template-rows: auto 1fr auto;
   grid-template-columns: 1fr;
   font-family: var(--font-family);
+  background: var(--p);
+  color: var(--p-fg);
+  text-shadow: 0 0 4vmin var(--p-dark);
 }
 
 header {
@@ -53,6 +60,7 @@ footer {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+  filter: drop-shadow(0 0 1vmin var(--p-dark));
 }
 
 #version {
