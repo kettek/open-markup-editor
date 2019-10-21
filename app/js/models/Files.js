@@ -253,6 +253,7 @@ let Files = Emitter({
         Files.loadedFiles[index].saved = true;
         Files.loadedFiles[index].deleted = false;
         Files.loadedFiles[index].changed = false;
+        menu.addRecentFile(Files.loadedFiles[index].filepath);
         cb(index);
         Files.checkState();
       });
