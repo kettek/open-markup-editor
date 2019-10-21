@@ -57,7 +57,6 @@ function updateOpenRecentMenu() {
       label: label,
       click: () => {
         windows.list[windows.MAIN_WINDOW].webContents.send('file-open', filepath);
-        addRecentFile(filepath);
       }
     }));
   }
@@ -91,7 +90,6 @@ function getMenuTemplate () {
               if (fileNames === undefined) return;
               for (let i = 0; i < fileNames.length; i++) {
                 windows.list[windows.MAIN_WINDOW].webContents.send('file-open', fileNames[i]);
-                addRecentFile(fileNames[i]);
               }
           })}
         },
@@ -102,7 +100,6 @@ function getMenuTemplate () {
               label: el.name,
               click: () => {
                 windows.list[windows.MAIN_WINDOW].webContents.send('file-open', el.filepath);
-                addRecentFile(el.filepath);
               }
             }
           }).concat([

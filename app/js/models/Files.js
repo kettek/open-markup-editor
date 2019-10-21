@@ -327,6 +327,7 @@ let Files = Emitter({
         Files.emit("file-load", Files.loadedFiles.length-1);
         Files.checkState();
       }
+      menu.addRecentFile(filepath);
     });
   },
   newFile: () => {
