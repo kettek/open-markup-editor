@@ -1,6 +1,17 @@
 body {
   padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#owl {
+  display: block;
+  width: 100vw;
+  height: 100vh;
   background-image: url('../images/splash.png');
-  background-size: 100%;
+  background-size: 90%;
+  background-position: center;
   background-repeat: no-repeat;
+  filter: drop-shadow(0 0 2vmin #000);
 }
