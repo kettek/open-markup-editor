@@ -103,7 +103,7 @@ let Files = Emitter({
     Files.loadedFiles[index].saved = value;
   },
   isFileSaved: index => {
-    if (!Files.validateFileEntry(index)) return false;
+    if (!Files.validateFileEntry(index)) return true;
     return Files.loadedFiles[index].saved;
   },
   isFileChanged: index => {
