@@ -289,10 +289,6 @@ section.recent-files {
   height: 100%;
   padding: 2em;
 }
-.recent-files header {
-  font-size: 150%;
-  margin-bottom: 1em;
-}
 .recent-files__items {
   flex: 1;
   display: flex;

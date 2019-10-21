@@ -9,8 +9,7 @@ module.exports = {
     return (
       m("section.welcome",
         m('section.welcome-text', 
-          m("div", "Hello!"),
-          m("div", " "),
+          m("header", "Hello!"),
           m("div", 
             m('span', "Create or open "),
             MarkupPackManager.packs.reduce((arr, pack, pack_index) => {
