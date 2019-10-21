@@ -85,7 +85,6 @@ function createMainWindow() {
       if (index == 0) return; // FIXME: index >= 1 when npm start called directly
       windows.list[windows.MAIN_WINDOW].webContents.send('file-open', val);
     });
-
   });
 
   windows.list[windows.MAIN_WINDOW].on('close', () => {
@@ -200,8 +199,6 @@ if (is_main_instance) {
       renderpack: "$OME_RENDER_PACKS/ome-rp-default",
       editorpack: "$OME_EDITOR_PACKS/ome-ep-codemirror"
     }, true);
-    //
-    menu.init();
   
     // This is a bit unfortunate, but the window will show up with
     // a white background if we do not delay the splash window
@@ -238,6 +235,8 @@ if (is_main_instance) {
   ipcMain.on('ready-to-run', (event) => {
     windows.list[windows.MAIN_WINDOW].show();
     windows.list[windows.SPLASH_WINDOW].hide();
+    // Set our menu.
+    menu.init();
     if (isDev) windows.list[windows.MAIN_WINDOW].toggleDevTools();
   });
 } else {
