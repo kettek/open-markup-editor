@@ -1,6 +1,6 @@
 module.exports = {
   name: 'markdown-it',
-  supports: ['md', 'markdown'],
+  supports: ['markdown', 'md'],
   libraries: [
     { name: 'Task Lists', desc: 'Adds support for Github-style tasklists.', example: '[ ] Task item\n[x] Task item', src: 'markdown-it-task-lists' }
     , { name: 'Line Numbering', desc: 'Adds line numbering ids, required for synch-to-line.', example: '', src: 'markdown-it-inject-linenumbers' }
