@@ -11,7 +11,7 @@ module.exports = {
       ,
       [
         //m('span', Files.getFileName(vnode.attrs.fileIndex) + (!Files.isFileSaved(vnode.attrs.fileIndex) ? '*' : ''))
-        m('span'+(!Files.isFileSaved(vnode.attrs.fileIndex) ? '.unsaved' : '')+(Files.isFileChanged(vnode.attrs.fileIndex) ? '.changed' : '')+(Files.isFileDeleted(vnode.attrs.fileIndex) ? '.deleted' : ''), Files.getFileName(vnode.attrs.fileIndex))
+        m('span'+(!Files.isFileSaved(vnode.attrs.fileIndex) ? '.unsaved' : '')+(Files.isFileChanged(vnode.attrs.fileIndex) ? '.changed' : '')+(Files.isFileDeleted(vnode.attrs.fileIndex) ? '.deleted' : ''), Files.getFileName(vnode.attrs.fileIndex)
       , m(Icon, {
           iconName: "remove",
           className: "button close",
@@ -20,7 +20,7 @@ module.exports = {
               Files.closeFile(vnode.attrs.fileIndex);
             }
           }
-        }, '')
+        }, ''))
       /*, m('button.close', { onclick: () => {
           Files.closeFile(vnode.attrs.fileIndex);
         }}, '' )*/

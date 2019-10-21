@@ -7,43 +7,39 @@ const Icon = require('./Icon');
 
 module.exports = {
   view: (vnode) => {
-    return m('nav.tabs', [
-      m('.tab.new', 
-        { onclick: Files.newFile },
+    return m('nav.tabs-bar', [
+      m('.tabs-bar__controls', [
         m(Icon, {
+          attrs: { onclick: Files.newFile },
           iconName: 'file-new',
           className: 'button new'
-        })
-      ),
-      m('.tab.open', 
-        { onclick: Files.openFile },
+        }),
         m(Icon, {
+          attrs: { onclick: Files.openFile },
           iconName: 'file-open',
           className: 'button open'
-        })
-      ),
-      m('.tab.save' + (Files.isFileSaved(Files.focused) ? '.disabled' : ''), 
-        { onclick: ()=>{Files.saveFile()} },
+        }),
         m(Icon, {
+          attrs: { onclick: ()=>{Files.saveFile()} },
           iconName: 'file-save',
-          className: 'button save'
-        })
+          className: 'button save' + (Files.isFileSaved(Files.focused) ? ' disabled' : '')
+        }),
+        /*m('.tabs-bar__controls__item.save-as', 
+          { onclick: Files.saveFileAs },
+          m(Icon, {
+            iconName: 'file-save-as',
+            className: 'button save-as'
+          })
+        ),*/
+      ]),
+      m('.tabs', 
+        vnode.children,
       ),
-      /*m('.tab.save-as', 
-        { onclick: Files.saveFileAs },
-        m(Icon, {
-          iconName: 'file-save-as',
-          className: 'button save-as'
-        })
-      ),*/
-      vnode.children,
-      m('.tab.settings',
-        { onclick: () => AppState.show_config = !AppState.show_config },
-        m(Icon, {
-          iconName: 'gear',
-          className: 'button settings'
-        })
-      )
+      m(Icon, {
+        attrs: { onclick: () => AppState.show_config = !AppState.show_config },
+        iconName: 'gear',
+        className: 'button settings'
+      })
     ]);
   }
 }

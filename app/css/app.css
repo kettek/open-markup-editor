@@ -29,10 +29,23 @@ body {
 }
 * { box-sizing: border-box }
 
+.tabs-bar {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: auto 1fr auto;
+  user-select: none;
+}
+.tabs-bar__controls {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
 .tabs {
   display: flex;
   align-items: center;
   user-select: none;
+  overflow: auto;
 }
 
 .tab {
@@ -159,6 +172,11 @@ nav {
   color: var(--s-dark);
   cursor: pointer;
 }
+.tab span {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
 .tab.focused {
   color: var(--s-light);
 }
@@ -194,16 +212,19 @@ span.deleted {
   color: var(--s-light);
 }
 .button {
-  display: flex;
   cursor: pointer;
   color: var(--s);
-  width: 1.5em;
-  height: 1.5em;
-  padding: 0.25em;
+  width: 1.6em;
+  height: 1.6em;
+  padding: 0.1em;
 }
 .button:hover {
   transition: .2s all;
   color: var(--s-dark-fg);
+}
+.button.close {
+  width: 1.1em;
+  height: 1.1em;
 }
 
 svg {
@@ -238,26 +259,6 @@ button:hover:before {
   color: var(--s-dark-fg);
 }
 
-.button.settings {
-  width: 2em;
-  height: 2em;
-  padding: .1em;
-}
-.tab.settings {
-  margin: 0 0 0 auto;
-}
-.tab.new, .tab.open, .tab.save, .tab.save-as {
-  padding: 0;
-  margin: 0;
-}
-.tab.new .button, .tab.open .button, .tab.save .button, .tab.save-as .button {
-  padding: 0;
-  margin: 0;
-  font-size: 12pt;
-}
-.tab.save-as {
-  margin-right: .5em;
-}
 section.settings {
   position: absolute;
   z-index: 1000;
