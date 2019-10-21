@@ -16,12 +16,14 @@ const path      = require('path');
 const url       = require('url');
 const menu      = require('./menu');
 const windows   = require('./windows');
+const pkg       = require('../package.json');
 
 const util      = require('util');
 const fs        = require('fs');
 const asyncReadFile = util.promisify(fs.readFile)
 
-console.log(process.versions.electron)
+log.info('OME: ' + pkg.version)
+log.info('Electron: ' + process.versions.electron)
 
 function createSplashWindow() {
   windows.list[windows.SPLASH_WINDOW] = new BrowserWindow({ width: 320, height: 320, show: false, frame: false, transparent: true });

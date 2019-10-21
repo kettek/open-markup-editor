@@ -4,6 +4,7 @@ const chokidar = require('chokidar');
 
 const m = require('mithril');
 
+const log         = require('electron-log');
 const settings    = require('electron-app-settings');
 
 const Emitter = require('../emitter.js');
@@ -245,7 +246,7 @@ let Files = Emitter({
       fs.writeFile(Files.loadedFiles[index].filepath, Files.getFileText(index), (err) => {
         Files.loadedFiles[index].saving = false
         if (err) {
-          console.log(err.message);
+          log.error(`File.saveFile "${Files.loadedFiles[index].filepath}"`, err.message);
           Files.loadedFiles[index].saved = false;
           return;
         }
@@ -264,7 +265,7 @@ let Files = Emitter({
       if (oldFilepath == Files.loadedFiles[index].filepath) return;
       fs.unlink(oldFilepath, (err) => {
         if (err) {
-          console.log(err.message);
+          log.error(`renameFile unlink "${oldFilepath}"`, err.message);
           return;
         }
       });
@@ -274,7 +275,7 @@ let Files = Emitter({
     let index = Files.focused;
     fs.readFile(filepath, 'utf-8', (err, data) => {
       if (err) {
-        console.log(err.message);
+        log.error(`importFile "${filepath}"`, err.message);
         return;
       }
       // Create a blank file if there is no valid file open.
@@ -312,7 +313,7 @@ let Files = Emitter({
     // Otherwise read the privided file at filepath.
     fs.readFile(filepath, 'utf-8', (err, data="") => {
       if (err && err.code != "ENOENT") {
-        console.log(err.message);
+        log.error(`Files.loadFile "${filepath}"`, err.message);
         return;
       }
       if (Files.isCaching()) {
@@ -402,7 +403,7 @@ Files.watcher.on('change', (path, stats) => {
     if (Files.loadedFiles[i].filepath == path) {
       fs.readFile(path, 'utf-8', (err, data="") => {
         if (err && err.code != "ENOENT") {
-          console.log(err.message);
+          log.error(`change event for file "${path}"`, err.message);
           return;
         }
         Files.setFileChanged(i, data !== Files.getFileText(i), data);
