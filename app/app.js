@@ -21,6 +21,13 @@ const { app } = require('electron').remote;
 const path = require('path');
 
 // ---- Setup IPC ---
+ipcRenderer.on('redraw', () => {
+  m.redraw();
+});
+ipcRenderer.on('clear-recent', () => {
+  settings.set('recent_files', []);
+  settings.get('recent_files').length = 0;
+});
 ipcRenderer.on('file-new', (event, arg) => {
   Files.newFile();
 });

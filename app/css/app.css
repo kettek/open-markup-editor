@@ -89,21 +89,6 @@ section.view-window.closeElement {
 /*  display: flex;*/
 }
 
-.welcome {
-  display: flex;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  border-style: solid;
-  border-width: 1px 0;
-  border-color: var(--s);
-  background-color: var(--p);
-  color: var(--p-fg);
-  font-size: 3vw;
-  align-items: center;
-  justify-content: center;
-}
-
 .editor {
   flex: 1;
   width: 100%;
@@ -257,6 +242,71 @@ button:hover {
 }
 button:hover:before {
   color: var(--s-dark-fg);
+}
+
+section.welcome {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 1px 0;
+  border-color: var(--s);
+  background-color: var(--p);
+  color: var(--p-fg);
+  font-size: 3vw;
+  align-items: center;
+  justify-content: center;
+}
+
+section.welcome-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5vw;
+  height: 100%;
+  padding: 2em;
+}
+
+section.recent-files {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  font-size: 1.5vw;
+  background: var(--p-dark);
+  color: var(--p-dark-fg);
+  height: 100%;
+  padding: 2em;
+}
+.recent-files header {
+  font-size: 150%;
+  margin-bottom: 1em;
+}
+.recent-files__items {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+.recent-files__item {
+  padding: .5em;
+  cursor: pointer;
+}
+.recent-files__item__name {
+  font-size: 80%;
+  color: var(--s);
+}
+.recent-files__item__filepath {
+  font-size: 60%;
+  opacity: 0.5;
+}
+.recent-files__item:hover {
+  background: var(--p);
 }
 
 section.settings {

@@ -39,7 +39,9 @@ function addRecentFile(file) {
 }
 
 function clearRecent() {
-  settings.get('recent_files').length = 0
+  settings.set('recent_files', []);
+  settings.get('recent_files').length = 0;
+  windows.list[windows.MAIN_WINDOW].webContents.send('clear-recent');
   updateOpenRecentMenu();
 }
 
@@ -65,6 +67,7 @@ function updateOpenRecentMenu() {
     click: clearRecent
   }));
   electron.Menu.setApplicationMenu(menu);
+  windows.list[windows.MAIN_WINDOW].webContents.send('redraw');
 }
 
 function getMenuTemplate () {
