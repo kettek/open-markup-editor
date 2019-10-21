@@ -13,3 +13,7 @@ document.addEventListener('keyup', (e) => {
     ipcRenderer.send('about-hide');
   }
 });
+
+document.addEventListener('click', () => {
+  ipcRenderer.send('about-hide');
+});
