@@ -1,6 +1,7 @@
 let m = require('mithril');
 let settings = require('electron-app-settings');
 
+let MarkupPackManager = require('../MarkupPackManager');
 let Files = require('../models/Files');
 
 module.exports = {
@@ -9,7 +10,20 @@ module.exports = {
       m("section.welcome",
         m('section.welcome-text', 
           m("div", "Hello!"),
-          m("div", "Create or Open a markup file of your delicious flavour!")
+          m("div", " "),
+          m("div", 
+            m('span', "Create or open "),
+            MarkupPackManager.packs.reduce((arr, pack, pack_index) => {
+              arr.push(pack.supports[0].replace(/^\.+/gm,''))
+              return arr
+            }, []).map((ext, index, src) => {
+              return [
+                m('span', (index > 0 ? index == src.length-1 ? ', or ' : ', ' : '')),
+                m('span.extension', ext),
+              ]
+            }),
+            m('span', ' files!')
+          ),
         ),
         m("section.recent-files",
           m("header", "Recent Files"),

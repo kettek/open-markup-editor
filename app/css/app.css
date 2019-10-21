@@ -264,11 +264,18 @@ section.welcome {
 section.welcome-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: 1.5vw;
   height: 100%;
   padding: 2em;
+}
+
+.welcome header {
+  font-size: 150%;
+  margin-bottom: 1em;
+}
+
+.extension {
+  color: var(--s-light);
 }
 
 section.recent-files {
