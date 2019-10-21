@@ -302,6 +302,14 @@ let Files = Emitter({
     })
   },
   loadFile: filepath => {
+    // If the filepath is already loaded, focus it instead.
+    for (let i = 0; i < Files.loadedFiles.length; i++) {
+      if (Files.loadedFiles[i].filepath == filepath) {
+        Files.setFileFocus(i);
+        return;
+      }
+    }
+    // Otherwise read the privided file at filepath.
     fs.readFile(filepath, 'utf-8', (err, data="") => {
       if (err && err.code != "ENOENT") {
         console.log(err.message);
