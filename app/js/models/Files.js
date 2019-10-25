@@ -18,7 +18,6 @@ const main_window = require('electron').remote.getCurrentWindow()
 let Files = Emitter({
   focused: 0,
   watcher: chokidar.watch([], {
-    persistent: false,
     disableGlobbing: true,
     ignoreInitial: true,
   }),
