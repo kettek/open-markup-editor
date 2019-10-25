@@ -260,7 +260,7 @@ module.exports = {
             'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]],
             (pack.read_only
               ? ['button.disabled', 'Built-in']
-              : [['button', 'Check for Update', {
+              : [['button' + (RenderPackManager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
                 onclick: () => {
                   RenderPackManager.checkForUpdate(index);
                 }

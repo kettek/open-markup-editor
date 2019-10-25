@@ -235,6 +235,11 @@ function makePackManager(module_name, obj={}) {
         }
       });
     },
+    hasRepository: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      if (mm.packs[index].repository == '') return false;
+      return true;
+    },
     checkForUpdate: index => {
       if (index < 0 || index >= mm.packs.length) return false;
       //
