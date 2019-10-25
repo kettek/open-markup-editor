@@ -214,7 +214,7 @@ module.exports = {
                 title: "Install Editor Pack archive",
                 filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
                 properties: ["openFile", "showHiddenFiles"]
-              }, EditorPackManager.install);
+              }).then(result => EditorPackManager.install(result.filePaths));
             }
           }
         }) ),
@@ -229,10 +229,10 @@ module.exports = {
           attrs: {
             onclick: () => {
               dialog.showOpenDialog({
-                title: "Install Editor Pack archive",
+                title: "Install Markup Pack archive",
                 filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
                 properties: ["openFile", "showHiddenFiles"]
-              }, EditorPackManager.install);
+              }).then(result => MarkupPackManager.install(result.filePaths));
             }
           }
         }) ),
@@ -251,7 +251,7 @@ module.exports = {
                 title: "Install Render Pack archive",
                 filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
                 properties: ["openFile", "showHiddenFiles"]
-              }, RenderPackManager.install);
+              }).then(result => RenderPackManager.install(result.filePaths));
             }
           }
         })),
@@ -260,11 +260,15 @@ module.exports = {
             'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]],
             (pack.read_only
               ? ['button.disabled', 'Built-in']
-              : ['button', 'Uninstall', {
+              : [['button', 'Check for Update', {
+                onclick: () => {
+                  RenderPackManager.checkForUpdate(index);
+                }
+              }], ['button', 'Uninstall', {
                 onclick: () => {
                   RenderPackManager.uninstall(index);
                 }
-              }]
+              }]]
             )
             ],
             pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
@@ -280,7 +284,7 @@ module.exports = {
                 title: "Install Render Pack archive",
                 filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
                 properties: ["openFile", "showHiddenFiles"]
-              }, RenderPackManager.install);
+              }).then(result => ExtensionPackManager.install(result.filePaths));
             }
           }
         })),

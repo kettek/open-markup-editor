@@ -3,6 +3,7 @@ const m           = require('mithril');
 const fs          = require('fs');
 const path        = require('path');
 const log         = require('electron-log');
+const https       = require('https');
 const DataManager = require('./DataManager');
 const Emitter     = require('./emitter');
 
@@ -111,6 +112,7 @@ function makePackManager(module_name, obj={}) {
       let pkg = JSON.parse(fs.readFileSync(path.join(filepath, 'package.json'), 'utf8'))
       let mod = Emitter(Object.assign({
         short_name: pkg.name,
+        repository: pkg.repository ? pkg.repository : '',
         version:    '',
         filepath:   filepath,
         name:       '',
@@ -231,7 +233,52 @@ function makePackManager(module_name, obj={}) {
           mm.unload(index);
         }
       });
-    }
+    },
+    checkForUpdate: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      //
+      let full = mm.packs[index].repository
+      let user = ''
+      let repo = ''
+      // Figure out our repository type.
+      if (full.startsWith('github:')) {
+        full = full.substring('github:'.length)
+        let parts = full.split('/', 2)
+        user = parts[0]
+        repo = parts[1]
+      } else {
+        let url = new URL(full)
+        let parts = url.pathname.split('/', 2)
+        user = parts[0]
+        repo = parts[1].replace(/\.git$/, '') 
+      }
+      if (user == '' || repo == '') {
+        log.warn(`Could not get user or repo for updating`)
+        return
+      }
+      // Now we can request an update
+      https.get(`https://api.github.com/repos/${user}/${repo}/releases/latest`, {
+        json: true,
+        headers: {
+          "User-Agent": "Open Markup Editor"
+        }
+      }, (res) => {
+        if (res.statusCode !== 200) {
+          log.error(res.statusCode, res.statusMessage)
+          return
+        }
+        let str = ''
+        res.on('data', chunk => {
+          str += chunk
+        })
+        res.on('end', () => {
+          let result = JSON.parse(str)
+          // TODO: Use result.tag_name to check semver against our own package version
+          // TODO: Iterate through result.assets and check first for platform-specific releases. If no specifics, use a non-platform suffixed version.
+          console.log(result)
+        })
+      }).end();
+    },
   }, obj));
   return mm;
 }
