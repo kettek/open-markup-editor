@@ -137,7 +137,9 @@ let Files = Emitter({
            buttons: isSuperior ?  ["Ignore", "Reload"] : ["Reload", "Ignore"],
            defaultId: isSuperior ? 1 : 0
         };
-        dialog.showMessageBox(main_window, options, (response) => {
+        dialog.showMessageBox(main_window, options)
+        .then(result => {
+          let response = result.response
           if (response === (isSuperior ? 0 : 1)) {          // Ignore
           } else if (response === (isSuperior ? 1 : 0)) {   // Reload
             if (data != null) {
@@ -146,6 +148,8 @@ let Files = Emitter({
               Files.setFileChanged(index, false)
             }
           }
+        }).catch(err => {
+          log.error(err)
         });
       }
     }
@@ -179,7 +183,9 @@ let Files = Emitter({
          buttons: isSuperior ?  ["Discard", "Cancel", "Save"] : ["Save", "Discard", "Cancel"],
          defaultId: isSuperior ? 2 : 0
       };
-      dialog.showMessageBox(main_window, options, (response) => {
+      dialog.showMessageBox(main_window, options)
+      .then(result => {
+        let response = result.response
         if (response === (isSuperior ? 1 : 2)) {          // Cancel
         } else if (response === (isSuperior ? 2 : 0)) {   // Save
           Files.saveFile(index, false, false, (saved_index) => {
@@ -188,6 +194,8 @@ let Files = Emitter({
         } else if (response === (isSuperior ? 0 : 1)) {   // Discard
           Files.closeFile(index, true);
         }
+      }).catch(err => {
+        log.error(err)
       });
       return;
     }
@@ -235,11 +243,15 @@ let Files = Emitter({
       if (rename) {
         options.buttonLabel = "Rename";
       }
-      dialog.showSaveDialog(main_window, options, filename => {
-        if (filename === undefined) return;
+      dialog.showSaveDialog(main_window, options)
+      .then(result => {
+        if (result.canceled) return;
+        let filename = result.filePath
         Files.loadedFiles[index].saveAs = false;
         Files.setFilePath(index, filename);
         Files.saveFile(index, false, rename, cb);
+      }).catch(err => {
+        log.error(err)
       });
     } else {
       Files.loadedFiles[index].saving = true
@@ -295,12 +307,14 @@ let Files = Emitter({
   openFile: () => {
     dialog.showOpenDialog(main_window, {
       properties: ['openFile', 'multiSelections']
-    }, fileNames => {
-      if (fileNames === undefined) return;
-      for (let i = 0; i < fileNames.length; i++) {
-        main_window.webContents.send('file-open', fileNames[i]);
-        menu.addRecentFile(fileNames[i]);
+    }).then(result => {
+      if (result.canceled) return
+      for (let i = 0; i < result.filePaths.length; i++) {
+        main_window.webContents.send('file-open', result.filePaths[i]);
+        menu.addRecentFile(result.filePaths[i]);
       }
+    }).catch(err => {
+      log.error(err)
     })
   },
   loadFile: filepath => {

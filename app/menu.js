@@ -1,8 +1,9 @@
 let electron = require('electron')
 
-const {app, dialog, shell, remote, ipcMain } = require('electron');
+const {app, dialog, shell, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');
-const path = require('path')
+const path  = require('path')
+const log   = require('electron-log');
 
 let windows = require('./windows');
 
@@ -84,14 +85,18 @@ function getMenuTemplate () {
         {
           label: 'Open...',
           accelerator: 'CmdOrCtrl+O',
-          click: () => {dialog.showOpenDialog(windows.list[windows.MAIN_WINDOW], {
-            properties: ['openFile', 'multiSelections']},
-            (fileNames) => {
-              if (fileNames === undefined) return;
-              for (let i = 0; i < fileNames.length; i++) {
-                windows.list[windows.MAIN_WINDOW].webContents.send('file-open', fileNames[i]);
+          click: () => {
+            dialog.showOpenDialog(windows.list[windows.MAIN_WINDOW], {
+              properties: ['openFile', 'multiSelections']
+            }).then(result => {
+              if (result.canceled) return
+              for (let i = 0; i < result.filePaths.length; i++) {
+                windows.list[windows.MAIN_WINDOW].webContents.send('file-open', result.filePaths[i]);
               }
-          })}
+            }).catch(err => {
+              log.error(err)
+            })
+          }
         },
         {
           label: 'Open Recent',
@@ -118,14 +123,18 @@ function getMenuTemplate () {
         {
           label: 'Import...',
           accelerator: 'CmdOrCtrl+I',
-          click: () => {dialog.showOpenDialog(windows.list[windows.MAIN_WINDOW], {
-            properties: ['openFile', 'multiSelections']},
-            (fileNames) => {
-              if (fileNames === undefined) return;
-              for (let i = 0; i < fileNames.length; i++) {
-                windows.list[windows.MAIN_WINDOW].webContents.send('file-import', fileNames[i]);
+          click: () => {
+            dialog.showOpenDialog(windows.list[windows.MAIN_WINDOW], {
+              properties: ['openFile', 'multiSelections']
+            }).then(result => {
+              if (result.canceled) return
+              for (let i = 0; i < result.filePaths.length; i++) {
+                windows.list[windows.MAIN_WINDOW].webContents.send('file-import', result.filePaths[i]);
               }
-          })}
+            }).catch(err => {
+              log.error(err)
+            })
+          }
         },
         {
           label: 'Duplicate...',

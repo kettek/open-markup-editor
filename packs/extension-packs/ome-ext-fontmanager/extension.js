@@ -1,4 +1,4 @@
-var fontManager = require('font-manager');
+var fontManager = require('fontmanager-redux');
 
 function refreshCSS(props) {
   let style = document.getElementsByTagName('head')[0].querySelector('#OME-FontManager');

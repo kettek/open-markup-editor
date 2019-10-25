@@ -39,7 +39,7 @@ function createSplashWindow() {
 }
 
 function createAboutWindow() {
-  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false, resizable: false, frame: false  });
+  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false, resizable: false, frame: false, webPreferences: { nodeIntegration: true } });
   windows.list[windows.ABOUT_WINDOW].loadURL(url.format({
     pathname: path.join(__dirname, 'about.html'),
     protocol: 'file:',
@@ -68,7 +68,7 @@ function createAboutWindow() {
 }
 
 function createMainWindow() {
-  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false });
+  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false, webPreferences: { nodeIntegration: true } });
   windows.list[windows.MAIN_WINDOW].setBounds({x: settings.get("window.left"), y: settings.get("window.top"), width: settings.get("window.width"), height: settings.get("window.height")});
 
   windows.list[windows.MAIN_WINDOW].loadURL(url.format({
