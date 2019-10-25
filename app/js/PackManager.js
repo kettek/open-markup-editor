@@ -4,6 +4,7 @@ const fs          = require('fs');
 const path        = require('path');
 const log         = require('electron-log');
 const https       = require('https');
+const semver      = require('semver');
 const DataManager = require('./DataManager');
 const Emitter     = require('./emitter');
 
@@ -238,26 +239,58 @@ function makePackManager(module_name, obj={}) {
       if (index < 0 || index >= mm.packs.length) return false;
       //
       let full = mm.packs[index].repository
+      let url  = {}
+      let type = ''
       let user = ''
       let repo = ''
-      // Figure out our repository type.
+
+      // Check if we are using a repository object.
+      if (typeof full === 'object') {
+        if (full.type == 'git') {
+          full = full.url
+        } else {
+          log.warn(`Unsupported repository type ${full.type}`)
+          return
+        }
+      }
+
+      // Parse our repository string.
       if (full.startsWith('github:')) {
         full = full.substring('github:'.length)
         let parts = full.split('/', 2)
         user = parts[0]
         repo = parts[1]
+        type = 'github'
       } else {
-        let url = new URL(full)
-        let parts = url.pathname.split('/', 2)
+        url = new URL(full)
+        let pathname = url.pathname
+        if (pathname[0] == '/') pathname = pathname.substring(1)
+        let parts = pathname.split('/', 2)
+        if (url.hostname == 'github.com') {
+          type = 'github'
+        }
         user = parts[0]
         repo = parts[1].replace(/\.git$/, '') 
       }
+
       if (user == '' || repo == '') {
         log.warn(`Could not get user or repo for updating`)
         return
       }
+      // TODO: gitlab and any others that have a releases API
+      let target = ''
+      if (type == 'github') {
+        target = `https://api.github.com/repos/${user}/${repo}/releases`
+      } else if (url != '') {
+        // NOTE: This presumes gitea API.
+        target = `${url.protocol}//${url.host}/api/v1/repos/${user}/${repo}/releases`
+      }
+      if (target == '') {
+        log.warn(`Could not build an appropriate target`)
+        return
+      }
       // Now we can request an update
-      https.get(`https://api.github.com/repos/${user}/${repo}/releases/latest`, {
+      https.get(target, {
         json: true,
         headers: {
           "User-Agent": "Open Markup Editor"
@@ -273,9 +306,16 @@ function makePackManager(module_name, obj={}) {
         })
         res.on('end', () => {
           let result = JSON.parse(str)
-          // TODO: Use result.tag_name to check semver against our own package version
-          // TODO: Iterate through result.assets and check first for platform-specific releases. If no specifics, use a non-platform suffixed version.
           console.log(result)
+          // NOTE: We are presuming that the first element of the returned array is the latest, as this seems to be true for GitHub and Gitea.
+          // TODO: We need to check against: MAJOR version as well as some target OME semantic version field. Probably iterate through releases to find one that is in the same MAJOR category.
+          let ver = semver.clean(result[0].tag_name)
+          if (semver.gt(ver, mm.packs[index].version)) {
+            console.log(`${ver} greater than ${mm.packs[index].version}`)
+            // TODO: Iterate through result.assets and check first for platform-specific releases via name. If no specifics, use a non-platform suffixed version.
+          } else {
+            console.log(`${ver} is same or less than ${mm.packs[index].version}`)
+          }
         })
       }).end();
     },
