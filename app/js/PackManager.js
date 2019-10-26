@@ -115,6 +115,7 @@ function makePackManager(module_name, obj={}) {
         short_name: pkg.name,
         repository: pkg.repository ? pkg.repository : '',
         version:    '',
+        updates:    {major: '', minor: '', patch: ''},
         filepath:   filepath,
         name:       '',
         key:        module_name+'.undefined',
@@ -243,7 +244,7 @@ function makePackManager(module_name, obj={}) {
     updateHandlers: {
       github: {
         getReleasesURL: url => {
-          let user = '', repo = ''
+          let user = '', repo = '', type = ''
           if (typeof url === 'object') {
             if (url.type != 'git') {
               return ''
@@ -290,7 +291,35 @@ function makePackManager(module_name, obj={}) {
             res.on('end', () => {
               let result = JSON.parse(str)
               console.log(result)
-              // NOTE: We are presuming that the first element of the returned array is the latest, as this seems to be true for GitHub and Gitea.
+              // Get our major, minor, and/or patch updates available.
+              let min_version = semver.clean(pack.version)
+              let max_version = semver.inc(min_version, 'major')
+              let patch_version = semver.inc(min_version, 'minor')
+              let minor_range = `>${min_version} <${max_version}`
+              let patch_range = `>${min_version} <${patch_version}`
+              for (let i = 0; i < result.length; i++) {
+                let tag_name = semver.clean(result[i].tag_name)
+                // Is a patch
+                if (semver.satisfies(tag_name, patch_range)) {
+                  if (!pack.updates.patch || semver.gt(tag_name, pack.updates.patch)) {
+                    pack.updates.patch = tag_name
+                  }
+                }
+                // Is a minor update
+                if (semver.satisfies(tag_name, minor_range)) {
+                  if (!pack.updates.minor || semver.gt(tag_name, pack.updates.minor)) {
+                    pack.updates.minor = tag_name
+                  }
+                }
+                // Is a major update
+                if (semver.gtr(tag_name, minor_range)) {
+                  if (!pack.updates.major || semver.gt(tag_name, pack.updates.major)) {
+                    pack.updates.major = tag_name
+                  }
+                }
+              }
+              console.log(pack.updates)
+
               // TODO: We need to check against: MAJOR version as well as some target OME semantic version field. Probably iterate through releases to find one that is in the same MAJOR category.
               let ver = semver.clean(result[0].tag_name)
               if (semver.gt(ver, pack.version)) {
