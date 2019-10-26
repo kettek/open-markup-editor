@@ -240,89 +240,109 @@ function makePackManager(module_name, obj={}) {
       if (mm.packs[index].repository == '') return false;
       return true;
     },
-    checkForUpdate: index => {
-      if (index < 0 || index >= mm.packs.length) return false;
-      //
-      let full = mm.packs[index].repository
-      let url  = {}
-      let type = ''
-      let user = ''
-      let repo = ''
-
-      // Check if we are using a repository object.
-      if (typeof full === 'object') {
-        if (full.type == 'git') {
-          full = full.url
-        } else {
-          log.warn(`Unsupported repository type ${full.type}`)
-          return
-        }
-      }
-
-      // Parse our repository string.
-      if (full.startsWith('github:')) {
-        full = full.substring('github:'.length)
-        let parts = full.split('/', 2)
-        user = parts[0]
-        repo = parts[1]
-        type = 'github'
-      } else {
-        url = new URL(full)
-        let pathname = url.pathname
-        if (pathname[0] == '/') pathname = pathname.substring(1)
-        let parts = pathname.split('/', 2)
-        if (url.hostname == 'github.com') {
-          type = 'github'
-        }
-        user = parts[0]
-        repo = parts[1].replace(/\.git$/, '') 
-      }
-
-      if (user == '' || repo == '') {
-        log.warn(`Could not get user or repo for updating`)
-        return
-      }
-      // TODO: gitlab and any others that have a releases API
-      let target = ''
-      if (type == 'github') {
-        target = `https://api.github.com/repos/${user}/${repo}/releases`
-      } else if (url != '') {
-        // NOTE: This presumes gitea API.
-        target = `${url.protocol}//${url.host}/api/v1/repos/${user}/${repo}/releases`
-      }
-      if (target == '') {
-        log.warn(`Could not build an appropriate target`)
-        return
-      }
-      // Now we can request an update
-      https.get(target, {
-        json: true,
-        headers: {
-          "User-Agent": "Open Markup Editor"
-        }
-      }, (res) => {
-        if (res.statusCode !== 200) {
-          log.error(res.statusCode, res.statusMessage)
-          return
-        }
-        let str = ''
-        res.on('data', chunk => {
-          str += chunk
-        })
-        res.on('end', () => {
-          let result = JSON.parse(str)
-          console.log(result)
-          // NOTE: We are presuming that the first element of the returned array is the latest, as this seems to be true for GitHub and Gitea.
-          // TODO: We need to check against: MAJOR version as well as some target OME semantic version field. Probably iterate through releases to find one that is in the same MAJOR category.
-          let ver = semver.clean(result[0].tag_name)
-          if (semver.gt(ver, mm.packs[index].version)) {
-            console.log(`${ver} greater than ${mm.packs[index].version}`)
-            // TODO: Iterate through result.assets and check first for platform-specific releases via name. If no specifics, use a non-platform suffixed version.
-          } else {
-            console.log(`${ver} is same or less than ${mm.packs[index].version}`)
+    updateHandlers: {
+      github: {
+        getReleasesURL: url => {
+          let user = '', repo = ''
+          if (typeof url === 'object') {
+            if (url.type != 'git') {
+              return ''
+            }
+            url = url.url
           }
-        })
-      }).end();
+          // Check for NPM-style github declaration first.
+          if (url.startsWith('github:')) {
+            url = url.substring('github:'.length)
+            let parts = url.split('/', 2)
+            user = parts[0]
+            repo = parts[1]
+            type = 'github'
+          } else {
+            url = new URL(url)
+            let pathname = url.pathname
+            if (pathname[0] == '/') pathname = pathname.substring(1)
+            let parts = pathname.split('/', 2)
+            if (url.hostname == 'github.com') {
+              type = 'github'
+            }
+            user = parts[0]
+            repo = parts[1].replace(/\.git$/, '') 
+          }
+
+          if (type != 'github') return ''
+          else return `https://api.github.com/repos/${user}/${repo}/releases`
+        },
+        checkForUpdate: (pack, target, cb=()=>{}) => {
+          https.get(target, {
+            json: true,
+            headers: {
+              "User-Agent": "Open Markup Editor"
+            }
+          }, (res) => {
+            if (res.statusCode !== 200) {
+              log.error(res.statusCode, res.statusMessage)
+              return
+            }
+            let str = ''
+            res.on('data', chunk => {
+              str += chunk
+            })
+            res.on('end', () => {
+              let result = JSON.parse(str)
+              console.log(result)
+              // NOTE: We are presuming that the first element of the returned array is the latest, as this seems to be true for GitHub and Gitea.
+              // TODO: We need to check against: MAJOR version as well as some target OME semantic version field. Probably iterate through releases to find one that is in the same MAJOR category.
+              let ver = semver.clean(result[0].tag_name)
+              if (semver.gt(ver, pack.version)) {
+                console.log(`${ver} greater than ${pack.version}`)
+                // TODO: Iterate through result.assets and check first for platform-specific releases via name. If no specifics, use a non-platform suffixed version.
+                cb(ver)
+              } else {
+                console.log(`${ver} is same or less than ${pack.version}`)
+                cb(false)
+              }
+            })
+          }).end();
+        }
+      },
+      gitea: {
+        getReleasesURL: url => {
+          let user = '', repo = ''
+          if (typeof url === 'object') {
+            if (url.type != 'git') {
+              return ''
+            }
+            url = url.url
+          }
+
+          url = new URL(url)
+          let pathname = url.pathname
+          if (pathname[0] == '/') pathname = pathname.substring(1)
+          let parts = pathname.split('/', 2)
+
+          user = parts[0]
+          repo = parts[1].replace(/\.git$/, '') 
+
+          if (user == '' || repo == '') return ''
+          else return `${url.protocol}//${url.host}/api/v1/repos/${user}/${repo}/releases`
+        },
+        checkForUpdate: (pack, target, cb=()=>{}) => {
+          return mm.updateHandlers.github.checkForUpdate(pack, target, cb)
+        }
+      }
+    },
+    checkForUpdate: (index, cb=()=>{}) => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      // NOTE: We are presuming that Chromium iterates object properties in a FIFO order.
+      for (let handler in mm.updateHandlers) {
+        if (!mm.packs[index].repository) continue
+        let url = mm.updateHandlers[handler].getReleasesURL(mm.packs[index].repository)
+        if (url) {
+          mm.updateHandlers[handler].checkForUpdate(mm.packs[index], url, cb)
+          return
+        }
+      }
+      cb(false)
     },
   }, obj));
   return mm;
