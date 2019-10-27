@@ -365,6 +365,9 @@ article > header .buttons {
 article > header .buttons button {
   min-width: 6em;
 }
+button.update-major, button.update-minor, button.update-patch {
+  border: 1px solid green;
+}
 
 *[disabled], .disabled {
   cursor: no-drop;

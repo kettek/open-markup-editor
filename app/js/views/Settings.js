@@ -202,6 +202,7 @@ module.exports = {
     });
   },
   view: (vnode) => {
+    // TODO: Normalize all packs to have the same basic functionality and layout. Headers should be: '<show/hide icons> <name> <version>      <updates buttons> <check for updates icon> <disable> <uninstall w/ confirm>'
     return(
       m("section.settings",
         // Editor Packs
@@ -238,7 +239,9 @@ module.exports = {
         }) ),
         MarkupPackManager.packs.map((pack, index) => {
           return build(pack, [
-            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]], ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui
+            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ], pack.conf_ui.length ? ['span.hider', pack.hidden?'show':'hide', {
+              onclick: () => {pack.hidden = pack.hidden ? false : true}
+            }]:null], ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], (!pack.hidden) ? pack.conf_ui : null
           ]);
         }),
         // Render Packs
@@ -263,18 +266,6 @@ module.exports = {
               ['button.disabled', 'Built-in']
             :
               [
-                [
-                  (RenderPackManager.isChecking(index)
-                  ?
-                    ['span', 'checking...']
-                  :
-                    ['button' + (RenderPackManager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
-                      onclick: () => {
-                        RenderPackManager.checkForUpdate(index, m.redraw);
-                      }
-                    }]
-                  )
-                ],
                 (RenderPackManager.hasUpdate(index)
                 ? 
                   (RenderPackManager.isUpdating(index)
@@ -302,6 +293,18 @@ module.exports = {
                 :
                   null
                 ),
+                [
+                  (RenderPackManager.isChecking(index)
+                  ?
+                    ['span', 'checking...']
+                  :
+                    ['button' + (RenderPackManager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
+                      onclick: () => {
+                        RenderPackManager.checkForUpdate(index, m.redraw);
+                      }
+                    }]
+                  )
+                ],
                 ['button', 'Uninstall', {
                     onclick: () => {
                       RenderPackManager.uninstall(index);
@@ -330,7 +333,9 @@ module.exports = {
         })),
         ExtensionPackManager.packs.map((extension, index) => {
           return build(extension, [
-            'article', ['header', ['span.name', extension.name, ['span.version', extension.version]], ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], extension.enabled ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
+            'article', ['header', ['span.name', extension.name, ['span.version', extension.version], ['span.hider', extension.hidden?'show':'hide', {
+              onclick: () => {extension.hidden = extension.hidden ? false : true}
+            }]], ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], (!extension.hidden && extension.enabled) ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
           ]);
         })
       )
