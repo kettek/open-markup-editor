@@ -299,7 +299,7 @@ function makePackManager(module_name, obj={}) {
         }
       });
     },
-    update: (index, tag) => {
+    update: (index, tag, attempt=0) => {
       if (index < 0 || index >= mm.packs.length) return false;
       for (let t in mm.packs[index].updates) {
         let update = mm.packs[index].updates[t]
@@ -309,9 +309,26 @@ function makePackManager(module_name, obj={}) {
         mm.packs[index].updating = true
         m.redraw();
         let file = fs.createWriteStream(output)
-        https.get(update.download.url, (res) => {
+        https.get(update.download.url, {
+          headers: {
+            "User-Agent": "Open Markup Editor"
+          }
+        }, (res) => {
+          if (res.statusCode == 302) {
+            if (++attempt > 6) {
+              log.error('302 redirects exceeded 6, bailing download.')
+              mm.packs[index].updating = false
+              m.redraw();
+              return
+            }
+            update.download.url = res.headers.location
+            mm.update(index, tag, attempt)
+            return
+          }
           if (res.statusCode !== 200) {
             log.error(res.statusCode, res.statusMessage)
+            mm.packs[index].updating = false
+            m.redraw();
             // TODO: update updates[t] to show error
             return
           }
@@ -322,6 +339,7 @@ function makePackManager(module_name, obj={}) {
             mm.install([output])
           })
         }).end();
+        return
       }
     },
     hasRepository: index => {
