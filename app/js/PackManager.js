@@ -115,7 +115,7 @@ function makePackManager(module_name, obj={}) {
         short_name: pkg.name,
         repository: pkg.repository ? pkg.repository : '',
         version:    '',
-        updates:    {major: '', minor: '', patch: ''},
+        updates:    {major: null, minor: null, patch: null},
         filepath:   filepath,
         name:       '',
         key:        module_name+'.undefined',
@@ -236,10 +236,24 @@ function makePackManager(module_name, obj={}) {
         }
       });
     },
+    update: (index, tag) => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      for (let t in mm.packs[index].updates) {
+        let update = mm.packs[index].updates[t]
+        if (!update || update.tag_name != tag) continue
+        // TODO: download update.download.url to <TEMP>/update.download.name
+      }
+    },
     hasRepository: index => {
       if (index < 0 || index >= mm.packs.length) return false;
       if (mm.packs[index].repository == '') return false;
       return true;
+    },
+    hasUpdate: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      if (mm.packs[index].updates.patch) return true;
+      if (mm.packs[index].updates.minor) return true;
+      if (mm.packs[index].updates.major) return true;
     },
     updateHandlers: {
       github: {
@@ -290,7 +304,33 @@ function makePackManager(module_name, obj={}) {
             })
             res.on('end', () => {
               let result = JSON.parse(str)
-              console.log(result)
+              // getDownload gets the appropriate download link for the current platform.
+              let getDownload = result => {
+                let platforms = ['darwin', 'linux', 'win32']
+                let generic = -1, platform = -1
+                result.assets.forEach((asset, i) => {
+                  // Remove extension
+                  let basename = path.basename(asset.name, path.extname(asset.name))
+
+                  for (let i = 0; i < platforms.length; i++) {
+                    if (basename.endsWith(platforms[i])) {
+                      if (platforms[i] == process.platform) {
+                        platform = i
+                      }
+                      return
+                    }
+                  }
+                  generic = i
+                })
+                let target = platform != -1 ? platform : generic
+                if (target != -1) {
+                  return {
+                    url: result.assets[target].browser_download_url,
+                    filename: result.assets[target].name
+                  }
+                }
+                return null
+              }
               // Get our major, minor, and/or patch updates available.
               let min_version = semver.clean(pack.version)
               let max_version = semver.inc(min_version, 'major')
@@ -301,33 +341,38 @@ function makePackManager(module_name, obj={}) {
                 let tag_name = semver.clean(result[i].tag_name)
                 // Is a patch
                 if (semver.satisfies(tag_name, patch_range)) {
-                  if (!pack.updates.patch || semver.gt(tag_name, pack.updates.patch)) {
-                    pack.updates.patch = tag_name
+                  if (!pack.updates.patch || semver.gt(tag_name, semver.clean(pack.updates.patch.tag_name))) {
+                    pack.updates.patch = {
+                      tag_name: result[i].tag_name,
+                      text: result[i].body,
+                      download: getDownload(result[i])
+                    }
                   }
                 }
                 // Is a minor update
                 if (semver.satisfies(tag_name, minor_range)) {
-                  if (!pack.updates.minor || semver.gt(tag_name, pack.updates.minor)) {
-                    pack.updates.minor = tag_name
+                  if (!pack.updates.minor || semver.gt(tag_name, semver.clean(pack.updates.minor.tag_name))) {
+                    pack.updates.minor = {
+                      tag_name: result[i].tag_name,
+                      text: result[i].body,
+                      download: getDownload(result[i])
+                    }
                   }
                 }
                 // Is a major update
                 if (semver.gtr(tag_name, minor_range)) {
-                  if (!pack.updates.major || semver.gt(tag_name, pack.updates.major)) {
-                    pack.updates.major = tag_name
+                  if (!pack.updates.major || semver.gt(tag_name, semver.clean(pack.updates.major.tag_name))) {
+                    pack.updates.major = {
+                      tag_name: result[i].tag_name,
+                      text: result[i].body,
+                      download: getDownload(result[i])
+                    }
                   }
                 }
               }
-              console.log(pack.updates)
-
-              // TODO: We need to check against: MAJOR version as well as some target OME semantic version field. Probably iterate through releases to find one that is in the same MAJOR category.
-              let ver = semver.clean(result[0].tag_name)
-              if (semver.gt(ver, pack.version)) {
-                console.log(`${ver} greater than ${pack.version}`)
-                // TODO: Iterate through result.assets and check first for platform-specific releases via name. If no specifics, use a non-platform suffixed version.
-                cb(ver)
+              if (pack.updates.major || pack.updates.minor || pack.updates.patch) {
+                cb(true)
               } else {
-                console.log(`${ver} is same or less than ${pack.version}`)
                 cb(false)
               }
             })

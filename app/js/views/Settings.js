@@ -259,16 +259,44 @@ module.exports = {
           return build(pack, [
             'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]],
             (pack.read_only
-              ? ['button.disabled', 'Built-in']
-              : [['button' + (RenderPackManager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
-                onclick: () => {
-                  RenderPackManager.checkForUpdate(index);
-                }
-              }], ['button', 'Uninstall', {
-                onclick: () => {
-                  RenderPackManager.uninstall(index);
-                }
-              }]]
+            ?
+              ['button.disabled', 'Built-in']
+            :
+              [
+                ['button' + (RenderPackManager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
+                  onclick: () => {
+                    RenderPackManager.checkForUpdate(index, m.redraw);
+                  }
+                }],
+                (RenderPackManager.hasUpdate(index)
+                ? 
+                  [
+                    pack.updates.major ? ['button.update-major', pack.updates.major.tag_name, {
+                      onclick: () => {
+                        RenderPackManager.update(index, pack.updates.major.tag_name)
+                      }
+                    }] : null,
+                    pack.updates.minor ? ['button.update-minor', pack.updates.minor.tag_name, {
+                      onclick: () => {
+                        RenderPackManager.update(index, pack.updates.minor.tag_name)
+                      }
+                    }] : null,
+                    pack.updates.patch ? ['button.update-patch', pack.updates.patch.tag_name, {
+                      onclick: () => {
+                        RenderPackManager.update(index, pack.updates.patch.tag_name)
+                      }
+                    }] : null
+                  ].filter(e => e != null)
+                :
+                  null
+                ),
+                ['button', 'Uninstall', {
+                    onclick: () => {
+                      RenderPackManager.uninstall(index);
+                    }
+                  }
+                ]
+              ]
             )
             ],
             pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
