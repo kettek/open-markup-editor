@@ -1,6 +1,7 @@
 const settings    = require('electron-app-settings');
 const m           = require('mithril');
-const fs          = require('fs');
+const fs          = require('fs-extra');
+const { app }     = require('electron').remote;
 const path        = require('path');
 const log         = require('electron-log');
 const https       = require('https');
@@ -121,6 +122,8 @@ function makePackManager(module_name, obj={}) {
         key:        module_name+'.undefined',
         conf_ui:    [],
         did_setup:  false,
+        updating:   false,
+        checking:   false,
         setup:      () => {},
         conf:       (obj, conf_ui) => { },
         reset:      () => { },
@@ -211,7 +214,67 @@ function makePackManager(module_name, obj={}) {
     install: files => {
       if (!files || files.length == 0) return;
       let file = files[0];
-      DataManager.unpackFile(file, path.join('packs', module_name), (err, pack_path) => {
+      // This is kind of nasty.
+      DataManager.unpackFileToTemp(file, (err, temp_path) => {
+        let restorePreviousPack = ()=>{}
+        let temp_pkg = require(path.join(temp_path.fullpath, 'package.json'))
+        let match_index = -1
+        for (let i = 0; i < mm.packs.length; i++) {
+          if (mm.packs[i].short_name == temp_pkg.name) {
+            match_index = i
+          }
+        }
+
+        let placeNewPack = () => {
+          DataManager.restoreFromTemp(temp_path.path, path.join('packs', module_name), (err, pack_path) => {
+            if (err.length) {
+              log.error(err);
+              return;
+            }
+            try {
+              mm.load(pack_path);
+              log.info("  ...OK");
+            } catch (e) {
+              log.warn("  ...NOKAY");
+              log.warn(e);
+              fs.remove(pack_path.fullpath, () => {
+                restorePreviousPack();
+              });
+            }
+            m.redraw();
+          })
+        }
+
+        if (match_index == -1) {
+          placeNewPack()
+        } else {
+          DataManager.moveToTemp(path.join('packs', module_name, path.basename(mm.packs[match_index].filepath)), (err, temp_path) => {
+            if (err.length) {
+              log.error(err);
+              return;
+            }
+            restorePreviousPack = () => {
+              DataManager.restoreFromTemp(temp_path.fullpath, path.join('packs', module_name), (err, pack) => {
+                if (err.length) {
+                  log.error(err);
+                  return;
+                }
+                try {
+                  mm.load(pack.filepath);
+                  log.info(" ...OK");
+                } catch (e) {
+                  log.warn("  ...NOKAY");
+                  log.warn(e);
+                }
+                m.redraw();
+              });
+            }
+            mm.unload(match_index);
+            placeNewPack();
+          })
+        }
+      })
+      /*DataManager.unpackFile(file, path.join('packs', module_name), (err, pack_path) => {
         if (err) {
           alert(err);
         } else {
@@ -224,7 +287,7 @@ function makePackManager(module_name, obj={}) {
           }
           m.redraw();
         }
-      });
+      });*/
     },
     uninstall: index => {
       if (index < 0 || index >= mm.packs.length) return false;
@@ -241,7 +304,24 @@ function makePackManager(module_name, obj={}) {
       for (let t in mm.packs[index].updates) {
         let update = mm.packs[index].updates[t]
         if (!update || update.tag_name != tag) continue
-        // TODO: download update.download.url to <TEMP>/update.download.name
+        let output = path.join(app.getPath("temp"), update.download.filename)
+
+        mm.packs[index].updating = true
+        m.redraw();
+        let file = fs.createWriteStream(output)
+        https.get(update.download.url, (res) => {
+          if (res.statusCode !== 200) {
+            log.error(res.statusCode, res.statusMessage)
+            // TODO: update updates[t] to show error
+            return
+          }
+          res.pipe(file)
+          res.on('end', () => {
+            mm.packs[index].updating = false
+            m.redraw();
+            mm.install([output])
+          })
+        }).end();
       }
     },
     hasRepository: index => {
@@ -255,6 +335,15 @@ function makePackManager(module_name, obj={}) {
       if (mm.packs[index].updates.minor) return true;
       if (mm.packs[index].updates.major) return true;
     },
+    isChecking: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      return mm.packs[index].checking;
+    },
+    isUpdating: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      return mm.packs[index].updating;
+    },
+    // TODO: Document how to write an update handler.
     updateHandlers: {
       github: {
         getReleasesURL: url => {
@@ -410,9 +499,13 @@ function makePackManager(module_name, obj={}) {
       // NOTE: We are presuming that Chromium iterates object properties in a FIFO order.
       for (let handler in mm.updateHandlers) {
         if (!mm.packs[index].repository) continue
+        mm.packs[index].checking = true
         let url = mm.updateHandlers[handler].getReleasesURL(mm.packs[index].repository)
         if (url) {
-          mm.updateHandlers[handler].checkForUpdate(mm.packs[index], url, cb)
+          mm.updateHandlers[handler].checkForUpdate(mm.packs[index], url, (hasUpdate) => {
+            mm.packs[index].checking = false
+            cb(hasUpdate)
+          })
           return
         }
       }

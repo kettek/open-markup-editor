@@ -356,6 +356,15 @@ article > header .version {
   opacity: 0.5;
   font-size: 75%;
 }
+article > header .buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+article > header .buttons button {
+  min-width: 6em;
+}
 
 *[disabled], .disabled {
   cursor: no-drop;
