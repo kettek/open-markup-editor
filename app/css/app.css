@@ -345,28 +345,45 @@ section.settings > article {
 section.settings input[type=text], section.settings select, section.settings input[type=number] {
   padding: .25em;
 }
-article > header {
-  margin: 0 .5em;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+button.update-major, button.update-minor, button.update-patch {
+  border: 1px solid green;
 }
-article > header .version {
+
+.packHeader {
+  margin: 0 .5em;
+  align-items: center;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: auto auto 1fr;
+}
+.packHeader__name {
+}
+.packHeader__name__version {
   margin-left: .25em;
   opacity: 0.5;
   font-size: 75%;
 }
-article > header .buttons {
+.packHeader__folder {
+}
+.packHeader__buttons {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
 }
-article > header .buttons button {
+.packHeader__buttons button {
   min-width: 6em;
 }
-button.update-major, button.update-minor, button.update-patch {
-  border: 1px solid green;
+
+.button {
+  transition: .2s all;
+}
+
+.rotate-90 {
+  transform: rotate(90deg);
+}
+.rotate-180 {
+  transform: rotate(180deg);
 }
 
 *[disabled], .disabled {

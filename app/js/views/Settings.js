@@ -85,6 +85,9 @@ const defined_elements = {
     map: {
       key: 'for'
     }
+  },
+  'icon': {
+    mithril: Icon,
   }
 };
 
@@ -106,6 +109,8 @@ function build(extension, obj) {
         item.children.push(build(extension, obj[i]));
       } else if (typeof obj[i] === 'function') {
         item.children.push(build(extension, obj[i]()));
+      } else if (obj[i] == null || typeof obj[i] === 'undefined') {
+        // de nada
       } else if (typeof obj[i] === 'object') {
         item.attrs = Object.assign(item.attrs, obj[i]);
       } else { // Strings, Booleans, etc.
@@ -121,14 +126,18 @@ function build(extension, obj) {
     // Parse out classname and id from tag
     let reg = /([\.|#][a-zA-Z0-9_-]*)/g
     let part;
+    let tag;
     while ((part = reg.exec(item.tag)) != null) {
       if (part[0][0] == '.') {
-        item.classes.push(item.tag.substr(part.index+1, part[0].length-1));
+        item.classes.push(item.tag.substring(part.index+1, part.index+part[0].length));
       } else if (part[0][0] == '#') {
-        item.id = item.tag.substr(part.index+1, part[0].length-1);
+        item.id = item.tag.substring(part.index+1, part.index+part[0].length);
       }
-      item.tag = item.tag.substr(0, part.index);
+      if (!tag) {
+        tag = item.tag.substring(0, part.index);
+      }
     }
+    if (tag) item.tag = tag;
 
     // Apply element filter
     let e_handler = defined_elements[item.tag];
@@ -175,10 +184,11 @@ function build(extension, obj) {
       return item.children;
     } else {
       if (e_handler && e_handler.mithril) {
-        return m(e_handler.mithril, Object.assign({
+        item.attrs = Object.assign({
           id: item.id,
-          className: item.classes.join('.'),
-        }, item.attrs), item.attrs, item.value, item.children);
+          className: item.classes.join(' ')
+        }, item.attrs)
+        return m(e_handler.mithril, item.attrs, item.children);
       }
       return m(item.tag + (item.classes ? '.'+item.classes.join('.') : '') + (item.id ? '#'+item.id : ''), item.attrs, item.value, item.children);
     }
@@ -203,6 +213,74 @@ module.exports = {
   },
   view: (vnode) => {
     // TODO: Normalize all packs to have the same basic functionality and layout. Headers should be: '<show/hide icons> <name> <version>      <updates buttons> <check for updates icon> <disable> <uninstall w/ confirm>'
+    function buildPackList(manager) {
+      return manager.packs.map((pack, index) => {
+        return build(pack, [
+          'article', ['header.packHeader', ['span.packHeader__name', pack.name, ['span.packHeader__name__version', pack.version ]],
+          pack.conf_ui.length ? ['icon.packHeader__folder.button.'+(pack.shown?'rotate-180':'rotate-90'), '', {
+            iconName: 'arrow-up',
+            attrs: {
+              onclick: () => {pack.shown = pack.shown ? false : true}
+            }
+          }]:['span'],
+          ['span.packHeader__buttons', (pack.read_only
+          ?
+            ['button.disabled', 'Built-in']
+          :
+            [
+              (manager.hasUpdate(index)
+              ? 
+                (manager.isUpdating(index)
+                ?
+                  ['span', 'updating...']
+                :
+                  [
+                    pack.updates.major ? ['button.update-major', 'major ' + pack.updates.major.tag_name, {
+                      onclick: () => {
+                        manager.update(index, pack.updates.major.tag_name)
+                      }
+                    }] : null,
+                    pack.updates.minor ? ['button.update-minor', 'minor ' + pack.updates.minor.tag_name, {
+                      onclick: () => {
+                        manager.update(index, pack.updates.minor.tag_name)
+                      }
+                    }] : null,
+                    pack.updates.patch ? ['button.update-patch', 'patch ' + pack.updates.patch.tag_name, {
+                      onclick: () => {
+                        manager.update(index, pack.updates.patch.tag_name)
+                      }
+                    }] : null
+                  ].filter(e => e != null)
+                )
+              :
+                null
+              ),
+              [
+                (manager.isChecking(index)
+                ?
+                  ['span', 'checking...']
+                :
+                  ['button' + (manager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
+                    onclick: () => {
+                      manager.checkForUpdate(index, m.redraw);
+                    }
+                  }]
+                )
+              ],
+              ['button', 'Uninstall', {
+                  onclick: () => {
+                    manager.uninstall(index);
+                  }
+                }
+              ],
+              ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Enable', {onclick: () => manager.toggle(index)}]
+            ]
+          )]
+          ],
+          (pack.shown && pack.enabled && pack.conf_ui.length > 0) ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
+        ]);
+      })
+    }
     return(
       m("section.settings",
         // Editor Packs
@@ -219,10 +297,7 @@ module.exports = {
             }
           }
         }) ),
-        EditorPackManager.packs.map((pack, index) => {
-          return build(pack, [
-            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]], ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], pack.conf_ui]);
-        }),
+        buildPackList(EditorPackManager),
         // Markup Packs
         m("header", "Markup Packs", m(Icon, {
           iconName: "add",
@@ -237,13 +312,7 @@ module.exports = {
             }
           }
         }) ),
-        MarkupPackManager.packs.map((pack, index) => {
-          return build(pack, [
-            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ], pack.conf_ui.length ? ['span.hider', pack.hidden?'show':'hide', {
-              onclick: () => {pack.hidden = pack.hidden ? false : true}
-            }]:null], ['button.disabled', 'Not Yet Implemented', {onclick: () => {}}]], (!pack.hidden) ? pack.conf_ui : null
-          ]);
-        }),
+        buildPackList(MarkupPackManager),
         // Render Packs
         m("header", "Render Packs", m(Icon, {
           iconName: "add",
@@ -258,65 +327,7 @@ module.exports = {
             }
           }
         })),
-        RenderPackManager.packs.map((pack, index) => {
-          return build(pack, [
-            'article', ['header', ['span.name', pack.name, ['span.version', pack.version ]],
-            ['span.buttons', (pack.read_only
-            ?
-              ['button.disabled', 'Built-in']
-            :
-              [
-                (RenderPackManager.hasUpdate(index)
-                ? 
-                  (RenderPackManager.isUpdating(index)
-                  ?
-                    ['span', 'updating...']
-                  :
-                    [
-                      pack.updates.major ? ['button.update-major', 'major ' + pack.updates.major.tag_name, {
-                        onclick: () => {
-                          RenderPackManager.update(index, pack.updates.major.tag_name)
-                        }
-                      }] : null,
-                      pack.updates.minor ? ['button.update-minor', 'minor ' + pack.updates.minor.tag_name, {
-                        onclick: () => {
-                          RenderPackManager.update(index, pack.updates.minor.tag_name)
-                        }
-                      }] : null,
-                      pack.updates.patch ? ['button.update-patch', 'patch ' + pack.updates.patch.tag_name, {
-                        onclick: () => {
-                          RenderPackManager.update(index, pack.updates.patch.tag_name)
-                        }
-                      }] : null
-                    ].filter(e => e != null)
-                  )
-                :
-                  null
-                ),
-                [
-                  (RenderPackManager.isChecking(index)
-                  ?
-                    ['span', 'checking...']
-                  :
-                    ['button' + (RenderPackManager.hasRepository(index) ? '' : '.disabled'), 'Check for Update', {
-                      onclick: () => {
-                        RenderPackManager.checkForUpdate(index, m.redraw);
-                      }
-                    }]
-                  )
-                ],
-                ['button', 'Uninstall', {
-                    onclick: () => {
-                      RenderPackManager.uninstall(index);
-                    }
-                  }
-                ]
-              ]
-            )]
-            ],
-            pack.enabled ? pack.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: pack.reset}]]) : null
-          ]);
-        }),
+        buildPackList(RenderPackManager),
         // ExtensionPackManager
         m("header", "Extensions", m(Icon, {
           iconName: "add",
@@ -331,13 +342,7 @@ module.exports = {
             }
           }
         })),
-        ExtensionPackManager.packs.map((extension, index) => {
-          return build(extension, [
-            'article', ['header', ['span.name', extension.name, ['span.version', extension.version], ['span.hider', extension.hidden?'show':'hide', {
-              onclick: () => {extension.hidden = extension.hidden ? false : true}
-            }]], ['button.' + (extension.enabled ? 'disable' : 'enable'), extension.enabled ? 'Disable' : 'Enable', {onclick: () => ExtensionPackManager.toggle(index)}]], (!extension.hidden && extension.enabled) ? extension.conf_ui.concat([['button.reset', 'Reset to Defaults', {onclick: extension.reset}]]) : null
-          ]);
-        })
+        buildPackList(ExtensionPackManager),
       )
     )
   }
