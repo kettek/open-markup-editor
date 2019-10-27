@@ -292,7 +292,7 @@ module.exports = {
                           RenderPackManager.update(index, pack.updates.minor.tag_name)
                         }
                       }] : null,
-                      pack.updates.patch ? ['button.update-patch', 'path ' + pack.updates.patch.tag_name, {
+                      pack.updates.patch ? ['button.update-patch', 'patch ' + pack.updates.patch.tag_name, {
                         onclick: () => {
                           RenderPackManager.update(index, pack.updates.patch.tag_name)
                         }
