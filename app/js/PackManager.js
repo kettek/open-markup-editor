@@ -88,17 +88,19 @@ function makePackManager(module_name, obj={}) {
         };
         settings.on('set', mm.packs[index]._global_conf_set);
       }
-      //settings.set(mm.packs[index].key + '.enabled', mm.packs[index].enabled);
+      settings.set(mm.packs[index].key + '.disabled', !mm.packs[index].enabled);
+      m.redraw();
     },
     disable: index => {
       if (index < 0 || index >= mm.packs.length) return false;
       if (!mm.packs[index].enabled) return false;
       mm.packs[index].enabled = mm.packs[index].emit('disable') === false ? true : false;
-      //settings.set(mm.packs[index].key+'.enabled', mm.packs[index].enabled);
       if (mm.packs[index]._global_conf_set) {
         settings.off('set', mm.packs[index]._global_conf_set);
         delete mm.packs[index]._global_conf_set;
       }
+      settings.set(mm.packs[index].key+'.disabled', !mm.packs[index].enabled);
+      m.redraw();
 
       return true;
     },

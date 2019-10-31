@@ -225,7 +225,8 @@ module.exports = {
           }]:['span'],
           ['span.packHeader__buttons', (pack.read_only
           ?
-            ['button.disabled', 'Built-in']
+            [['button.disabled', 'Built-in'],
+            ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Enable', {onclick: () => manager.toggle(index)}]]
           :
             [
               (manager.hasUpdate(index)
