@@ -93,6 +93,11 @@ function createMainWindow() {
     windows.list[windows.MAIN_WINDOW] = null;
   });
 
+  windows.list[windows.MAIN_WINDOW].on('resize', (e) => {
+    let bounds = windows.list[windows.MAIN_WINDOW].getBounds();
+    settings.set("window", {left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height });
+  });
+
   // Might as well create our about window for future use here.
   createAboutWindow();
 }
