@@ -7,13 +7,40 @@ const MarkupPackManager = MM('markup-packs', {
     if (!pack) return text;
     return pack.render(text);
   },
-  getSupportedExtensions: () => {
-    let extensions = []
+  getGroupNameForExtension: (ext) => {
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
-      for (let j = 0; j < MarkupPackManager.packs[i].supports.length; j++) {
-        let extension = MarkupPackManager.packs[i].supports[j].toLowerCase();
-        if (!extensions.includes(extension)) {
-          extensions.push(extension);
+      for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
+        for (let j = 0; j < MarkupPackManager.packs[i].supports[key].length; j++) {
+          if (ext.toLowerCase() == MarkupPackManager.packs[i].supports[key][j]) {
+            return key
+          }
+        }
+      }
+    }
+    return ''
+  },
+  getSupportedExtensions: () => {
+    let extensions = {}
+    for (let i = 0; i < MarkupPackManager.packs.length; i++) {
+      for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
+        // Check for existing extensions entry.
+        let match = ''
+        for (let [k,v] of Object.entries(extensions)) {
+          if (key.toUpperCase() == k.toUpperCase()) {
+            match = k
+            break
+          }
+        }
+        if (match == '') {
+          match = key
+          extensions[key] = []
+        }
+        // Add file extensions to their sections.
+        for (let j = 0; j < MarkupPackManager.packs[i].supports[key].length; j++) {
+          let extension = MarkupPackManager.packs[i].supports[key][j].toLowerCase();
+          if (!extensions[match].includes(extension)) {
+            extensions[match].push(extension);
+          }
         }
       }
     }
@@ -24,11 +51,13 @@ const MarkupPackManager = MM('markup-packs', {
       return MarkupPackManager.packs[MarkupPackManager.cached_packs[type]];
     }
     for (let i = MarkupPackManager.packs.length-1; i >= 0; i--) {
-      for (let j = 0; j < MarkupPackManager.packs[i].supports.length; j++) {
-        let regex = new RegExp(MarkupPackManager.packs[i].supports[j], 'i');
-        if (regex.test(type)) {
-          MarkupPackManager.cached_packs[type] = i;
-          return MarkupPackManager.packs[i];
+      for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
+        for (let j = 0; j < MarkupPackManager.packs[i].supports[key].length; j++) {
+          let regex = new RegExp(MarkupPackManager.packs[i].supports[key][j], 'i');
+          if (regex.test(type)) {
+            MarkupPackManager.cached_packs[type] = i;
+            return MarkupPackManager.packs[i];
+          }
         }
       }
     }

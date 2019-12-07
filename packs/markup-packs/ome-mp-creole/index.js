@@ -1,6 +1,8 @@
 module.exports = {
   name: 'Creole',
-  supports: ['creole', 'txt'],
+  supports: {
+    'Creole': ['creole', 'txt'],
+  },
   setup: pack => {
     let Creole = null;
     let creole = null;

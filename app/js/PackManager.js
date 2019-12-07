@@ -74,6 +74,25 @@ function makePackManager(module_name, obj={}) {
       extension.did_setup = true;
       return true;
     },
+    setDefault: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      for (let i = 0; i < mm.packs.length; i++) {
+        settings.set(mm.packs[i].key + '.default', false)
+      }
+      settings.set(mm.packs[index].key + '.default', true)
+    },
+    isDefault: index => {
+      if (index < 0 || index >= mm.packs.length) return false;
+      return settings.get(mm.packs[index].key+'.default')
+    },
+    getDefaultPack: () => {
+      for (let i = 0; i < mm.packs.length; i++) {
+        if (settings.get(mm.packs[i].key + '.default')) {
+          return mm.packs[i]
+        }
+      }
+      return mm.packs[0]
+    },
     enable: index => {
       if (index < 0 || index >= mm.packs.length) return false;
       if (mm.packs[index].enabled) return true;

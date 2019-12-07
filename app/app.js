@@ -29,7 +29,7 @@ ipcRenderer.on('clear-recent', () => {
   settings.get('recent_files').length = 0;
 });
 ipcRenderer.on('file-new', (event, arg) => {
-  Files.newFile();
+  Files.newFile(arg);
 });
 ipcRenderer.on('file-open', (event, arg) => {
   Files.loadFile(arg);
@@ -82,6 +82,7 @@ ipcRenderer.on('init', (event, arg) => {
     if (pending_packs == 0) {
       Files.releaseCache();
       ipcRenderer.send('ready-to-run');
+      ipcRenderer.send('supported-markup', MarkupPackManager.getSupportedExtensions());
     }
   }
   ExtensionPackManager.populate(path.join('packs', 'extension-packs'), () => {

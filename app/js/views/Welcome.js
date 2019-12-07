@@ -12,13 +12,10 @@ module.exports = {
           m("header", "Hello!"),
           m("div", 
             m('span', "Create or open "),
-            MarkupPackManager.packs.reduce((arr, pack, pack_index) => {
-              arr.push(pack.supports[0].replace(/^\.+/gm,''))
-              return arr
-            }, []).map((ext, index, src) => {
+            Object.keys(MarkupPackManager.getSupportedExtensions()).map((extensionGroupKey, index, src) => {
               return [
                 m('span', (index > 0 ? index == src.length-1 ? ', or ' : ', ' : '')),
-                m('span.extension', ext),
+                m('span.extension', extensionGroupKey),
               ]
             }),
             m('span', ' files!')

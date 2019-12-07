@@ -221,13 +221,20 @@ let Files = Emitter({
       let fileext = path.extname(Files.loadedFiles[index].filepath || Files.loadedFiles[index].name)
       fileext = (fileext.length > 0 ? fileext.substring(1) : fileext)
       let desiredExtension;
-      let extensions = MarkupPacksManager.getSupportedExtensions().filter(ext => {
-        if (ext == fileext) {
-          desiredExtension = ext;
-          return false;
+      let extensions = []
+      let extensionGroups = MarkupPacksManager.getSupportedExtensions();
+      for (let [k, v] of Object.entries(extensionGroups)) {
+        for (let i = 0; i < v.length; i++) {
+          if (v[i] == fileext.toLowerCase()) {
+            extensionName = k
+            desiredExtension = v[i]
+          } else {
+            if (!extensions.includes(v[i])) {
+              extensions.push(v[i])
+            }
+          }
         }
-        return true;
-      });
+      }
       if (desiredExtension) extensions.unshift(desiredExtension);
       let filters = extensions.map(ext => {
         return {
@@ -343,9 +350,16 @@ let Files = Emitter({
       menu.addRecentFile(filepath);
     });
   },
-  newFile: () => {
+  newFile: (extension) => {
+    if (!extension) {
+      let pack = MarkupPacksManager.getDefaultPack()
+      for (let [k, v] of Object.entries(pack.supports)) {
+        extension = v[0]
+        break
+      }
+    }
     Files.loadedFiles.push(
-      Files.buildFileEntry({name: "Untitled.md"})
+      Files.buildFileEntry({name: "Untitled."+extension})
     );
     Files.setFileFocus(Files.loadedFiles.length-1);
     Files.emit("file-load", Files.loadedFiles.length-1);

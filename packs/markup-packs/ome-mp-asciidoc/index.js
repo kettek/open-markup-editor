@@ -1,6 +1,8 @@
 module.exports = {
   name: 'AsciiDoc',
-  supports: ['.asciidoc', '.adoc', '.asc', '.txt'],
+  supports: {
+    'AsciiDoc': ['adoc', 'asciidoc', 'asc', 'txt'],
+  },
   extensions: [
     {
       name: 'emoji', desc: 'An extension for Asciidoctor.js that turns emoji:cat[] into 🐱!', example: 'emoji:cat[]', src: 'asciidoctor-emoji'

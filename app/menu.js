@@ -16,6 +16,24 @@ function init () {
   electron.Menu.setApplicationMenu(menu)
 }
 
+ipcMain.on('supported-markup', (event, types) => {
+  let item = getMenuItem('New Type...')
+  if (!item) return;
+  item.submenu.clear();
+  let i = 0
+  for (let [k, v] of Object.entries(types)) {
+    let label     = k
+    let extension = v[0]
+    item.submenu.insert(i++, new electron.MenuItem({
+      label: label,
+      click: () => {
+        windows.list[windows.MAIN_WINDOW].webContents.send('file-new', extension);
+      }
+    }));
+
+  }
+})
+
 function getMenuItem (label) {
   for (let i = 0; i < menu.items.length; i++) {
     let menuItem = menu.items[i].submenu.items.find(function (item) {
@@ -81,6 +99,14 @@ function getMenuTemplate () {
           click: () => {
             windows.list[windows.MAIN_WINDOW].webContents.send('file-new');
           }
+        },
+        {
+          label: 'New Type...',
+          submenu: [
+            {
+              label: 'hmm',
+            }
+          ],
         },
         {
           label: 'Open...',

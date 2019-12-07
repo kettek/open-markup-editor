@@ -313,6 +313,22 @@ module.exports = {
             }
           }
         }) ),
+        m("label", { for: 'ome-default-mp' }, 'Default Markup Pack'),
+        m("section", {
+          title: "Default markup pack for new files"
+        }, [
+          m('select', {
+            id: 'ome-default-mp',
+            onchange: e => {
+              MarkupPackManager.setDefault(e.target.selectedIndex)
+            },
+          }, MarkupPackManager.packs.map((pack, pack_index) => {
+            return m('option', {
+              value: pack_index,
+              selected: MarkupPackManager.isDefault(pack_index)
+            }, pack.name)
+          }))
+        ]),
         buildPackList(MarkupPackManager),
         // Render Packs
         m("header", "Render Packs", m(Icon, {
@@ -327,7 +343,16 @@ module.exports = {
               }).then(result => RenderPackManager.install(result.filePaths));
             }
           }
-        })),
+        }), /*m(Icon, {
+          iconName: "add",
+          className: "button download",
+          attrs: {
+            onclick: () => {
+              // TODO: download via RenderPackManager.download(url), then call install(filePath)
+            }
+          }
+        })),*/
+        ),
         buildPackList(RenderPackManager),
         // ExtensionPackManager
         m("header", "Extensions", m(Icon, {

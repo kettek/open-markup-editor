@@ -1,13 +1,14 @@
 let m = require('mithril');
 const settings = require('electron-app-settings');
 const RenderPackManager = require('../RenderPackManager');
+const MarkupPackManager = require('../MarkupPackManager');
 
 let Files   = require('../models/Files');
 
 module.exports = {
   view: (vnode) => {
     return m('footer', [
-      m('span', 'TYPE: ' + Files.getFileExtension(vnode.attrs.fileIndex)),
+      m('span', 'TYPE: ' + MarkupPackManager.getGroupNameForExtension(Files.getFileExtension(vnode.attrs.fileIndex))),
       m('span',
         m('label[for=renderpack]', "Render Pack:"),
         m("select#renderpack", {onchange: (e) => {

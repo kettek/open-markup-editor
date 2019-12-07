@@ -1,6 +1,8 @@
 module.exports = {
   name: 'Textile',
-  supports: ['textile', 'txt'],
+  supports: {
+    'Textile': ['textile', 'txt'],
+  },
   setup: pack => {
     let textile = null;
     let options = {};

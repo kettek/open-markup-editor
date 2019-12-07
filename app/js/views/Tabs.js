@@ -10,7 +10,7 @@ module.exports = {
     return m('nav.tabs-bar', [
       m('.tabs-bar__controls', [
         m(Icon, {
-          attrs: { onclick: Files.newFile },
+          attrs: { onclick: () => Files.newFile() },
           iconName: 'file-new',
           className: 'button new'
         }),
