@@ -8,10 +8,12 @@ Ex.
 ```
 module.exports = {
   name: 'Markup Pack Name',
-  supports: [
-    "*.md",
-    "*.markdown"
-  ],
+  supports: {
+    'Markdown': [
+        "md",
+        "markdown"
+    ]
+  },
   setup: (pack) => {
   }
 };
@@ -20,7 +22,7 @@ module.exports = {
 These properties and their purpose are defined below.
 
 #### supports
-An array of regular expressions that define the file extensions that the markup pack provides parsing for.
+An object that maps a markup string to an array of file extensions that the markup pack provides parsing for.
 
 #### setup
 A function that receives a pack instance and must set up the appropriate event hooks and callbacks for the markup pack's usage in rendering of markup and the handling of configuration.
