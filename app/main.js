@@ -77,12 +77,13 @@ function createMainWindow() {
     slashes: true
   }));
 
-  // Send our settings to the renderer when it loads.
+  // Send file-open events for all arguments not beginning with '--'
   windows.list[windows.MAIN_WINDOW].webContents.on('did-finish-load', () => {
     windows.list[windows.MAIN_WINDOW].webContents.send('init', process.argv[0]);
     // Send file open for any passed arguments
     process.argv.forEach((val, index) => {
       if (index == 0) return; // FIXME: index >= 1 when npm start called directly
+      if (val.startsWith('--')) return;
       windows.list[windows.MAIN_WINDOW].webContents.send('file-open', val);
     });
   });
@@ -174,9 +175,10 @@ app.on('second-instance', ((event, argv, cwd) => {
   if (windows.list[windows.MAIN_WINDOW]) {
     if (windows.list[windows.MAIN_WINDOW].isMinimized()) windows.list[windows.MAIN_WINDOW].restore();
     windows.list[windows.MAIN_WINDOW].focus();
-    // Send file open for any passed arguments
+    // Send file-open events for all arguments not beginning with '--'
     argv.forEach((val, index) => {
       if (index == 0) return; // FIXME: index >= 1 when npm start called directly
+      if (val.startsWith('--')) return;
       windows.list[windows.MAIN_WINDOW].webContents.send('file-open', val);
     });
   }
