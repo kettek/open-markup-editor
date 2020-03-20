@@ -94,7 +94,7 @@ function createMainWindow() {
     windows.list[windows.MAIN_WINDOW] = null;
     if (windows.list[windows.ABOUT_WINDOW]) windows.list[windows.ABOUT_WINDOW].close();
     if (windows.list[windows.SPLASH_WINDOW]) windows.list[windows.SPLASH_WINDOW].close();
-    if (windows.list[windows.PREVIEW_WINDOW]) windows.list[windows.PREVIEW_WINDOW].close();
+    if (windows.list[windows.PREVIEW]) windows.list[windows.PREVIEW].close();
   });
 
   windows.list[windows.MAIN_WINDOW].on('resize', (e) => {
