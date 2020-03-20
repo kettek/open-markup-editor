@@ -92,6 +92,9 @@ function createMainWindow() {
     let bounds = windows.list[windows.MAIN_WINDOW].getBounds();
     settings.set("window", {left: bounds.x, top: bounds.y, width: bounds.width, height: bounds.height });
     windows.list[windows.MAIN_WINDOW] = null;
+    if (windows.list[windows.ABOUT_WINDOW]) windows.list[windows.ABOUT_WINDOW].close();
+    if (windows.list[windows.SPLASH_WINDOW]) windows.list[windows.SPLASH_WINDOW].close();
+    if (windows.list[windows.PREVIEW_WINDOW]) windows.list[windows.PREVIEW_WINDOW].close();
   });
 
   windows.list[windows.MAIN_WINDOW].on('resize', (e) => {
@@ -218,9 +221,7 @@ if (is_main_instance) {
   });
   
   app.on('window-all-closed', () => {
-    //if (process.platform !== 'darwin') {
-      app.quit();
-    //}
+    app.quit();
   });
   
   app.on('activate', () => {
