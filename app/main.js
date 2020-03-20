@@ -36,6 +36,9 @@ function createSplashWindow() {
     protocol: 'file:',
     slashes: true
   }))
+  windows.list[windows.SPLASH_WINDOW].on('close', () => {
+    windows.list[windows.SPLASH_WINDOW] = null
+  })
 }
 
 function createAboutWindow() {
@@ -64,6 +67,9 @@ function createAboutWindow() {
   })
   windows.list[windows.MAIN_WINDOW].on('move', (e) => {
     syncAboutSize()
+  })
+  windows.list[windows.ABOUT_WINDOW].on('close', () => {
+    windows.list[windows.ABOUT_WINDOW] = null
   })
 }
 
