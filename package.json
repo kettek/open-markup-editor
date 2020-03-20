@@ -28,12 +28,12 @@
   "author": "Ketchetwahmeegwun T. Southall <kts@kettek.net> (https://kettek.net/)",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^7.0.0",
-    "electron-builder": "^21.2.0",
+    "electron": "^8.1.1",
+    "electron-builder": "^22.4.1",
     "submodules-install": "^1.0.1"
   },
   "dependencies": {
-    "@hapi/cryptiles": "^4.2.1",
+    "@hapi/cryptiles": "^5.0.0",
     "bezier-easing": "^2.1.0",
     "chokidar": "^3.2.2",
     "electron-app-settings": "^1.0.2",
@@ -42,7 +42,7 @@
     "fs-extra": "^8.1.0",
     "mithril": "^1.1.7",
     "semver": "^6.3.0",
-    "tar": "^5.0.5"
+    "tar": "^6.0.1"
   },
   "build": {
     "files": [
