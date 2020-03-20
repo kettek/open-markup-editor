@@ -2,6 +2,8 @@ const MM = require('./PackManager');
 const settings  = require('electron-app-settings');
 
 const RenderPackManager = MM('render-packs', {
+  pack_type: 'render',
+  pack_type_short: 'rp',
   selected_index: 0,
   mod_replace_string: "$OME_RENDER_PACKS",
   select: (index) => {

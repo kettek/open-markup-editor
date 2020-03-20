@@ -12,6 +12,8 @@ const Emitter     = require('./emitter');
 
 function makePackManager(module_name, obj={}) {
   let mm = Emitter(Object.assign({
+    pack_type: 'extension',
+    pack_type_short: 'ext',
     packs: [],
     // Packs that are pending loading. For each pack detected by populate, a number is added to this. For each pack that finishes loading, successfully or not, this number is decreased. When it reaches 0, "populated" is emitted.
     pending_packs: 0,
@@ -22,28 +24,48 @@ function makePackManager(module_name, obj={}) {
       }
     },
     mod_replace_string: "",
-    populate: (dir, on_finish=()=>{}) => {
-      DataManager.getFiles(dir, (errors, data_files) => {
-        mm.pending_packs += data_files.length
-        data_files.forEach(data_file => {
-          log.info(" Loading " + data_file.fullpath + "...");
-          try {
-            fs.accessSync(path.join(data_file.fullpath, 'package.json'), fs.constants.F_OK);
-          } catch (err) {
-            log.warn("  ...ignoring, missing 'package.json'.");
-            mm.reducePendingPacks(on_finish);
-            return;
-          }
+    populate: (dir) => {
+      return new Promise((finalResolve, finalReject) => {
+        DataManager.getFiles(dir, async (errors, data_files) => {
+          mm.pending_packs += data_files.length
+          for (const data_file of data_files) {
+            try {
+              let result = await new Promise((resolve, reject) => {
+                log.info(" Loading " + data_file.fullpath + "...");
+                try {
+                  fs.accessSync(path.join(data_file.fullpath, 'package.json'), fs.constants.F_OK);
+                } catch (err) {
+                  log.warn("  ...ignoring, missing 'package.json'.");
+                  resolve();
+                  return;
+                }
 
-          try {
-            mm.load(data_file, () => {
-              mm.reducePendingPacks(on_finish);
-            });
-            log.info("  ...OK");
-          } catch (e) {
-            mm.reducePendingPacks(on_finish);
-            log.warn("  ...NOKAY");
-            log.warn(e);
+                try {
+                  mm.load(data_file, () => {
+                    log.info("  ...OK");
+                    resolve();
+                  });
+                } catch (e) {
+                  if (e.code === 'INCORRECT_PACK_TYPE') {
+                    // TODO: Show a popup dialog telling the user what is wrong and whether or not to delete the pack.
+                    DataManager.deleteDirectory(data_file.fullpath, err => {
+                      if (err) {
+                        reject(err);
+                        return
+                      }
+                      log.info("  ...YEET");
+                      reject(e)
+                    });
+                  } else {
+                    log.warn("  ...NOKAY");
+                    reject(e)
+                  }
+                }
+              });
+              mm.reducePendingPacks(finalResolve);
+            } catch(err) {
+              mm.reducePendingPacks(finalResolve);
+            }
           }
         });
       });
@@ -133,7 +155,10 @@ function makePackManager(module_name, obj={}) {
       return mm.packs.filter(mod => {return mod.short_name == short_name});
     },
     create: filepath => {
-      let pkg = JSON.parse(fs.readFileSync(path.join(filepath, 'package.json'), 'utf8'))
+      let pkg = JSON.parse(fs.readFileSync(path.join(filepath, 'package.json'), 'utf8'));
+
+      mm.validate(pkg, filepath);
+
       let mod = Emitter(Object.assign({
         short_name: pkg.name,
         repository: pkg.repository ? pkg.repository : '',
@@ -233,6 +258,17 @@ function makePackManager(module_name, obj={}) {
       }
       return mod;
     },
+    validate: (pkg, filepath) => {
+      // Ensure pack is of the appropriate pack type. First check package.json then try file name match.
+      if (!pkg.ome || pkg.ome.packType !== mm.pack_type) {
+        let regex = new RegExp('([^-]*)-'+mm.pack_type_short+'-([^-]*)');
+        if (!regex.test(path.basename(filepath))) {
+          let err = new Error('Incorrect pack type');
+          err.code = 'INCORRECT_PACK_TYPE';
+          throw err;
+        }
+      }
+    },
     install: files => {
       if (!files || files.length == 0) return;
       let file = files[0];
@@ -240,6 +276,7 @@ function makePackManager(module_name, obj={}) {
       DataManager.unpackFileToTemp(file, (err, temp_path) => {
         let restorePreviousPack = ()=>{}
         let temp_pkg = require(path.join(temp_path.fullpath, 'package.json'))
+
         let match_index = -1
         for (let i = 0; i < mm.packs.length; i++) {
           if (mm.packs[i].short_name == temp_pkg.name) {
@@ -257,6 +294,7 @@ function makePackManager(module_name, obj={}) {
               mm.load(pack_path);
               log.info("  ...OK");
             } catch (e) {
+              // TODO: Show a popup dialog telling the user that the pack could not be installed.
               log.warn("  ...NOKAY");
               log.warn(e);
               fs.remove(pack_path.fullpath, () => {
@@ -285,6 +323,7 @@ function makePackManager(module_name, obj={}) {
                   mm.load(pack.filepath);
                   log.info(" ...OK");
                 } catch (e) {
+                // TODO: Show a popup dialog telling the user that the pack could not be restored.
                   log.warn("  ...NOKAY");
                   log.warn(e);
                 }

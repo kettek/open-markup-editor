@@ -1,6 +1,8 @@
 const MM = require('./PackManager');
 
 const MarkupPackManager = MM('markup-packs', {
+  pack_type: 'markup',
+  pack_type_short: 'mp',
   cached_packs: {},
   parseText: (type, text) => {
     let pack = MarkupPackManager.getMarkup(type);

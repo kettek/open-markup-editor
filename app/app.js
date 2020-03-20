@@ -59,7 +59,7 @@ ipcRenderer.on('conf-show', (event, arg) => {
   m.redraw();
 });
 
-ipcRenderer.on('init', (event, arg) => {
+ipcRenderer.on('init', async (event, arg) => {
   // Add "project root/packs" for built-in packs.
   DataManager.addPath({
     path: path.join(__dirname, '..'),
@@ -75,44 +75,36 @@ ipcRenderer.on('init', (event, arg) => {
     path: app.getPath('userData'),
     writable: true
   }, 0);
-  // Load in our packs and signal that we are ready to run when all are done loading.
-  let pending_packs = 4;
-  let isDone = () => {
-    pending_packs -= 1
-    if (pending_packs == 0) {
-      Files.releaseCache();
-      ipcRenderer.send('ready-to-run');
-      ipcRenderer.send('supported-markup', MarkupPackManager.getSupportedExtensions());
+
+  // Load in our packs.
+  await ExtensionPackManager.populate(path.join('packs', 'extension-packs'))
+  for (let i = 0; i < ExtensionPackManager.packs.length; i++) {
+    ExtensionPackManager.setup(i);
+    if (!ExtensionPackManager.packs[i].get('disabled')) {
+      ExtensionPackManager.enable(i);
     }
   }
-  ExtensionPackManager.populate(path.join('packs', 'extension-packs'), () => {
-    for (let i = 0; i < ExtensionPackManager.packs.length; i++) {
-      ExtensionPackManager.setup(i);
-      if (!ExtensionPackManager.packs[i].get('disabled')) {
-        ExtensionPackManager.enable(i);
-      }
+
+  await EditorModuleManager.populate(path.join('packs', 'editor-packs'))
+  for (let i = 0; i < EditorModuleManager.packs.length; i++) {
+    if (!EditorModuleManager.packs[i].get('disabled')) {
+      EditorModuleManager.enable(i);
     }
-    isDone();
-  });
-  EditorModuleManager.populate(path.join('packs', 'editor-packs'), () => {
-    for (let i = 0; i < EditorModuleManager.packs.length; i++) {
-      if (!EditorModuleManager.packs[i].get('disabled')) {
-        EditorModuleManager.enable(i);
-      }
+  }
+
+  await MarkupPackManager.populate(path.join('packs', 'markup-packs'))
+  for (let i = 0; i < MarkupPackManager.packs.length; i++) {
+    if (!MarkupPackManager.packs[i].get('disabled')) {
+      MarkupPackManager.enable(i);
     }
-    isDone();
-  });
-  MarkupPackManager.populate(path.join('packs', 'markup-packs'), () => {
-    for (let i = 0; i < MarkupPackManager.packs.length; i++) {
-      if (!MarkupPackManager.packs[i].get('disabled')) {
-        MarkupPackManager.enable(i);
-      }
-    }
-    isDone();
-  });
-  RenderPackManager.populate(path.join('packs', 'render-packs'), () => {
-    isDone();
-  });
+  }
+
+  await RenderPackManager.populate(path.join('packs', 'render-packs'))
+
+  // Notify main that we're ready to run.
+  Files.releaseCache();
+  ipcRenderer.send('ready-to-run');
+  ipcRenderer.send('supported-markup', MarkupPackManager.getSupportedExtensions());
 });
 
 // Drag and Drop support
