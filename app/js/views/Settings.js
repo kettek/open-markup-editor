@@ -196,6 +196,24 @@ function build(extension, obj) {
 }
 
 module.exports = {
+  download: {
+    render: {
+      url: '',
+      show: false,
+    },
+    editor: {
+      url: '',
+      show: false,
+    },
+    markup: {
+      url: '',
+      show: false,
+    },
+    extension: {
+      url: '',
+      show: false,
+    }
+  },
   oncreate: (vnode) => {
     AppState.NewTimingFunction('settings-open', (completed) => {
       vnode.dom.style.left = 100 - (completed) + '%'
@@ -285,7 +303,40 @@ module.exports = {
     return(
       m("section.settings",
         // Editor Packs
-        m("header", "Editor Packs", m(Icon, {
+        m("header", "Editor Packs", m('span', {
+            style: 'flex: 1; display: flex; justify-content: flex-end; align-items:center;'
+          },
+            vnode.state.download.editor.show
+              ? [m("input[type=text]", {
+              onchange: e => {
+                vnode.state.download.editor.url = e.target.value
+              },
+              placeholder: 'https://...'
+              }), m(Icon, {
+                iconName: 'remove',
+                className: 'button remove',
+                attrs: {
+                  onclick: () => {
+                    vnode.state.download.editor.show = false
+                  }
+                }
+              })]
+            : null,
+            m(Icon, {
+              iconName: "download",
+              className: "button download",
+              attrs: {
+                onclick: () => {
+                  if (!vnode.state.download.editor.show) {
+                    vnode.state.download.editor.show = true
+                  } else {
+                    vnode.state.download.editor.show = false
+                    EditorPackManager.downloadAndInstall(vnode.state.download.editor.url, 0)
+                  }
+                }
+              }
+            })),
+        m(Icon, {
           iconName: "add",
           className: "button new",
           attrs: {
@@ -300,7 +351,40 @@ module.exports = {
         }) ),
         buildPackList(EditorPackManager),
         // Markup Packs
-        m("header", "Markup Packs", m(Icon, {
+        m("header", "Markup Packs", m('span', {
+            style: 'flex: 1; display: flex; justify-content: flex-end; align-items:center;'
+          },
+            vnode.state.download.markup.show
+              ? [m("input[type=text]", {
+              onchange: e => {
+                vnode.state.download.markup.url = e.target.value
+              },
+              placeholder: 'https://...'
+              }), m(Icon, {
+                iconName: 'remove',
+                className: 'button remove',
+                attrs: {
+                  onclick: () => {
+                    vnode.state.download.markup.show = false
+                  }
+                }
+              })]
+            : null,
+            m(Icon, {
+              iconName: "download",
+              className: "button download",
+              attrs: {
+                onclick: () => {
+                  if (!vnode.state.download.markup.show) {
+                    vnode.state.download.markup.show = true
+                  } else {
+                    vnode.state.download.markup.show = false
+                    MarkupPackManager.downloadAndInstall(vnode.state.download.markup.url, 0)
+                  }
+                }
+              }
+            })),
+         m(Icon, {
           iconName: "add",
           className: "button new",
           attrs: {
@@ -331,31 +415,99 @@ module.exports = {
         ]),
         buildPackList(MarkupPackManager),
         // Render Packs
-        m("header", "Render Packs", m(Icon, {
-          iconName: "add",
-          className: "button new",
-          attrs: {
-            onclick: () => {
-              dialog.showOpenDialog({
-                title: "Install Render Pack archive",
-                filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
-                properties: ["openFile", "showHiddenFiles"]
-              }).then(result => RenderPackManager.install(result.filePaths));
+        m("header", "Render Packs",
+          m('span', {
+            style: 'flex: 1; display: flex; justify-content: flex-end; align-items:center;'
+          },
+            vnode.state.download.render.show
+              ? [m("input[type=text]", {
+              onchange: e => {
+                vnode.state.download.render.url = e.target.value
+              },
+              placeholder: 'https://...'
+              }), m(Icon, {
+                iconName: 'remove',
+                className: 'button remove',
+                attrs: {
+                  onclick: () => {
+                    vnode.state.download.render.show = false
+                  }
+                }
+              })]
+            : null,
+            m(Icon, {
+              iconName: "download",
+              className: "button download",
+              attrs: {
+                onclick: () => {
+                  if (!vnode.state.download.render.show) {
+                    vnode.state.download.render.show = true
+                  } else {
+                    vnode.state.download.render.show = false
+                    RenderPackManager.downloadAndInstall(vnode.state.download.render.url, 0)
+                  }
+                }
+              }
+            }),
+          ),
+          m(Icon, {
+            iconName: "add",
+            className: "button new",
+            attrs: {
+              onclick: () => {
+                dialog.showOpenDialog({
+                  title: "Install Render Pack archive",
+                  filters: [{name: 'Tarballs', extensions: ["tar", "tar.gz", "tgz"]}],
+                  properties: ["openFile", "showHiddenFiles"]
+                }).then(result => RenderPackManager.install(result.filePaths));
+              }
             }
-          }
-        }), /*m(Icon, {
-          iconName: "add",
-          className: "button download",
-          attrs: {
-            onclick: () => {
-              // TODO: download via RenderPackManager.download(url), then call install(filePath)
+          }), /*m(Icon, {
+            iconName: "add",
+            className: "button download",
+            attrs: {
+              onclick: () => {
+                // TODO: download via RenderPackManager.download(url), then call install(filePath)
+              }
             }
-          }
-        })),*/
+          })),*/
         ),
         buildPackList(RenderPackManager),
         // ExtensionPackManager
-        m("header", "Extensions", m(Icon, {
+        m("header", "Extensions", m('span', {
+            style: 'flex: 1; display: flex; justify-content: flex-end; align-items:center;'
+          },
+            vnode.state.download.extension.show
+              ? [m("input[type=text]", {
+              onchange: e => {
+                vnode.state.download.extension.url = e.target.value
+              },
+              placeholder: 'https://...'
+              }), m(Icon, {
+                iconName: 'remove',
+                className: 'button remove',
+                attrs: {
+                  onclick: () => {
+                    vnode.state.download.extension.show = false
+                  }
+                }
+              })]
+            : null,
+            m(Icon, {
+              iconName: "download",
+              className: "button download",
+              attrs: {
+                onclick: () => {
+                  if (!vnode.state.download.extension.show) {
+                    vnode.state.download.extension.show = true
+                  } else {
+                    vnode.state.download.extension.show = false
+                    ExtensionPackManager.downloadAndInstall(vnode.state.download.extension.url, 0)
+                  }
+                }
+              }
+            })),
+        m(Icon, {
           iconName: "add",
           className: "button new",
           attrs: {

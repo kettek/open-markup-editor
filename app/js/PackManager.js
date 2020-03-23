@@ -389,7 +389,7 @@ function makePackManager(module_name, obj={}) {
         }
         // TODO: update state manager to report downloading status
         // Get our filename, either from content-disposition or from url base name. Should probably add .tar.gz.
-        let filename = /filename=\"(.*)\"/gi.exec(res.headers['content-disposition'])[1];
+        let filename = /filename="*([^"]*)/gi.exec(res.headers['content-disposition'])[1];
         if (!filename) filename = path.basename(downloadURL)
         let output = path.join(app.getPath("temp"), filename)
 

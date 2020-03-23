@@ -334,7 +334,7 @@ section.settings > header {
   justify-content: space-between;
   font-size: 200%;
 }
-section.settings > header > .button.new {
+section.settings > header .button {
   font-size: 12pt;
 }
 section.settings > article {
