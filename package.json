@@ -2,7 +2,7 @@
   "name": "open-markup-editor",
   "productName": "Open Markup Editor",
   "copyright": "Copyright 2018-2019 ${author}",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Pluggable markup editor",
   "main": "./app/main.js",
   "scripts": {
