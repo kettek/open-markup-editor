@@ -1,3 +1,4 @@
+const { ipcRenderer } = require('electron');
 const settings    = require('electron-app-settings');
 const m           = require('mithril');
 const fs          = require('fs-extra');
@@ -131,6 +132,7 @@ function makePackManager(module_name, obj={}) {
         settings.on('set', mm.packs[index]._global_conf_set);
       }
       settings.set(mm.packs[index].key + '.disabled', !mm.packs[index].enabled);
+
       m.redraw();
     },
     disable: index => {
@@ -142,6 +144,7 @@ function makePackManager(module_name, obj={}) {
         delete mm.packs[index]._global_conf_set;
       }
       settings.set(mm.packs[index].key+'.disabled', !mm.packs[index].enabled);
+
       m.redraw();
 
       return true;
@@ -150,6 +153,7 @@ function makePackManager(module_name, obj={}) {
       if (index < 0 || index >= mm.packs.length) return;
       if (mm.packs[index].enabled) mm.disable(index);
       else mm.enable(index);
+      ipcRenderer.send('supported-markup', mm.getSupportedExtensions());
     },
     getByShortName: short_name => {
       return mm.packs.filter(mod => {return mod.short_name == short_name});

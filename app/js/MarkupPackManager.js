@@ -11,6 +11,7 @@ const MarkupPackManager = MM('markup-packs', {
   },
   getGroupNameForExtension: (ext) => {
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
+      if (!MarkupPackManager.packs[i].enabled) continue
       for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
         for (let j = 0; j < MarkupPackManager.packs[i].supports[key].length; j++) {
           if (ext.toLowerCase() == MarkupPackManager.packs[i].supports[key][j]) {
@@ -24,6 +25,7 @@ const MarkupPackManager = MM('markup-packs', {
   getSupportedExtensions: () => {
     let extensions = {}
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
+      if (!MarkupPackManager.packs[i].enabled) continue
       for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
         // Check for existing extensions entry.
         let match = ''
@@ -50,9 +52,11 @@ const MarkupPackManager = MM('markup-packs', {
   },
   getMarkup: (type) => {
     if (MarkupPackManager.cached_packs[type]) {
+      if (!MarkupPackManager.packs[MarkupPackManager.cached_packs[type]].enabled) return null
       return MarkupPackManager.packs[MarkupPackManager.cached_packs[type]];
     }
     for (let i = MarkupPackManager.packs.length-1; i >= 0; i--) {
+      if (!MarkupPackManager.packs[i].enabled) continue
       for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
         for (let j = 0; j < MarkupPackManager.packs[i].supports[key].length; j++) {
           let regex = new RegExp(MarkupPackManager.packs[i].supports[key][j], 'i');
@@ -63,7 +67,7 @@ const MarkupPackManager = MM('markup-packs', {
         }
       }
     }
-    return MarkupPackManager.packs[0];
+    return null
   },
   mod_replace_string: "$OME_MARKUP_PACKS"
 });

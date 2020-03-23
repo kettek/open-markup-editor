@@ -231,7 +231,11 @@ module.exports = {
   },
   view: (vnode) => {
     // TODO: Normalize all packs to have the same basic functionality and layout. Headers should be: '<show/hide icons> <name> <version>      <updates buttons> <check for updates icon> <disable> <uninstall w/ confirm>'
-    function buildPackList(manager) {
+    function buildPackList(manager, options) {
+      options = Object.assign({
+        allowDisable: true,
+      }, options)
+
       return manager.packs.map((pack, index) => {
         return build(pack, [
           'article', ['header.packHeader', ['span.packHeader__name', pack.name, ['span.packHeader__name__version', pack.version ]],
@@ -244,7 +248,7 @@ module.exports = {
           ['span.packHeader__buttons', (pack.read_only
           ?
             [['button.disabled', 'Built-in'],
-            ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Enable', {onclick: () => manager.toggle(index)}]]
+            options.allowDisable ? ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Enable', {onclick: () => manager.toggle(index)}] : null]
           :
             [
               (manager.hasUpdate(index)
@@ -292,7 +296,7 @@ module.exports = {
                   }
                 }
               ],
-              ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Enable', {onclick: () => manager.toggle(index)}]
+              options.allowDisable ? ['button.' + (pack.enabled ? 'disable' : 'enable'), pack.enabled ? 'Disable' : 'Enable', {onclick: () => manager.toggle(index)}] : null
             ]
           )]
           ],
@@ -472,7 +476,7 @@ module.exports = {
             }
           })),*/
         ),
-        buildPackList(RenderPackManager),
+        buildPackList(RenderPackManager, {allowDisable: false}),
         // ExtensionPackManager
         m("header", "Extensions", m('span', {
             style: 'flex: 1; display: flex; justify-content: flex-end; align-items:center;'
