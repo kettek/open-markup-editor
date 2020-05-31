@@ -1,6 +1,7 @@
 let m = require('mithril');
 const settings = require('electron-app-settings');
 const path = require('path');
+const log = require('electron-log');
 const { ipcRenderer } = require('electron');
 
 let Files = require('../models/Files');
@@ -16,23 +17,36 @@ module.exports = {
     let rp = RenderPackManager.get(Files.getFileExtension(Files.focused));
     ipcRenderer.send('preview-load', RenderPackManager.get(Files.getFileExtension(Files.focused)));
     ipcRenderer.on('preview-loaded', () => {
-      let bounds = vnode.dom.getBoundingClientRect();
-      let converted_text = MarkupPackManager.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
-      ipcRenderer.send('preview-update', {
-        filename: Files.getFileName(Files.focused),
-        filepath: Files.getFilePath(Files.focused),
-        render:   converted_text,
-        bounds:   {
-          x:      bounds.x,
-          y:      bounds.y,
-          width:  bounds.width,
-          height: bounds.height
-        }
-      });
-      if (settings.get('render.synch_lines') == true) {
+      let doRender = text => {
+        let bounds = vnode.dom.getBoundingClientRect();
         ipcRenderer.send('preview-update', {
-          line: Files.getFileLine(Files.focused)
+          filename: Files.getFileName(Files.focused),
+          filepath: Files.getFilePath(Files.focused),
+          render:   text,
+          bounds:   {
+            x:      bounds.x,
+            y:      bounds.y,
+            width:  bounds.width,
+            height: bounds.height
+          }
         });
+        if (settings.get('render.synch_lines') == true) {
+          ipcRenderer.send('preview-update', {
+            line: Files.getFileLine(Files.focused)
+          });
+        }
+      }
+
+      let parsedText = MarkupPackManager.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
+
+      if (parsedText instanceof Promise) {
+        parsedText.then(result => {
+          doRender(result)
+        }).catch(err => {
+          log.warn("error while parseText promise", err)
+        })
+      } else {
+        doRender(parsedText)
       }
     });
     // Attach window resize listener
@@ -66,15 +80,28 @@ module.exports = {
       ipcRenderer.send('preview-load', RenderPackManager.get(Files.getFileExtension(Files.focused)));
     }
     if (Files.isFileDirty(Files.focused, true) || Files.should_redraw) {
-      let converted_text = MarkupPackManager.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
+      let doRender = (text) => {
+        ipcRenderer.send('preview-update', {
+          filename: Files.getFileName(Files.focused),
+          filepath: Files.getFilePath(Files.focused),
+          render:   text
+        });
+        Files.setFileDirty(Files.focused, false);
+        Files.should_redraw = false;
+      }
+
+      let parsedText = MarkupPackManager.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
+
+      if (parsedText instanceof Promise) {
+        parsedText.then(result => {
+          doRender(result)
+        }).catch(err => {
+          log.warn("error while parseText promise", err)
+        })
+      } else {
+        doRender(parsedText)
+      }
       // TODO: only send filename/filepath when the focused file changes!
-      ipcRenderer.send('preview-update', {
-        filename: Files.getFileName(Files.focused),
-        filepath: Files.getFilePath(Files.focused),
-        render:   converted_text
-      });
-      Files.setFileDirty(Files.focused, false);
-      Files.should_redraw = false;
     }
     if (settings.get('render.synch_lines') == true) {
       ipcRenderer.send('preview-update', {
