@@ -12,6 +12,7 @@ const MarkupPackManager = MM('markup-packs', {
   getGroupNameForExtension: (ext) => {
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
       if (!MarkupPackManager.packs[i].enabled) continue
+      if (!MarkupPackManager.packs[i].supports) continue
       for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
         for (let j = 0; j < MarkupPackManager.packs[i].supports[key].length; j++) {
           if (ext.toLowerCase() == MarkupPackManager.packs[i].supports[key][j]) {
@@ -26,6 +27,7 @@ const MarkupPackManager = MM('markup-packs', {
     let extensions = {}
     for (let i = 0; i < MarkupPackManager.packs.length; i++) {
       if (!MarkupPackManager.packs[i].enabled) continue
+      if (!MarkupPackManager.packs[i].supports) continue
       for (let key of Object.keys(MarkupPackManager.packs[i].supports)) {
         // Check for existing extensions entry.
         let match = ''
