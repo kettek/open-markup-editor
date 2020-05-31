@@ -149,8 +149,12 @@ module.exports = {
     const newFile = (filename="", content="", mode="markdown") => {
       let meta_info = CodeMirror.findModeByFileName(filename);
       if (meta_info) {
-        require(path.join('codemirror/mode/', meta_info.mode, meta_info.mode))
-        mode = meta_info.mode;
+        try {
+          require(path.join('codemirror/mode/', meta_info.mode, meta_info.mode))
+          mode = meta_info.mode;
+        } catch(e) {
+          console.log('No mode supported for ', meta_info)
+        }
       }
       return {
         doc: CodeMirror.Doc(content, mode)
