@@ -23,9 +23,15 @@ module.exports = {
     pack.conf({
       active_libraries: pack.libraries.map((lib, index) => {
         return lib.name;
-      })
+      }),
+      linkify: true,
     },
     ['section', {style: 'flex-direction: column;align-items:flex-start', title: "Available and active markdown-it plugins"},
+      ['label', 'Core', ''],
+        ['section', {title: 'Automatically generate links via linkify-it.'}, [
+          ['checkbox', '', 'linkify'],
+          ['label', 'Automatically Generate Links', 'linkify'],
+        ]],
       ['label', 'Plugins', ''],
       ['listbuilder', '', '', {
         left_items: () => {
@@ -79,7 +85,8 @@ module.exports = {
               token.tag = 'uxf-canvas';
             }
           }
-        }
+        },
+        linkify: pack.get('linkify')
       });
       let active = pack.get('active_libraries');
       for (let i = 0; i < active.length; i++) {
