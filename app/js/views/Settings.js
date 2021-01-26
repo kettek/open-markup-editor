@@ -322,6 +322,12 @@ module.exports = {
               oncontextmenu: e => {
                 editMenu.popup()
               },
+              onkeyup: e => {
+                if (e.keyCode === 13 && vnode.state.download.editor.url) {
+                  vnode.state.download.editor.show = false
+                  EditorPackManager.downloadAndInstall(vnode.state.download.editor.url, 0)
+                }
+              },
               placeholder: 'https://...'
               }), m(Icon, {
                 iconName: 'remove',
@@ -372,6 +378,12 @@ module.exports = {
               },
               oncontextmenu: e => {
                 editMenu.popup()
+              },
+              onkeyup: e => {
+                if (e.keyCode === 13 && vnode.state.download.markup.url) {
+                  vnode.state.download.markup.show = false
+                  MarkupPackManager.downloadAndInstall(vnode.state.download.markup.url, 0)
+                }
               },
               placeholder: 'https://...'
               }), m(Icon, {
@@ -441,6 +453,12 @@ module.exports = {
               oncontextmenu: e => {
                 editMenu.popup()
               },
+              onkeyup: e => {
+                if (e.keyCode === 13 && vnode.state.download.render.url) {
+                  vnode.state.download.render.show = false
+                  RenderPackManager.downloadAndInstall(vnode.state.download.render.url, 0)
+                }
+              },
               placeholder: 'https://...'
               }), m(Icon, {
                 iconName: 'remove',
@@ -498,6 +516,12 @@ module.exports = {
               ? [m("input[type=text]", {
               onchange: e => {
                 vnode.state.download.extension.url = e.target.value
+              },
+              onkeyup: e => {
+                if (e.keyCode === 13 && vnode.state.download.extension.url) {
+                  vnode.state.download.extension.show = false
+                  ExtensionPackManager.downloadAndInstall(vnode.state.download.extension.url, 0)
+                }
               },
               oncontextmenu: e => {
                 editMenu.popup()
