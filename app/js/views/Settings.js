@@ -1,5 +1,5 @@
 const m = require('mithril');
-const {dialog} = require('electron').remote;
+const {dialog, Menu} = require('electron').remote;
 const settings = require('electron-app-settings');
 
 const AppState = require('../models/AppState');
@@ -12,6 +12,10 @@ let ExtensionPackManager = require('../ExtensionPackManager');
 let ListBuilder = require('./ListBuilder');
 
 const Icon = require('./Icon');
+
+const editMenu = Menu.buildFromTemplate([
+  {role: 'editMenu'},
+]).items[0].submenu
 
 const defined_elements = {
   'section': {
@@ -315,6 +319,9 @@ module.exports = {
               onchange: e => {
                 vnode.state.download.editor.url = e.target.value
               },
+              oncontextmenu: e => {
+                editMenu.popup()
+              },
               placeholder: 'https://...'
               }), m(Icon, {
                 iconName: 'remove',
@@ -362,6 +369,9 @@ module.exports = {
               ? [m("input[type=text]", {
               onchange: e => {
                 vnode.state.download.markup.url = e.target.value
+              },
+              oncontextmenu: e => {
+                editMenu.popup()
               },
               placeholder: 'https://...'
               }), m(Icon, {
@@ -428,6 +438,9 @@ module.exports = {
               onchange: e => {
                 vnode.state.download.render.url = e.target.value
               },
+              oncontextmenu: e => {
+                editMenu.popup()
+              },
               placeholder: 'https://...'
               }), m(Icon, {
                 iconName: 'remove',
@@ -485,6 +498,9 @@ module.exports = {
               ? [m("input[type=text]", {
               onchange: e => {
                 vnode.state.download.extension.url = e.target.value
+              },
+              oncontextmenu: e => {
+                editMenu.popup()
               },
               placeholder: 'https://...'
               }), m(Icon, {
