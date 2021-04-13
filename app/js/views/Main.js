@@ -10,9 +10,14 @@ let WelcomeView = require('./Welcome');
 let SettingsView = require('./Settings')
 
 let AppState = require('../models/AppState');
+let Keybinds = require('../models/Keybinds');
 
 module.exports = {
   oninit: (vnode) => {
+    Keybinds.init();
+  },
+  onbeforeremove: (vnode) => {
+    Keybinds.deinit();
   },
   view: () => {
     const view = [];
