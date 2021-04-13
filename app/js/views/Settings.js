@@ -3,6 +3,7 @@ const {dialog, Menu} = require('electron').remote;
 const settings = require('electron-app-settings');
 
 const AppState = require('../models/AppState');
+const Keybinds = require('../models/Keybinds');
 let Files = require('../models/Files');
 let EditorPackManager = require('../EditorPackManager');
 let MarkupPackManager = require('../MarkupPackManager');
@@ -216,14 +217,19 @@ module.exports = {
     extension: {
       url: '',
       show: false,
-    }
+    },
+    hotkeys: null,
   },
   oncreate: (vnode) => {
+    Keybinds.addBind('close-settings', 'Escape', module.exports.hotkeys = () => {
+      AppState.show_config = false
+    })
     AppState.NewTimingFunction('settings-open', (completed) => {
       vnode.dom.style.left = 100 - (completed) + '%'
     }, 500);
   },
   onbeforeremove: (vnode) => {
+    Keybinds.removeBind('close-settings', 'Escape', module.exports.hotkeys)
     return new Promise((resolve) => {
       AppState.NewTimingFunction('settings-close', (completed) => {
         if (completed == 100) {
