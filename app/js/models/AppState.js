@@ -12,11 +12,12 @@ let AppState = Emitter({
       let tick_func = () => {
         let elapsed = new Date() - start;
         let completed = Math.round(easeInOut(elapsed / delay) * 100);
-        AppState.emit(which+'-timer', completed);
-        for (let i = 0; i < AppState._timers[which].length; i++) {
-          AppState._timers[which][i](completed);
-        }
-        if (elapsed >= delay) {
+        if (elapsed < delay) {
+          AppState.emit(which+'-timer', completed);
+          for (let i = 0; i < AppState._timers[which].length; i++) {
+            AppState._timers[which][i](completed);
+          }
+        } else {
           AppState.emit(which+'-timer', 100);
           for (let i = 0; i < AppState._timers[which].length; i++) {
             AppState._timers[which][i](100);
