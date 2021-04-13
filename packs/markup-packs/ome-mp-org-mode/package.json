@@ -1,0 +1,16 @@
+{
+  "name": "ome-mp-org-mode",
+  "version": "1.0.0",
+  "description": "Org Mode markup pack for Open Markup Editor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ketchetwahmeegwun T. Southall",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "orga-unified": "^2.3.16",
+    "rehype-stringify": "^8.0.0",
+    "reorg-rehype": "^2.3.16"
+  }
+}
