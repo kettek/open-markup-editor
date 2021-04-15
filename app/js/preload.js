@@ -6,6 +6,31 @@ const path = require('path');
 
 window.ome = Emitter();
 
+window.ome.getLink = (name) => {
+  let links = document.head.getElementsByTagName('link');
+  for (let link of links) {
+    if (link.getAttribute('href') === name) {
+      return link;
+    }
+  }
+};
+
+window.ome.addLink = (name) => {
+  let link = window.ome.getLink(name);
+  if (link) return;
+  link = document.createElement('link');
+  if (name.endsWith('.css')) {
+    link.rel = 'stylesheet';
+  }
+  link.href = name;
+  document.head.appendChild(link);
+};
+window.ome.removeLink = (name) => {
+  let link = window.ome.getLink(name);
+  if (!link) return;
+  link.parentNode.removeChild(link);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   ipcRenderer.on('go', (event, rp) => {
     if (rp.preload) {
@@ -36,6 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
     ipcRenderer.on('line', (event, message) => {
       window.ome.emit('line', message);
     });
+
+    // Send config information from render-pack.
+    ipcRenderer.on('conf', (event, message) => {
+      window.ome.emit('conf', message);
+    });
+    ipcRenderer.on('conf-set', (event, message) => {
+      window.ome.emit('conf-set', message);
+    });
+
     window.dispatchEvent(new Event('ome-ready'));
     window.ome.emit('ready');
   });
