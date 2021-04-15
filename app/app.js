@@ -100,6 +100,9 @@ ipcRenderer.on('init', async (event, arg) => {
   }
 
   await RenderPackManager.populate(path.join('packs', 'render-packs'))
+  for (let i = 0; i < RenderPackManager.packs.length; i++) {
+    RenderPackManager.enable(i);
+  }
 
   // Notify main that we're ready to run.
   Files.releaseCache();
