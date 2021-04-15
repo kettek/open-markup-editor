@@ -6,6 +6,7 @@ ome.on('filepath', (path) => {
   filepath = path;
 });
 ome.on('ready', () => {
+  ome.addLink('./github-markdown.css')
   target_element = document.getElementById('OME_TARGET');
 });
 ome.on('render', html => {
@@ -34,4 +35,30 @@ ome.on('render', html => {
 ome.on('line', line => {
   let el = document.querySelector('[data-source-line="'+line+'"]');
   if (el) el.scrollIntoView();
+});
+
+ome.on('conf', conf => {
+  let body = document.body
+  let el = document.getElementsByClassName('markdown-body')[0]
+  if (conf.darkmode === true) {
+    body.classList.add('-darkmode');
+    el.classList.add('-darkmode');
+  } else {
+    body.classList.remove('-darkmode');
+    el.classList.remove('-darkmode');
+  }
+});
+
+ome.on('conf-set', o => {
+  let body = document.body
+  let el = document.getElementsByClassName('markdown-body')[0]
+  if (o.key === 'darkmode') {
+    if (o.value === true) {
+      body.classList.add('-darkmode');
+      el.classList.add('-darkmode');
+    } else {
+      body.classList.remove('-darkmode');
+      el.classList.remove('-darkmode');
+    }
+  }
 });
