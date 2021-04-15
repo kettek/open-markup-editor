@@ -123,7 +123,14 @@ function makePackManager(module_name, obj={}) {
       // Setup if it hasn't been done already
       mm.setup(index);
       // Enable that beezy
-      mm.packs[index].enabled = mm.packs[index].emit('enable') === false ? false : true;
+      let result = mm.packs[index].emit('enable');
+      if (result instanceof Error) {
+        log.error(result.message);
+        mm.packs[index].enabled = false;
+        // TODO: Some sort of user notification.
+      } else {
+        mm.packs[index].enabled = result === false ? false : true;
+      }
       // Hook pack into global settings if it is listening for it
       if (mm.packs[index].on['global-conf-set']) {
         mm.packs[index]._global_conf_set = (arg) => {
