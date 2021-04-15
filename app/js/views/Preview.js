@@ -37,6 +37,8 @@ module.exports = {
         }
       }
 
+      ipcRenderer.send('preview-conf', rp.get());
+
       let parsedText = MarkupPackManager.parseText(Files.getFileExtension(Files.focused), Files.getFileText(Files.focused));
 
       if (parsedText instanceof Promise) {
@@ -77,7 +79,9 @@ module.exports = {
   onupdate: (vnode) => {
     if (settings.get('renderpack') != vnode.state.renderPack) {
       vnode.state.renderPack = settings.get('renderpack');
-      ipcRenderer.send('preview-load', RenderPackManager.get(Files.getFileExtension(Files.focused)));
+      let rp = RenderPackManager.get(Files.getFileExtension(Files.focused));
+      ipcRenderer.send('preview-load', rp);
+      ipcRenderer.send('preview-conf', rp.get());
     }
     if (Files.isFileDirty(Files.focused, true) || Files.should_redraw) {
       let doRender = (text) => {
