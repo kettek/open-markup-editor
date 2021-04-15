@@ -266,6 +266,9 @@ function makePackManager(module_name, obj={}) {
         mod.on('redraw', () => {
           m.redraw();
         });
+        mod.on('preview-conf-set', o => {
+          ipcRenderer.send('preview-conf-set', o);
+        });
       }
       return mod;
     },
