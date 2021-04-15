@@ -12,7 +12,11 @@ module.exports = (obj={}) => {
     if (!emitter.on[name]) return;
     let return_data;
     for (let cb of emitter.on[name]) {
-      return_data = cb(...data) || return_data;
+      try {
+        return_data = cb(...data) || return_data;
+      } catch(err) {
+        return_data = err
+      }
     }
     return return_data;
   }
