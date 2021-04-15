@@ -174,6 +174,14 @@ function destroyPreviewView() {
       windows.list[windows.PREVIEW].setBounds(bounds);
     }
   });
+  ipcMain.on('preview-conf', (event, options) => {
+    if (!windows.list[windows.PREVIEW]) return
+    windows.list[windows.PREVIEW].webContents.send('conf', options);
+  });
+  ipcMain.on('preview-conf-set', (event, options) => {
+    if (!windows.list[windows.PREVIEW]) return
+    windows.list[windows.PREVIEW].webContents.send('conf-set', options);
+  });
   ipcMain.on('preview-unload', (event) => {
     destroyPreviewView();
   });
