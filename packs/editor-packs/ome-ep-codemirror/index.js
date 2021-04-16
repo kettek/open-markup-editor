@@ -175,7 +175,9 @@ module.exports = {
         });
         //
         pack.cm.on("cursorActivity", (cm) => {
-          pack.emit("line", pack.focused, cm.getDoc().getCursor().line);
+          let cursor = cm.getDoc().getCursor()
+          pack.emit("line", pack.focused, cursor.line);
+          cm.scrollIntoView(cursor);
         });
         pack.cm.on("viewportChange", (cm, from, to) => {
         });
