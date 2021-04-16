@@ -9,7 +9,7 @@ module.exports = {
     },
     ['section', {title: "GitHub Options"},
       ['checkbox', '', 'darkmode'],
-      ['label', "Use GitHub's dark mode", 'darkmode'],
+      ['label', "Dark Mode", 'darkmode'],
     ]);
 
     let setDarkmode = (v) => {
