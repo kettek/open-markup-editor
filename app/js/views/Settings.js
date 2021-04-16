@@ -334,7 +334,7 @@ module.exports = {
                   EditorPackManager.downloadAndInstall(vnode.state.download.editor.url, 0)
                 }
               },
-              placeholder: 'https://...'
+              placeholder: 'https://...tgz'
               }), m(Icon, {
                 iconName: 'remove',
                 className: 'button remove',
@@ -391,7 +391,7 @@ module.exports = {
                   MarkupPackManager.downloadAndInstall(vnode.state.download.markup.url, 0)
                 }
               },
-              placeholder: 'https://...'
+              placeholder: 'https://...tgz'
               }), m(Icon, {
                 iconName: 'remove',
                 className: 'button remove',
@@ -465,7 +465,7 @@ module.exports = {
                   RenderPackManager.downloadAndInstall(vnode.state.download.render.url, 0)
                 }
               },
-              placeholder: 'https://...'
+              placeholder: 'https://...tgz'
               }), m(Icon, {
                 iconName: 'remove',
                 className: 'button remove',
@@ -532,7 +532,7 @@ module.exports = {
               oncontextmenu: e => {
                 editMenu.popup()
               },
-              placeholder: 'https://...'
+              placeholder: 'https://...tgz'
               }), m(Icon, {
                 iconName: 'remove',
                 className: 'button remove',
