@@ -11,9 +11,9 @@ const Emitter = require('../emitter.js');
 
 const MarkupPacksManager = require('../MarkupPackManager.js');
 
-const {dialog} = require('electron').remote;
-const menu = require('electron').remote.require('./menu')
-const main_window = require('electron').remote.getCurrentWindow()
+const {dialog} = require('@electron/remote');
+const menu = require('@electron/remote').require('./menu');
+const main_window = require('@electron/remote').getCurrentWindow();
 
 let Files = Emitter({
   focused: 0,

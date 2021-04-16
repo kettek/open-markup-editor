@@ -1,4 +1,4 @@
-const { app }   = require('electron').remote;
+const { app }   = require('@electron/remote');
 const settings  = require('electron-app-settings');
 const path      = require('path');
 const fs        = require('fs-extra');

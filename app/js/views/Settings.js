@@ -1,5 +1,5 @@
 const m = require('mithril');
-const {dialog, Menu} = require('electron').remote;
+const {dialog, Menu} = require('@electron/remote');
 const settings = require('electron-app-settings');
 
 const AppState = require('../models/AppState');

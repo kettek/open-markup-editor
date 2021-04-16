@@ -7,10 +7,13 @@ const {
   ipcMain 
 } = require('electron');
 
+require('@electron/remote/main').initialize()
+
 const isDev     = require('electron-is-dev');
 const log       = require('electron-log');
                 log.transports.console.level = 'info';
                 log.transports.file.level = 'info';
+                log.transports.ipc.level = 'info';
 let   settings  = {};
 const path      = require('path');
 const url       = require('url');
@@ -74,7 +77,7 @@ function createAboutWindow() {
 }
 
 function createMainWindow() {
-  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false, webPreferences: { nodeIntegration: true } });
+  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false, webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true } });
   windows.list[windows.MAIN_WINDOW].setBounds({x: settings.get("window.left"), y: settings.get("window.top"), width: settings.get("window.width"), height: settings.get("window.height")});
 
   windows.list[windows.MAIN_WINDOW].loadURL(url.format({
@@ -136,7 +139,7 @@ function createPreviewView() {
 }
 function destroyPreviewView() {
   windows.list[windows.MAIN_WINDOW].setBrowserView(null);
-  windows.list[windows.PREVIEW].destroy();
+  windows.list[windows.PREVIEW].webContents.destroy();
   windows.list[windows.PREVIEW] = null;
 }
 

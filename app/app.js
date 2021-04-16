@@ -3,6 +3,9 @@ let m = require('mithril');
 const settings = require('electron-app-settings');
 
 const log = require('electron-log');
+      log.transports.console.level = 'info';
+      log.transports.file.level = 'info';
+      log.transports.ipc.level = 'info';
 
 const DataManager = require('./js/DataManager');
 
@@ -16,7 +19,7 @@ const RenderPackManager = require('./js/RenderPackManager');
 const ExtensionPackManager = require('./js/ExtensionPackManager');
 
 const { ipcRenderer } = require('electron');
-const { app } = require('electron').remote;
+const { app } = require('@electron/remote');
 
 const path = require('path');
 
@@ -60,6 +63,13 @@ ipcRenderer.on('conf-show', (event, arg) => {
 });
 
 ipcRenderer.on('init', async (event, arg) => {
+  // Seems like a fair enough time to set up mithril.
+  let MainView = require('./js/views/Main');
+
+  m.route(document.body, "/", {
+    "/": MainView
+  })
+
   // Add "project root/packs" for built-in packs.
   DataManager.addPath({
     path: path.join(__dirname, '..'),
@@ -149,10 +159,3 @@ document.body.addEventListener('drop', (ev) => {
 window.addEventListener("optimizedResize", function() {
   AppState.emit('window-resize', window.innerWidth, window.innerHeight);
 });
-
-let MainView = require('./js/views/Main');
-
-m.route(document.body, "/", {
-  "/": MainView
-})
-

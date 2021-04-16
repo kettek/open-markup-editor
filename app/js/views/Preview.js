@@ -9,13 +9,11 @@ let MarkupPackManager = require('../MarkupPackManager');
 let RenderPackManager = require('../RenderPackManager');
 const AppState = require('../models/AppState');
 
-const main_window = require('electron').remote.getCurrentWindow();
-
 module.exports = {
   oncreate: (vnode) => {
     vnode.state.renderPack = settings.get('renderpack')
     let rp = RenderPackManager.get(Files.getFileExtension(Files.focused));
-    ipcRenderer.send('preview-load', RenderPackManager.get(Files.getFileExtension(Files.focused)));
+    ipcRenderer.send('preview-load', {preload: rp.preload, preview: rp.preview});
     ipcRenderer.on('preview-loaded', () => {
       let doRender = text => {
         let bounds = vnode.dom.getBoundingClientRect();
@@ -80,7 +78,7 @@ module.exports = {
     if (settings.get('renderpack') != vnode.state.renderPack) {
       vnode.state.renderPack = settings.get('renderpack');
       let rp = RenderPackManager.get(Files.getFileExtension(Files.focused));
-      ipcRenderer.send('preview-load', rp);
+      ipcRenderer.send('preview-load', {preload: rp.preload, preview: rp.preview});
       ipcRenderer.send('preview-conf', rp.get());
     }
     if (Files.isFileDirty(Files.focused, true) || Files.should_redraw) {
