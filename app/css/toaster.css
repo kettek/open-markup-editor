@@ -39,6 +39,7 @@ section.toaster {
   flex-direction: column;
   align-items: stretch;
   justify-content: stretch;
+  overflow: hidden;
 }
 
 section.toaster article {
@@ -56,6 +57,7 @@ section.toaster article {
   grid-template-rows: auto auto minmax(0, 1fr);
   margin-top: 1em;
   user-select: auto;
+  overflow: hidden;
 }
 
 header.toaster__toast__title {
@@ -72,6 +74,7 @@ header.toaster__toast__subtitle {
 
 main.toaster__toast__body {
   grid-area: toast__body;
+  overflow: auto;
 }
 
 aside.toaster__toast__controls {
