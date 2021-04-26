@@ -291,9 +291,25 @@ function makePackManager(module_name, obj={}) {
       if (!files || files.length == 0) return;
       let file = files[0];
       // This is kind of nasty.
-      DataManager.unpackFileToTemp(file, (err, temp_path) => {
+      DataManager.unpackFileToTemp(file, (errors, temp_path) => {
+        if (errors) {
+          for (let error of errors) {
+            Notifier.error({title: 'PackManager.install', body: error});
+          }
+          return
+        }
         let restorePreviousPack = ()=>{}
-        let temp_pkg = require(path.join(temp_path.fullpath, 'package.json'))
+        let temp_pkg
+        try {
+          temp_pkg = require(path.join(temp_path.fullpath, 'package.json'))
+        } catch(e) {
+          if (e.code === 'MODULE_NOT_FOUND') {
+            Notifier.error({title: `PackManager.install`, body: `"${file}" is not a valid pack.`});
+          } else {
+            Notifier.error({title: `PackManager.install`, body: e.code});
+          }
+          return
+        }
 
         let match_index = -1
         for (let i = 0; i < mm.packs.length; i++) {
