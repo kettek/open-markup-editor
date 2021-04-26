@@ -10,6 +10,7 @@ An okay markup editor designed for multiple markup languages and fully customiza
     * AsciiDoc via [asciidoctor](https://github.com/asciidoctor/asciidoctor.js)
     * Creole via [npm-creole](https://github.com/Zibx/jscreole)
     * Textile via [textile-js](https://github.com/borgar/textile-js)
+    * Org-mode via [orgajs](https://github.com/orgapp/orgajs)
    * Render themes!
      * Comes with GitHub and a Default theme
    * Custom colorization
