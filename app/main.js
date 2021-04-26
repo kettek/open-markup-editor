@@ -118,28 +118,30 @@ function createMainWindow() {
 
 function createPreviewView() {
   // Create our hidden browserview
-  windows.list[windows.PREVIEW] = new BrowserView({
-    show: false,
-    webPreferences: {
-      nodeIntegration: false,
-      preload: require.resolve('./js/preload.js'),
-      devTools: true
-    }
-  });
+  if (!windows.list[windows.PREVIEW]) {
+    windows.list[windows.PREVIEW] = new BrowserView({
+      show: false,
+      webPreferences: {
+        nodeIntegration: false,
+        preload: require.resolve('./js/preload.js'),
+        devTools: true
+      }
+    });
+    windows.list[windows.PREVIEW].webContents.on('will-navigate', (event, url) => {
+      console.log("Denying navigation to " + url)
+      event.preventDefault();
+    });
+    // Set up Main to Renderer IPC transactions.
+    windows.list[windows.PREVIEW].webContents.on('did-finish-load', () => {
+      windows.list[windows.PREVIEW].webContents.send('go', windows.list[windows.PREVIEW].renderPack);
+      windows.list[windows.MAIN_WINDOW].webContents.send('preview-loaded');
+    });
+  }
   windows.list[windows.MAIN_WINDOW].addBrowserView(windows.list[windows.PREVIEW]);
   if (windows.list[windows.MAIN_WINDOW].getBrowserViews().includes(windows.list[windows.TOASTER])) {
     windows.list[windows.MAIN_WINDOW].setTopBrowserView(windows.list[windows.TOASTER]);
   }
   windows.list[windows.PREVIEW].setBounds({x: -100, y: -100, width: 100, height: 100 });
-  windows.list[windows.PREVIEW].webContents.on('will-navigate', (event, url) => {
-    console.log("Denying navigation to " + url)
-    event.preventDefault();
-  });
-  // Set up Main to Renderer IPC transactions.
-  windows.list[windows.PREVIEW].webContents.on('did-finish-load', () => {
-    windows.list[windows.PREVIEW].webContents.send('go', windows.list[windows.PREVIEW].renderPack);
-    windows.list[windows.MAIN_WINDOW].webContents.send('preview-loaded');
-  });
 }
 function destroyPreviewView() {
   windows.list[windows.MAIN_WINDOW].removeBrowserView(windows.list[windows.PREVIEW]);
