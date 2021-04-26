@@ -238,8 +238,6 @@ function destroyToasterView() {
     windows.list[windows.MAIN_WINDOW].removeBrowserView(windows.list[windows.TOASTER]);
   });
   ipcMain.on('toaster-bounds', (event, bounds) => {
-    console.log('bounds', bounds)
-    console.log(windows.list[windows.TOASTER])
     windows.list[windows.TOASTER].setBounds({
       x: Math.round(bounds.x),
       y: Math.round(bounds.y),
