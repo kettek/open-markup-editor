@@ -10,6 +10,7 @@ const url         = require('url');
 const semver      = require('semver');
 const DataManager = require('./DataManager');
 const Emitter     = require('./emitter');
+const Notifier    = require('./models/Notifier');
 
 function makePackManager(module_name, obj={}) {
   let mm = Emitter(Object.assign({
@@ -47,6 +48,7 @@ function makePackManager(module_name, obj={}) {
                     resolve();
                   });
                 } catch (e) {
+                  Notifier.error({title: e.code, body: e.toString()});
                   if (e.code === 'INCORRECT_PACK_TYPE') {
                     // TODO: Show a popup dialog telling the user what is wrong and whether or not to delete the pack.
                     DataManager.deleteDirectory(data_file.fullpath, err => {
@@ -79,6 +81,7 @@ function makePackManager(module_name, obj={}) {
         mm.emit('load', extension);
         on_packload(extension)
       } catch (e) {
+        Notifier.error({title: 'PackManager.load', body: e.toString()});
         throw e;
       }
     },
@@ -128,6 +131,7 @@ function makePackManager(module_name, obj={}) {
         log.error(result.message);
         mm.packs[index].enabled = false;
         // TODO: Some sort of user notification.
+        Notifier.error({title: 'PackManager.enable', body: result.toString()});
       } else {
         mm.packs[index].enabled = result === false ? false : true;
       }
@@ -302,6 +306,7 @@ function makePackManager(module_name, obj={}) {
           DataManager.restoreFromTemp(temp_path.path, path.join('packs', module_name), (err, pack_path) => {
             if (err.length) {
               log.error(err);
+              Notifier.error({title: 'PackManager.install', body: err});
               return;
             }
             try {
@@ -311,6 +316,7 @@ function makePackManager(module_name, obj={}) {
               // TODO: Show a popup dialog telling the user that the pack could not be installed.
               log.warn("  ...NOKAY");
               log.warn(e);
+              Notifier.error({title: 'PackManager.install', body: e.toString()});
               fs.remove(pack_path.fullpath, () => {
                 restorePreviousPack();
               });
@@ -331,6 +337,7 @@ function makePackManager(module_name, obj={}) {
               DataManager.restoreFromTemp(temp_path.fullpath, path.join('packs', module_name), (err, pack) => {
                 if (err.length) {
                   log.error(err);
+                  Notifier.error({title: 'PackManager.install', body: err});
                   return;
                 }
                 try {
@@ -340,6 +347,7 @@ function makePackManager(module_name, obj={}) {
                 // TODO: Show a popup dialog telling the user that the pack could not be restored.
                   log.warn("  ...NOKAY");
                   log.warn(e);
+                  Notifier.error({title: 'PackManager.install', body: e.toString()});
                 }
                 m.redraw();
               });
@@ -349,26 +357,12 @@ function makePackManager(module_name, obj={}) {
           })
         }
       })
-      /*DataManager.unpackFile(file, path.join('packs', module_name), (err, pack_path) => {
-        if (err) {
-          alert(err);
-        } else {
-          try {
-            mm.load(pack_path);
-            log.info("  ...OK");
-          } catch (e) {
-            log.warn("  ...NOKAY");
-            log.warn(e);
-          }
-          m.redraw();
-        }
-      });*/
     },
     uninstall: index => {
       if (index < 0 || index >= mm.packs.length) return false;
       DataManager.deleteDirectory(mm.packs[index].filepath, err => {
         if (err) {
-          alert(err);
+          Notifier.error({title: 'PackManager.uninstall', body: err.toString()});
         } else {
           mm.unload(index);
         }
@@ -376,45 +370,52 @@ function makePackManager(module_name, obj={}) {
     },
     downloadAndInstall: (downloadURL, attempt) => {
       m.redraw();
-      https.get(downloadURL, {
-        headers: {
-          "User-Agent": "Open Markup Editor"
-        }
-      }, (res) => {
-        if (res.statusCode == 302) {
-          if (++attempt > 6) {
-            log.error('302 redirects exceeded 6, bailing download.')
-            m.redraw();
+      try {
+        https.get(downloadURL, {
+          headers: {
+            "User-Agent": "Open Markup Editor"
+          }
+        }, (res) => {
+          if (res.statusCode == 302) {
+            if (++attempt > 6) {
+              log.error('302 redirects exceeded 6, bailing download.')
+              Notifier.error({title: 'PackManager.downloadAndInstall', body: `Too many 302 redirects.`});
+              m.redraw();
+              return
+            }
+            if (res.headers.location[0] === '/') {
+              downloadURL = url.resolve(downloadURL, res.headers.location)
+            } else {
+              downloadURL = res.headers.location
+            }
+            mm.downloadAndInstall(downloadURL, attempt)
             return
           }
-          if (res.headers.location[0] === '/') {
-            downloadURL = url.resolve(downloadURL, res.headers.location)
-          } else {
-            downloadURL = res.headers.location
+          if (res.statusCode !== 200) {
+            log.error(res.statusCode, res.statusMessage)
+            Notifier.error({title: 'PackManager.downloadAndInstall', body: `${res.statusCode} ${res.statusMessage}`});
+            m.redraw();
+            // TODO: show error
+            return
           }
-          mm.downloadAndInstall(downloadURL, attempt)
-          return
-        }
-        if (res.statusCode !== 200) {
-          log.error(res.statusCode, res.statusMessage)
-          m.redraw();
-          // TODO: show error
-          return
-        }
-        // TODO: update state manager to report downloading status
-        // Get our filename, either from content-disposition or from url base name. Should probably add .tar.gz.
-        let filename = /filename="*([^"]*)/gi.exec(res.headers['content-disposition'])[1];
-        if (!filename) filename = path.basename(downloadURL)
-        let output = path.join(app.getPath("temp"), filename)
+          // TODO: update state manager to report downloading status
+          // Get our filename, either from content-disposition or from url base name. Should probably add .tar.gz.
+          let filename = /filename="*([^"]*)/gi.exec(res.headers['content-disposition'])[1];
+          if (!filename) filename = path.basename(downloadURL)
+          let output = path.join(app.getPath("temp"), filename)
 
-        // Create file and write it.
-        let file = fs.createWriteStream(output)
-        res.on('end', () => {
-          m.redraw();
-          mm.install([output])
-        })
-        res.pipe(file)
-      }).end();
+          // Create file and write it.
+          let file = fs.createWriteStream(output)
+          res.on('end', () => {
+            m.redraw();
+            mm.install([output])
+          })
+          res.pipe(file)
+        }).end();
+      } catch(err) {
+        log.error(err)
+        Notifier.error({title: `PackManager.downloadAndInstall(${downloadURL})`, body: err.toString()});
+      }
     },
     update: (index, tag, attempt=0) => {
       if (index < 0 || index >= mm.packs.length) return false;
@@ -434,6 +435,7 @@ function makePackManager(module_name, obj={}) {
           if (res.statusCode == 302) {
             if (++attempt > 6) {
               log.error('302 redirects exceeded 6, bailing download.')
+              Notifier.error({title: 'PackManager.update', body: `Too many 302 redirects.`});
               mm.packs[index].updating = false
               m.redraw();
               return
@@ -449,6 +451,7 @@ function makePackManager(module_name, obj={}) {
           }
           if (res.statusCode !== 200) {
             log.error(res.statusCode, res.statusMessage)
+            Notifier.error({title: 'PackManager.update', body: `${res.statusCode} ${res.statusMessage}`});
             mm.packs[index].updating = false
             m.redraw();
             // TODO: update updates[t] to show error
@@ -525,6 +528,7 @@ function makePackManager(module_name, obj={}) {
           }, (res) => {
             if (res.statusCode !== 200) {
               log.error(res.statusCode, res.statusMessage)
+              Notifier.error({title: 'PackManager.checkForUpdate', body: `${res.statusCode} ${res.statusMessage}`});
               return
             }
             let str = ''

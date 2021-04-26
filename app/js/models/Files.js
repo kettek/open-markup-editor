@@ -9,6 +9,8 @@ const settings    = require('electron-app-settings');
 
 const Emitter = require('../emitter.js');
 
+const Notifier = require('./Notifier');
+
 const MarkupPacksManager = require('../MarkupPackManager.js');
 
 const {dialog} = require('@electron/remote');
@@ -149,6 +151,7 @@ let Files = Emitter({
           }
         }).catch(err => {
           log.error(err)
+          Notifier.error({title: 'File change', body: err.toString()})
         });
       }
     }
@@ -195,6 +198,7 @@ let Files = Emitter({
         }
       }).catch(err => {
         log.error(err)
+        Notifier.error({title: 'Files.closeFile', body: err.toString()})
       });
       return;
     }
@@ -258,6 +262,7 @@ let Files = Emitter({
         Files.saveFile(index, false, rename, cb);
       }).catch(err => {
         log.error(err)
+        Notifier.error({title: 'Files.saveFile', body: err.toString()})
       });
     } else {
       Files.loadedFiles[index].saving = true
@@ -266,6 +271,7 @@ let Files = Emitter({
         if (err) {
           log.error(`File.saveFile "${Files.loadedFiles[index].filepath}"`, err.message);
           Files.loadedFiles[index].saved = false;
+          Notifier.error({title: 'Files.saveFile', body: err.toString()})
           return;
         }
         Files.loadedFiles[index].saved = true;
@@ -285,6 +291,7 @@ let Files = Emitter({
       fs.unlink(oldFilepath, (err) => {
         if (err) {
           log.error(`renameFile unlink "${oldFilepath}"`, err.message);
+          Notifier.error({title: 'Files.renameFile', body: err.toString()})
           return;
         }
       });
@@ -295,6 +302,7 @@ let Files = Emitter({
     fs.readFile(filepath, 'utf-8', (err, data) => {
       if (err) {
         log.error(`importFile "${filepath}"`, err.message);
+        Notifier.error({title: 'Files.importFile', body: err.toString()})
         return;
       }
       // Create a blank file if there is no valid file open.
@@ -321,6 +329,7 @@ let Files = Emitter({
       }
     }).catch(err => {
       log.error(err)
+      Notifier.error({title: 'Files.openFile', body: err.toString()})
     })
   },
   loadFile: filepath => {
@@ -335,6 +344,7 @@ let Files = Emitter({
     fs.readFile(filepath, 'utf-8', (err, data="") => {
       if (err && err.code != "ENOENT") {
         log.error(`Files.loadFile "${filepath}"`, err.message);
+        Notifier.error({title: `Files.loadFile(${filepath})`, body: err.toString()})
         return;
       }
       if (Files.isCaching()) {
@@ -433,6 +443,7 @@ Files.watcher.on('change', (path, stats) => {
       fs.readFile(path, 'utf-8', (err, data="") => {
         if (err && err.code != "ENOENT") {
           log.error(`change event for file "${path}"`, err.message);
+          Notifier.error({title: `File change ${path}`, body: err.toString()})
           return;
         }
         Files.setFileChanged(i, data !== Files.getFileText(i), data);
