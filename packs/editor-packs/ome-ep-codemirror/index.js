@@ -7,6 +7,7 @@ module.exports = {
   name: "CodeMirror",
   themes: [],
   keymaps: ['default'],
+  search_addons: ['search/search.js', 'search/searchcursor.js', 'search/jump-to-line.js', 'dialog/dialog.js'],
   setup: (pack) => {
     // TODO: async
     let files = fs.readdirSync(path.join(__dirname, 'node_modules/codemirror/theme'));
@@ -18,13 +19,14 @@ module.exports = {
       pack.keymaps.push(path.basename(file, '.js'));
     });
 
+
     pack.conf({
       'theme_index': 25,
       'theme': 'material',
       'keymap_index': 0,
       'keymap': 'default',
       'use_tabs': false,
-      'indent_size': 2
+      'indent_size': 2,
     }, [
       ['section', {title: "The theme used by CodeMirror"},
         ['select', '', 'theme_index', {
@@ -99,6 +101,18 @@ module.exports = {
         pack.cm.setOption('keyMap', pack.keymap);
       }
     }
+    function enableSearch() {
+      for (let addon of pack.search_addons) {
+        require('codemirror/addon/'+addon)
+      }
+      pack.load(path.join(__dirname, 'node_modules/codemirror/addon/dialog/dialog.css'));
+    }
+    function disableSearch() {
+      for (let addon of pack.search_addons) {
+        delete require.cache[require.resolve('codemirror/addon/'+addon)]
+      }
+      pack.unload(path.join(__dirname, 'node_modules/codemirror/addon/dialog/dialog.css'));
+    }
     function unloadCustomTheming() {
       let style = document.getElementsByTagName('head')[0].querySelector('#ome-ep-codemirror');
       if (style) style.parentNode.removeChild(style);
@@ -136,12 +150,14 @@ module.exports = {
         require('codemirror/mode/meta');
       }
       pack.load(path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
+      enableSearch();
       loadTheme(pack.theme);
       loadKeymap(pack.keymap);
       loadCustomTheming();
       pack.emit('ready');
     });
     pack.on('disable', () => {
+      disableSearch();
       pack.unload(path.join(__dirname, 'node_modules/codemirror/lib/codemirror.css'));
       unloadTheme(pack.theme);
       unloadCustomTheming();
