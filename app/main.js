@@ -77,7 +77,7 @@ function createAboutWindow() {
 }
 
 function createMainWindow() {
-  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: true, webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true } });
+  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false, webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true } });
   windows.list[windows.MAIN_WINDOW].setBounds({x: settings.get("window.left"), y: settings.get("window.top"), width: settings.get("window.width"), height: settings.get("window.height")});
 
   windows.list[windows.MAIN_WINDOW].loadURL(url.format({
