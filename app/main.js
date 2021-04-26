@@ -45,7 +45,7 @@ function createSplashWindow() {
 }
 
 function createAboutWindow() {
-  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false, resizable: false, frame: false, webPreferences: { nodeIntegration: true } });
+  windows.list[windows.ABOUT_WINDOW] = new BrowserWindow({ width: 640, height: 480, parent: windows.list[windows.MAIN_WINDOW], modal: true, show: false, resizable: false, frame: false, webPreferences: { nodeIntegration: true, contextIsolation: false } });
   windows.list[windows.ABOUT_WINDOW].loadURL(url.format({
     pathname: path.join(__dirname, 'about.html'),
     protocol: 'file:',
@@ -77,7 +77,7 @@ function createAboutWindow() {
 }
 
 function createMainWindow() {
-  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: false, webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true } });
+  windows.list[windows.MAIN_WINDOW] = new BrowserWindow({ width: settings.get("window.width"), height: settings.get("window.height"), show: true, webPreferences: { nodeIntegration: true, contextIsolation: false, enableRemoteModule: true } });
   windows.list[windows.MAIN_WINDOW].setBounds({x: settings.get("window.left"), y: settings.get("window.top"), width: settings.get("window.width"), height: settings.get("window.height")});
 
   windows.list[windows.MAIN_WINDOW].loadURL(url.format({
@@ -104,6 +104,7 @@ function createMainWindow() {
     if (windows.list[windows.ABOUT_WINDOW]) windows.list[windows.ABOUT_WINDOW].close();
     if (windows.list[windows.SPLASH_WINDOW]) windows.list[windows.SPLASH_WINDOW].close();
     if (windows.list[windows.PREVIEW] && windows.list[windows.PREVIEW].close) windows.list[windows.PREVIEW].close();
+    if (windows.list[windows.TOASTER] && windows.list[windows.TOASTER].close) windows.list[windows.TOASTER].close();
   });
 
   windows.list[windows.MAIN_WINDOW].on('resize', (e) => {
@@ -125,7 +126,10 @@ function createPreviewView() {
       devTools: true
     }
   });
-  windows.list[windows.MAIN_WINDOW].setBrowserView(windows.list[windows.PREVIEW]);
+  windows.list[windows.MAIN_WINDOW].addBrowserView(windows.list[windows.PREVIEW]);
+  if (windows.list[windows.MAIN_WINDOW].getBrowserViews().includes(windows.list[windows.TOASTER])) {
+    windows.list[windows.MAIN_WINDOW].setTopBrowserView(windows.list[windows.TOASTER]);
+  }
   windows.list[windows.PREVIEW].setBounds({x: -100, y: -100, width: 100, height: 100 });
   windows.list[windows.PREVIEW].webContents.on('will-navigate', (event, url) => {
     console.log("Denying navigation to " + url)
@@ -138,7 +142,7 @@ function createPreviewView() {
   });
 }
 function destroyPreviewView() {
-  windows.list[windows.MAIN_WINDOW].setBrowserView(null);
+  windows.list[windows.MAIN_WINDOW].removeBrowserView(windows.list[windows.PREVIEW]);
   windows.list[windows.PREVIEW].webContents.destroy();
   windows.list[windows.PREVIEW] = null;
 }
@@ -187,6 +191,67 @@ function destroyPreviewView() {
   });
   ipcMain.on('preview-unload', (event) => {
     destroyPreviewView();
+  });
+})()
+
+function createToasterView() {
+  // Create our hidden browserview
+  windows.list[windows.TOASTER] = new BrowserView({
+    show: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    }
+  });
+
+  windows.list[windows.TOASTER].webContents.loadURL(url.format({
+    pathname: path.join(__dirname, 'toaster.html'),
+    protocol: 'file:',
+    slashes: true
+  }));
+
+  windows.list[windows.TOASTER].setBounds({x: 100, y: 100, width: 100, height: 100 });
+  windows.list[windows.TOASTER].webContents.on('will-navigate', (event, url) => {
+    console.log("Denying navigation to " + url)
+    event.preventDefault();
+  });
+  // I 'unno
+}
+function destroyToasterView() {
+  windows.list[windows.MAIN_WINDOW].removeBrowserView(windows.list[windows.TOASTER]);
+  windows.list[windows.TOASTER].webContents.destroy();
+  windows.list[windows.TOASTER] = null;
+}
+
+(function setupToasterIPC() {
+  ipcMain.on('toaster-open', () => {
+    createToasterView();
+  });
+  ipcMain.on('toaster-close', () => {
+    destroyToasterView();
+  });
+  ipcMain.on('toaster-show', () => {
+    windows.list[windows.MAIN_WINDOW].addBrowserView(windows.list[windows.TOASTER]);
+    windows.list[windows.MAIN_WINDOW].setTopBrowserView(windows.list[windows.TOASTER]);
+  });
+  ipcMain.on('toaster-hide', () => {
+    windows.list[windows.MAIN_WINDOW].removeBrowserView(windows.list[windows.TOASTER]);
+  });
+  ipcMain.on('toaster-bounds', (event, bounds) => {
+    console.log('bounds', bounds)
+    console.log(windows.list[windows.TOASTER])
+    windows.list[windows.TOASTER].setBounds({
+      x: Math.round(bounds.x),
+      y: Math.round(bounds.y),
+      width: Math.round(bounds.width),
+      height: Math.round(bounds.height)
+    });
+  });
+  ipcMain.on('toaster-toast', (event, msg) => {
+    windows.list[windows.TOASTER].webContents.send('toast', msg);
+  });
+  ipcMain.on('toaster-awaiting', () => {
+    windows.list[windows.MAIN_WINDOW].webContents.send('toaster-ready');
   });
 })()
 

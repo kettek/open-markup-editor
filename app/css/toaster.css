@@ -1,0 +1,170 @@
+/** Unfortunate lonely Toast **/
+@import "../fonts/mplus-2c.css";
+
+:root {
+  --s: #0277bd;
+  --s-light: #58a5f0;
+  --s-dark: #004c8c;
+  --s-fg: #261312;
+  --s-dark-fg: #f4e9ea;
+  --s-light-fg: #261312;
+
+  --p: #212121;
+  --p-fg: #fbfbfb;
+  --p-light: #484848;
+  --p-light-fg: #fbfbfb;
+  --p-dark: #000;
+  --p-dark-fg: #fbfbfb;
+
+  --font-family: "M+ C Type-2 (basic latin)";
+}
+
+html, body { width: 100%; height: 100%; }
+body { 
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family);
+  color: var(--p-light-fg);
+}
+* { box-sizing: border-box }
+
+section.toaster {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+section.toaster article {
+  width: 100%;
+  height: 100%;
+  padding: .5em;
+  color: var(--p-fg);
+  background-color: var(--p);
+  pointer-events: auto;
+  display: grid;
+  grid-template-areas: "toast__icon toast__title toast__controls"
+                       "toast__icon toast__date toast__controls"
+                       "toast__icon toast__body toast__controls";
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  margin-top: 1em;
+  user-select: auto;
+}
+
+header.toaster__toast__title {
+  font-size: 125%;
+  font-weight: bold;
+  grid-area: toast__title;
+}
+
+header.toaster__toast__subtitle {
+  opacity: 0.5;
+  font-size: 75%;
+  grid-area: toast__date;
+}
+
+main.toaster__toast__body {
+  grid-area: toast__body;
+}
+
+aside.toaster__toast__controls {
+  grid-area: toast__controls;
+  display: grid;
+  user-select: none;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "toast__controls__nav"
+                       "toast__controls__close";
+}
+
+header.toaster__toast__controls__nav {
+  grid-area: toast__controls__nav;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-content: center;
+}
+
+span.toaster__toast__controls__nav__count {
+  opacity: 0.5;
+  font-size: 75%;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+main.toaster__toast__controls__close {
+  grid-area: toast__controls__close;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main.toaster__toast__controls__close:hover {
+  transition: .2s all;
+  color: var(--s-dark-fg);
+}
+
+aside.toaster__toast__icon {
+  grid-area: toast__icon;
+  padding-right: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+aside.toaster__toast__icon > * {
+  width: 2em;
+  height: 2em;
+}
+
+svg {
+  fill: currentColor;
+}
+
+aside.toaster__toast__icon .-warning {
+  color: yellow;
+}
+aside.toaster__toast__icon .-error {
+  color: red;
+}
+
+aside.toaster__toast__icon .-info {
+  color: lightblue;
+}
+
+.closeToast {
+  width: 2em;
+  height: 2em;
+}
+
+.navIcon {
+  width: 1.5em;
+  height: 1em;
+}
+
+.navIcon.-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.navIcon.-left {
+  transform: rotate(-90deg);
+}
+
+.navIcon.-right {
+  transform: rotate(90deg);
+}

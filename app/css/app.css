@@ -568,3 +568,12 @@ listbuilder select {
 section.closeElement {
   animation: slideToRight 0.5s, fadeOut 0.5s;
 }
+
+section.toaster {
+  position: absolute;
+  right: 1em;
+  bottom: 3em;
+  width: 30em;
+  height: 8em;
+  pointer-events: none;
+}

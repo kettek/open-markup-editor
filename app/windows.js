@@ -4,5 +4,6 @@ module.exports = {
   PREVIEW: 2,
   SPLASH_WINDOW: 3,
   ABOUT_WINDOW: 4,
+  TOASTER: 5,
   list: []
 };
