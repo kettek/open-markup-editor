@@ -422,7 +422,7 @@ function makePackManager(module_name, obj={}) {
 
           // Create file and write it.
           let file = fs.createWriteStream(output)
-          res.on('end', () => {
+          file.on('finish', () => {
             m.redraw();
             mm.install([output])
           })
