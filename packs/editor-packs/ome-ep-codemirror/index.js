@@ -27,6 +27,7 @@ module.exports = {
       'keymap': 'default',
       'use_tabs': false,
       'indent_size': 2,
+      'spellchecker': false,
     }, [
       ['section', {title: "The theme used by CodeMirror"},
         ['select', '', 'theme_index', {
@@ -75,7 +76,17 @@ module.exports = {
           }
         ],
         ['label', 'Indentation Size', 'indent_size']
-      ]
+      ],
+      ['section', {title: "Experimental spellchecker support. Restart or close all open files for changes to take effect. Works best with default key map."},
+        ['checkbox', '', 'spellchecker', {
+            'onchange': (e) => {
+              pack.set('spellchecker', e.target.checked);
+            }
+          }
+        ],
+        ['label', 'Spellchecker (experimental)', 'spellchecker']
+      ],
+
     ]);
 
     pack.theme = pack.get('theme');
@@ -178,14 +189,26 @@ module.exports = {
     }
     pack.focused = -1;
     pack.files = [];
+    pack.parentTarget = null;
+    pack.oldTarget = null;
     pack.on('dom-attach', (dom) => {
       if (!pack.cm) {
-        pack.cm = CodeMirror.fromTextArea(dom, {
+        let options = {
           lineNumbers: true,
           lineWrapping: pack.getGlobal('editor.linewrapping') ? true : false,
           theme: pack.theme,
-          keyMap: pack.keymap
-        });
+          keyMap: pack.keymap,
+          spellcheck: true
+        }
+        if (pack.get('spellchecker') == true) {
+          options.inputStyle = "contenteditable"
+          pack.parentTarget = dom.parentNode
+          pack.oldTarget = dom
+          pack.parentTarget.removeChild(pack.oldTarget)
+          pack.cm = CodeMirror(pack.parentTarget, options)
+        } else {
+          pack.cm = CodeMirror.fromTextArea(dom, options)
+        }
         pack.cm.on("changes", (cm, changes) => {
           pack.emit("change", pack.focused);
         });
@@ -217,7 +240,14 @@ module.exports = {
       }
     });
     pack.on('dom-detach', (dom) => {
-      pack.cm.toTextArea();
+      if (pack.cm.options.inputStyle == 'contenteditable') {
+        let el = pack.cm.getWrapperElement()
+        el.parentNode.removeChild(el);
+        pack.parentTarget.appendChild(pack.oldTarget);
+        pack.parentTarget = pack.oldTarget = null;
+      } else {
+        pack.cm.toTextArea();
+      }
       pack.cm = null;
     });
     pack.on('doc-new', (index, filename) => {
