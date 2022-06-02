@@ -78,7 +78,6 @@ let Files = Emitter({
   setFileLine: (index, num) => {
     if (!Files.validateFileEntry(index)) return false;
     Files.loadedFiles[index].current_line = num;
-    m.redraw();
   },
   isFileDirty: (index) => {
     if (!Files.validateFileEntry(index)) return false;

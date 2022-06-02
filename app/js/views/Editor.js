@@ -1,5 +1,6 @@
 let m = require('mithril');
 const settings = require('electron-app-settings');
+const { ipcRenderer } = require('electron');
 
 let EditorPackManager = require('../EditorPackManager');
 
@@ -34,6 +35,16 @@ function onEditorChange(index) {
   updateTimeout = setTimeout(updateFunction, settings.get("editor.update_delay"));
 }
 
+function onEditorLine(index, num) {
+  Files.setFileLine(index, num)
+  // This is a bit iffy to send a preview-update from here, but calling `m.redraw()` in setFileLine breaks range selections in the editor.
+  if (settings.get('render.synch_lines') == true) {
+    ipcRenderer.send('preview-update', {
+      line: Files.getFileLine(Files.focused)
+    });
+  }
+}
+
 function attachEditor(dom) {
   if (current_editor) return;
   current_editor = EditorPackManager.getEditor();
@@ -52,7 +63,7 @@ function attachEditor(dom) {
   if (current_editor.getText) {
     Files.on("get-text", current_editor.getText);
   }
-  current_editor.on("line", Files.setFileLine);
+  current_editor.on("line", onEditorLine);
   // Ugliness here.
   current_editor.on("change", onEditorChange);
 }
@@ -60,7 +71,7 @@ function attachEditor(dom) {
 function detachEditor() {
   if (!current_editor) return;
   current_editor.off("change", onEditorChange);
-  current_editor.off("line", Files.setFileLine);
+  current_editor.off("line", onEditorLine);
   if (current_editor.getText) {
     Files.off("get-text", current_editor.getText);
   }
