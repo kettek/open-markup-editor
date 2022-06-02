@@ -68,7 +68,7 @@ function attachEditor(dom) {
   current_editor.on("change", onEditorChange);
 }
 
-function detachEditor() {
+function detachEditor(dom) {
   if (!current_editor) return;
   current_editor.off("change", onEditorChange);
   current_editor.off("line", onEditorLine);
@@ -79,7 +79,7 @@ function detachEditor() {
   Files.off('file-import', onFileImport);
   Files.off('file-close', onFileClose);
   Files.off('file-load', onFileLoad);
-  current_editor.emit('dom-detach');
+  current_editor.emit('dom-detach', dom);
   current_editor = null;
 }
 
@@ -92,7 +92,7 @@ module.exports = {
           attachEditor(vnode.dom);
         },
         onremove: (vnode) => {
-          detachEditor();
+          detachEditor(vnode.dom);
         },
         onupdate: (vnode) => {
           if (current_editor) {
