@@ -28,7 +28,7 @@
   "author": "Ketchetwahmeegwun T. Southall <kts@kettek.net> (https://kettek.net/)",
   "license": "GPL-3.0",
   "devDependencies": {
-    "electron": "^12.0.4",
+    "electron": "^13.6.6",
     "electron-builder": "^22.10.5",
     "submodules-install": "^1.0.1"
   },
