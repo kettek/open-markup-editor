@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "markdown-it": "^8.4.1",
+    "markdown-it": "^12.3.2",
     "markdown-it-anchor": "^5.0.2",
     "markdown-it-attrs": "^1.2.1",
     "markdown-it-container": "^2.0.0",
